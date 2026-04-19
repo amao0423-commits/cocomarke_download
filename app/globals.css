@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-design-bg-page text-design-text-primary antialiased;
+    font-size: 16px;
+    line-height: 29px;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      line-height: 30px;
+    }
+  }
+
+  /**
+   * サイト共通タイポ（SP 既定・md 以上で PC）
+   * H1 32/45 → 40/54 · H2 26/38 → 32/45 · H3 20/30 → 24/36
+   * 本文 16/29 → 16/30 · 小見出し（h4）13/22 → 14/24
+   */
+  h1 {
+    font-size: 32px;
+    line-height: 45px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 40px;
+      line-height: 54px;
+    }
+  }
+
+  h2 {
+    font-size: 26px;
+    line-height: 38px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    h2 {
+      font-size: 32px;
+      line-height: 45px;
+    }
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    h3 {
+      font-size: 24px;
+      line-height: 36px;
+    }
+  }
+
+  h4 {
+    font-size: 13px;
+    line-height: 22px;
+    font-weight: 600;
+  }
+
+  @media (min-width: 768px) {
+    h4 {
+      font-size: 14px;
+      line-height: 24px;
+    }
+  }
+
+  /** 本文エリアの見出し色（ヘッダーは layout 上 main 外のため対象外） */
+  main h1,
+  main h2 {
+    @apply text-cocomarke-navy;
+  }
+}
+
+@layer components {
+  /**
+   * 淡いメッシュグラデーション（Tailwind: bg-coco-mesh-wash と同じレイヤー）
+   * ページ全体やセクションのラッパーに付与
+   */
+  .coco-bg-mesh-wash {
+    @apply relative overflow-hidden;
+    background-color: theme("colors.design.bg-page");
+    background-image: theme("backgroundImage.coco-mesh-wash");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
+
+  /* ヒーロー：資料一覧ページ上部は純白で下のスレート曲線セクションと対比 */
+  .coco-section-hero {
+    @apply relative overflow-hidden bg-white;
+  }
+
+  /* 資料ライブラリ：カード下の白地と一体になるフラットな白 */
+  .coco-section-library {
+    @apply relative overflow-hidden bg-white;
+  }
+
+  /* お問い合わせ：淡いグレー＋パステル */
+  .coco-section-contact {
+    @apply relative overflow-hidden border-t border-design-border;
+    background-color: theme("colors.design.surface-soft");
+    background-image: theme("backgroundImage.coco-cta-wash");
+  }
+  .coco-section-contact::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 50%;
+    background: radial-gradient(
+      ellipse 90% 70% at 50% 100%,
+      rgba(234, 242, 255, 0.4) 0%,
+      transparent 68%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .coco-section-inner {
+    @apply relative z-10;
+  }
+}
