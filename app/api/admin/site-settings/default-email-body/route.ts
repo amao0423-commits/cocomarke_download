@@ -33,7 +33,7 @@ const KEY_SUBJECT = 'default_email_template_subject';
 
 export async function GET(_request: NextRequest) {
   try {
-    if (!verifyAdmin(request)) {
+    if (!verifyAdmin(_request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
     const [bodyHtml, subject] = await Promise.all([
