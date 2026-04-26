@@ -415,7 +415,7 @@ export function TemplatesTab({ secretKey }: { secretKey: string }) {
         <StepBlock
           step={4}
           title="公開設定を決めて保存する"
-          description="すぐ使うテンプレートにしたい場合だけ公開にしてください。公開できるのは同時に1つだけです。"
+          description="すぐ使う文面は公開にしてください。複数まとめて公開できます。送信時はフォームや資料との対応から、適切な文面が選ばれます。"
         >
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input

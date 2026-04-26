@@ -27,7 +27,7 @@ export async function normalizeDownloadRequestTemplateId(
  * 選択された資料から、送信に使うテンプレートをできるだけ自動で決める。
  * - フォーム側で指定済みのテンプレートがあり、全資料がそのテンプレに含まれる場合はそれを優先
  * - 指定がなくても、全資料に共通するテンプレートが1つだけならそれを採用
- * - 資料ごとに別テンプレートが混在する場合は、フォーム指定または公開中テンプレにフォールバック
+ * - 資料ごとに別テンプレートが混在する場合は、フォーム指定または公開中テンプレ（更新が新しいもの）にフォールバック
  */
 export async function resolveDownloadRequestTemplateId(params: {
   requestedTemplateId: string | null;

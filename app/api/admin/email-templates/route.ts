@@ -62,12 +62,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      if (error.code === '23505') {
-        return NextResponse.json(
-          { error: '公開テンプレートは同時に1件だけです。先に他を非公開にしてください。' },
-          { status: 409 }
-        );
-      }
       console.error('email-templates POST:', error);
       return NextResponse.json({ error: '作成に失敗しました' }, { status: 500 });
     }

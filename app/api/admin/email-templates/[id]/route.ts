@@ -68,12 +68,6 @@ export async function PATCH(request: NextRequest, context: Ctx) {
     if (Object.keys(updatePayload).length > 0) {
       const { error } = await supabase.from('email_templates').update(updatePayload).eq('id', id);
       if (error) {
-        if (error.code === '23505') {
-          return NextResponse.json(
-            { error: '公開テンプレートは同時に1件だけです。' },
-            { status: 409 }
-          );
-        }
         console.error('email-templates PATCH:', error);
         return NextResponse.json({ error: '更新に失敗しました' }, { status: 500 });
       }
