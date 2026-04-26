@@ -35,15 +35,23 @@ export type DownloadFormProps = {
 type FormDoc = { id: string; label: string; thumbnailUrl?: string | null };
 
 const fieldControlClass =
-  'w-full rounded-[10px] border border-cocomarke-gray bg-white px-3 py-2 text-sm leading-snug text-cocomarke-black placeholder:text-xs placeholder:text-cocomarke-black/30 transition-colors focus:border-cocomarke-teal focus:outline-none focus:ring-2 focus:ring-cocomarke-teal/20 disabled:opacity-60';
+  'w-full min-h-[44px] rounded-md border border-slate-300 bg-white px-3 py-2.5 text-base leading-snug text-slate-900 placeholder:text-sm placeholder:text-slate-400 transition-colors sm:min-h-0 sm:py-2 sm:text-sm focus:border-[#185FA5] focus:outline-none focus:ring-2 focus:ring-[#185FA5]/20 disabled:opacity-60';
 
-const labelClass = 'mb-1 block text-xs font-medium leading-tight text-slate-600';
+const labelClass =
+  'mb-1.5 block text-sm font-medium leading-tight text-slate-600 sm:mb-1 sm:text-xs';
 
 const requiredBadgeClass =
-  'ml-1.5 align-middle text-[10px] font-medium leading-none text-red-500';
+  'ml-1.5 align-middle text-[10px] font-medium leading-none text-[#E24B4A]';
 
 const optionalBadgeClass =
-  'ml-1.5 align-middle text-[10px] font-normal leading-none text-slate-400';
+  'ml-1.5 align-middle text-[10px] font-normal leading-none text-slate-500';
+
+const pillBaseClass =
+  'min-h-10 rounded-full border px-3 py-2 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#185FA5]/35 disabled:opacity-60 sm:min-h-0 sm:py-1.5';
+
+const pillSelectedClass = 'border-[#185FA5] bg-[#185FA5] text-[#E6F1FB]';
+const pillIdleClass =
+  'border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50';
 
 export default function DownloadForm({
   templateId: templateIdProp,
@@ -69,9 +77,6 @@ export default function DownloadForm({
   const [errorMessage, setErrorMessage] = useState('');
   const [resolvedTemplateId, setResolvedTemplateId] = useState<string | null>(null);
   const [configReady, setConfigReady] = useState(templateIdProp !== undefined);
-  const [formDocuments, setFormDocuments] = useState<FormDoc[]>([]);
-  const [docsLoading, setDocsLoading] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   /**
    * サンクス画面: 今回申し込んだ資料以外で、DB上アップロード日時が新しい順の最大3件。
    * success 遷移前に API で取得済みにする（受付メッセージと同じ描画で表示）。
@@ -80,110 +85,36 @@ export default function DownloadForm({
   const [thanksRecommended, setThanksRecommended] = useState<FormDoc[] | null>(null);
 
   useEffect(() => {
-    const urlId = documentIdProp?.trim() ?? null;
-
-    const applyDocList = (list: FormDoc[]) => {
-      if (urlId) {
-        const effectiveList: FormDoc[] = list.some((d) => d.id === urlId)
-          ? list
-          : [{ id: urlId, label: documentLabel?.trim() || 'ご指定の資料' }, ...list];
-        setFormDocuments(effectiveList);
-        setSelectedIds(new Set([urlId]));
-      } else {
-        setFormDocuments(list);
-        setSelectedIds(new Set(list.map((d) => d.id)));
-      }
-    };
-
-    const applyNoTemplate = () => {
-      if (urlId) {
-        setFormDocuments([{ id: urlId, label: documentLabel?.trim() || 'ご指定の資料' }]);
-        setSelectedIds(new Set([urlId]));
-      } else {
-        setFormDocuments([]);
-        setSelectedIds(new Set());
-      }
-    };
-
-    const parseDocList = (data: unknown): FormDoc[] =>
-      Array.isArray((data as { documents?: unknown })?.documents)
-        ? (data as { documents: { id: string; label?: string }[] }).documents.map((d) => ({
-            id: d.id,
-            label: typeof d.label === 'string' && d.label.trim() ? d.label.trim() : '資料',
-          }))
-        : [];
-
     if (templateIdProp !== undefined) {
       const v =
         templateIdProp === null || templateIdProp === ''
           ? null
           : String(templateIdProp).trim() || null;
       setResolvedTemplateId(v);
-      if (!v) {
-        applyNoTemplate();
-        setConfigReady(true);
-        return;
-      }
-      let cancelled = false;
-      setDocsLoading(true);
-      (async () => {
-        try {
-          const res = await fetch(
-            `/api/download-form-documents?slug=${encodeURIComponent(formSlug)}`
-          );
-          const data = await res.json();
-          if (!cancelled) applyDocList(parseDocList(data));
-        } catch {
-          if (!cancelled) applyNoTemplate();
-        } finally {
-          if (!cancelled) {
-            setDocsLoading(false);
-            setConfigReady(true);
-          }
-        }
-      })();
-      return () => { cancelled = true; };
+      setConfigReady(true);
+      return;
     }
 
-    // templateIdProp が未指定 → config と documents を同時取得（直列→並列で高速化）
     let cancelled = false;
     setConfigReady(false);
-    setDocsLoading(true);
     (async () => {
       try {
-        const [configRes, docsRes] = await Promise.all([
-          fetch(`/api/download-form-config?slug=${encodeURIComponent(formSlug)}`),
-          fetch(`/api/download-form-documents?slug=${encodeURIComponent(formSlug)}`),
-        ]);
-        const [configData, docsData] = await Promise.all([
-          configRes.json(),
-          docsRes.json(),
-        ]);
+        const res = await fetch(`/api/download-form-config?slug=${encodeURIComponent(formSlug)}`);
+        const configData = await res.json();
         if (cancelled) return;
         const tid =
           typeof configData?.templateId === 'string' && configData.templateId.trim()
             ? configData.templateId.trim()
             : null;
         setResolvedTemplateId(tid);
-        if (!tid) {
-          applyNoTemplate();
-        } else {
-          applyDocList(parseDocList(docsData));
-        }
       } catch {
-        if (!cancelled) {
-          setResolvedTemplateId(null);
-          applyNoTemplate();
-        }
+        if (!cancelled) setResolvedTemplateId(null);
       } finally {
-        if (!cancelled) {
-          setDocsLoading(false);
-          setConfigReady(true);
-        }
+        if (!cancelled) setConfigReady(true);
       }
     })();
     return () => { cancelled = true; };
-  }, [templateIdProp, formSlug, documentIdProp, documentLabel]);
+  }, [templateIdProp, formSlug]);
 
   useEffect(() => {
     if (state !== 'success') {
@@ -200,34 +131,22 @@ export default function DownloadForm({
     firstName.trim().length > 0 &&
     company.trim().length > 0 &&
     email.trim().length > 0 &&
-    phone.trim().length > 0 &&
     jobTitleSelected &&
     requestPurpose.length > 0 &&
     privacyConsent &&
-    configReady &&
-    !docsLoading &&
-    (formDocuments.length === 0 || selectedIds.size > 0);
+    configReady;
 
   useEffect(() => {
     if (!onSelectedDocumentChange) return;
-
-    if (formDocuments.length > 0) {
-      const selected =
-        formDocuments.find((doc) => selectedIds.has(doc.id)) ?? formDocuments[0] ?? null;
-      onSelectedDocumentChange(selected);
-      return;
-    }
-
     if (documentIdProp?.trim()) {
       onSelectedDocumentChange({
         id: documentIdProp.trim(),
         label: documentLabel?.trim() || 'ご指定の資料',
       });
-      return;
+    } else {
+      onSelectedDocumentChange(null);
     }
-
-    onSelectedDocumentChange(null);
-  }, [formDocuments, selectedIds, documentIdProp, documentLabel, onSelectedDocumentChange]);
+  }, [documentIdProp, documentLabel, onSelectedDocumentChange]);
 
   useEffect(() => {
     onThanksModeChange?.(state === 'success');
@@ -255,7 +174,7 @@ export default function DownloadForm({
         lastName: lastName.trim(),
         firstName: firstName.trim(),
         email: email.trim(),
-        phone: phone.trim(),
+        phone: phone.trim() || '',
         company: company.trim(),
         department: department.trim(),
         requestPurpose,
@@ -265,10 +184,12 @@ export default function DownloadForm({
       if (resolvedTemplateId) {
         body.templateId = resolvedTemplateId;
       }
-      if (formDocuments.length > 0) {
-        body.documentIds = Array.from(selectedIds);
-      } else if (documentIdProp?.trim()) {
+      if (documentIdProp?.trim()) {
         body.documentId = documentIdProp.trim();
+      }
+      const label = documentLabel?.trim();
+      if (label) {
+        body.documentTitle = label;
       }
 
       const res = await fetch('/api/download-request', {
@@ -285,12 +206,7 @@ export default function DownloadForm({
         return;
       }
 
-      const successIds =
-        formDocuments.length > 0
-          ? Array.from(selectedIds)
-          : documentIdProp?.trim()
-            ? [documentIdProp.trim()]
-            : [];
+      const successIds = documentIdProp?.trim() ? [documentIdProp.trim()] : [];
 
       let recommendedList: FormDoc[] = [];
       try {
@@ -348,13 +264,37 @@ export default function DownloadForm({
                   </svg>
                 </div>
                 <h1 className="text-xl font-extrabold leading-snug text-[#01408D] sm:text-2xl">
-                  申請を受け付けました
+                  資料のご請求ありがとうございました。
                 </h1>
-                <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600">
-                  ご入力いただいたメールアドレス宛に資料をお送りします。
-                  <br />
-                  しばらくお待ちください。
-                </p>
+                <div className="mx-auto mt-6 w-full max-w-lg text-left text-sm leading-relaxed text-slate-600 sm:mt-8">
+                  <p>資料はご登録いただいたメールアドレスにお送りいたしました。</p>
+                  <p className="mt-3">記載のURLからダウンロードください。</p>
+                  <p className="mt-4">
+                    また、ぜひ一度、チャットやオンラインにて15分ほど
+                    <br />
+                    現在のInstagram運用の課題や疑問
+                    <br />
+                    弊社の運用代行サービスの説明
+                    <br />
+                    についてお話する機会をいただけますと幸いです。
+                  </p>
+                  <p className="mt-4">
+                    日程・ご相談につきましては以下のメールアドレスよりお問い合わせをよろしくお願いいたします。
+                  </p>
+                  <p className="mt-2">
+                    <a
+                      href="mailto:info@ccoomarke.com"
+                      className="font-medium text-[#01408D] underline-offset-2 hover:underline"
+                    >
+                      info@ccoomarke.com
+                    </a>
+                  </p>
+                  <p className="mt-5 text-[13px] leading-relaxed">
+                    万一、メールが届かない場合は【送信エラー】【ご入力内容に誤りがある】等の可能性がございます。
+                    <br />
+                    お手数をおかけしてしまい大変申し訳ございませんが、もう一度送信いただくか、お電話にてご連絡くださいませ。
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -446,7 +386,7 @@ export default function DownloadForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex h-full min-h-0 w-full max-w-[800px] flex-1 flex-col rounded-[20px] border border-cocomarke-gray/90 bg-white px-5 py-4 shadow-[0_28px_72px_-44px_rgba(15,23,42,0.3)] sm:px-6 sm:py-4 lg:mx-auto"
+      className="flex h-full min-h-0 w-full flex-1 flex-col rounded-xl border border-slate-200/90 bg-white px-3.5 py-5 shadow-sm sm:px-5 sm:py-5"
       noValidate
     >
       <input
@@ -456,17 +396,15 @@ export default function DownloadForm({
         readOnly
         aria-hidden
       />
-      <div className="mb-2 shrink-0">
-        <p className="text-xs font-normal leading-snug text-slate-600 sm:text-[13px] sm:leading-snug">
+      <div className="mb-3 shrink-0">
+        <p className="text-sm font-normal leading-relaxed text-slate-600 sm:text-[13px] sm:leading-snug">
           必要事項をご入力ください。内容確認後、ご案内メールをお送りします。
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col justify-between gap-2">
-        <div className="min-h-0 space-y-2">
-
-          {/* 姓・名 */}
-          <div className="grid grid-cols-2 gap-2">
+      <div className="flex min-h-0 flex-1 flex-col justify-between gap-3">
+        <div className="min-h-0 space-y-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             <div>
               <label htmlFor="lastName" className={labelClass}>
                 姓
@@ -503,7 +441,6 @@ export default function DownloadForm({
             </div>
           </div>
 
-          {/* 会社名 */}
           <div>
             <label htmlFor="company" className={labelClass}>
               会社名
@@ -522,49 +459,52 @@ export default function DownloadForm({
             />
           </div>
 
-          {/* 役職・電話番号 */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label htmlFor="department" className={labelClass}>
-                役職
-                <span className={requiredBadgeClass}>必須</span>
-              </label>
-              <select
-                id="department"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                required
-                disabled={state === 'submitting'}
-                className={fieldControlClass}
-              >
-                <option value="">選択してください</option>
-                {DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
+          <div>
+            <div id="job-title-label" className={labelClass}>
+              役職
+              <span className={requiredBadgeClass}>必須</span>
             </div>
-            <div>
-              <label htmlFor="phone" className={labelClass}>
-                電話番号
-                <span className={requiredBadgeClass}>必須</span>
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="03-1234-5678"
-                required
-                autoComplete="tel"
-                disabled={state === 'submitting'}
-                className={fieldControlClass}
-              />
+            <div
+              role="radiogroup"
+              aria-labelledby="job-title-label"
+              className="flex flex-wrap gap-2"
+            >
+              {DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS.map((opt) => {
+                const selected = department === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    disabled={state === 'submitting'}
+                    onClick={() => setDepartment(opt)}
+                    className={`${pillBaseClass} ${selected ? pillSelectedClass : pillIdleClass}`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* メールアドレス */}
+          <div>
+            <label htmlFor="phone" className={labelClass}>
+              電話番号
+              <span className={optionalBadgeClass}>任意</span>
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="03-1234-5678"
+              autoComplete="tel"
+              disabled={state === 'submitting'}
+              className={fieldControlClass}
+            />
+          </div>
+
           <div>
             <label htmlFor="email" className={labelClass}>
               メールアドレス
@@ -583,30 +523,35 @@ export default function DownloadForm({
             />
           </div>
 
-          {/* 資料請求の目的 */}
           <div>
-            <label htmlFor="requestPurpose" className={labelClass}>
+            <div id="request-purpose-label" className={labelClass}>
               資料請求の目的
               <span className={requiredBadgeClass}>必須</span>
-            </label>
-            <select
-              id="requestPurpose"
-              value={requestPurpose}
-              onChange={(e) => setRequestPurpose(e.target.value)}
-              required
-              disabled={state === 'submitting'}
-              className={fieldControlClass}
+            </div>
+            <div
+              role="radiogroup"
+              aria-labelledby="request-purpose-label"
+              className="flex flex-wrap gap-2"
             >
-              <option value="">選択してください</option>
-              {DOWNLOAD_REQUEST_PURPOSE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+              {DOWNLOAD_REQUEST_PURPOSE_OPTIONS.map((opt) => {
+                const selected = requestPurpose === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    disabled={state === 'submitting'}
+                    onClick={() => setRequestPurpose(opt)}
+                    className={`${pillBaseClass} ${selected ? pillSelectedClass : pillIdleClass}`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* ご質問・ご要望 */}
           <div>
             <label htmlFor="questions" className={labelClass}>
               ご質問・ご要望
@@ -617,46 +562,38 @@ export default function DownloadForm({
               value={questions}
               onChange={(e) => setQuestions(e.target.value)}
               placeholder="ご不明点やご要望があればご記入ください"
-              rows={2}
+              rows={3}
               disabled={state === 'submitting'}
-              className={`${fieldControlClass} resize-y min-h-[72px]`}
+              className={`${fieldControlClass} min-h-[72px] resize-y`}
             />
           </div>
 
-          {/* 同意欄 */}
-          <div className="rounded-lg border border-cocomarke-gray/80 bg-cocomarke-black/[0.02] p-2">
-            <p className="text-[10px] leading-snug text-cocomarke-black/85">
-              本フォームにてお預かりした個人情報は、お問合せ・資料請求への対応のほか、株式会社ホットセラーが取り扱う各種商品・サービス等の情報提供（ダイレクトメール、電子メール、電話による）に利用されることに同意します。
-            </p>
-            <p className="mt-1 text-[10px] leading-snug text-cocomarke-black/85">
-              上記の個人情報の取扱いおよび当社の
-              <a
-                href="https://www.cocomarke.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-cocomarke-teal underline underline-offset-2 hover:brightness-95"
-              >
-                プライバシーポリシー
-              </a>
-              をご確認のうえ、同意される場合のみ送信してください。
-            </p>
-            <label className="mt-2 flex cursor-pointer items-start gap-2">
+          <div className="border-t border-slate-200 pt-3">
+            <label className="flex cursor-pointer items-start gap-2.5">
               <input
                 type="checkbox"
                 checked={privacyConsent}
                 onChange={(e) => setPrivacyConsent(e.target.checked)}
                 disabled={state === 'submitting'}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border-cocomarke-gray text-cocomarke-teal focus:ring-cocomarke-teal"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-[#185FA5] focus:ring-[#185FA5]"
               />
-              <span className="text-xs font-medium leading-snug text-slate-600">
-                同意する
+              <span className="text-sm font-medium leading-relaxed text-slate-600 sm:text-xs sm:leading-relaxed">
+                <a
+                  href="https://www.cocomarke.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-[#185FA5] underline underline-offset-2 hover:brightness-95"
+                >
+                  プライバシーポリシー
+                </a>
+                に同意する
                 <span className={requiredBadgeClass}>必須</span>
               </span>
             </label>
           </div>
         </div>
 
-        <div className="shrink-0 space-y-2 pt-1">
+        <div className="shrink-0 space-y-3 pt-1">
           {state === 'error' && errorMessage && (
             <p role="alert" className="text-sm font-medium text-red-600">
               {errorMessage}
@@ -666,22 +603,21 @@ export default function DownloadForm({
           <button
             type="submit"
             disabled={!canSubmit || state === 'submitting'}
-            className={`${documentDownloadCtaClassName} min-h-[44px] w-full whitespace-nowrap !py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#1a1a1a]`}
+            className="flex min-h-[44px] w-full items-center justify-center rounded-lg bg-[#185FA5] px-4 py-2.5 text-sm font-medium text-[#E6F1FB] transition hover:bg-[#154a88] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#185FA5]/40 disabled:cursor-not-allowed disabled:opacity-50"
           >
-        {state === 'submitting' ? (
-          '送信中...'
-        ) : !configReady || docsLoading ? (
-          '準備中...'
-        ) : (
-          <>
-            資料ダウンロード
-            <Download className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-          </>
-        )}
+            {state === 'submitting' ? '送信中...' : !configReady ? '準備中...' : '資料ダウンロード'}
           </button>
+
+          <p className="text-center">
+            <Link
+              href="/"
+              className="text-xs font-medium text-[#185FA5] underline-offset-2 transition hover:underline sm:text-sm"
+            >
+              ← トップページに戻る
+            </Link>
+          </p>
         </div>
       </div>
-
     </form>
   );
 }

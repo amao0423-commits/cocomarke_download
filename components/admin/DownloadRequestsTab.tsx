@@ -51,13 +51,26 @@ function formatRequestDate(iso: string): string {
 function statusSelectClasses(status: DownloadRequestStatus): string {
   switch (status) {
     case '送付済':
-      return 'bg-[#DBEAFE] text-[#2563EB] border-[#BFDBFE]';
+      return 'bg-[#FFD1D1] text-[#D32F2F] border-[#FFD1D1]';
     case 'リタ中':
-      return 'bg-[#FFF9C4] text-[#FBC02D] border-[#FFF59D]';
+      return 'bg-[#FFF9C4] text-[#F57F17] border-[#FFF9C4]';
     case '契約':
-      return 'bg-[#C8E6C9] text-[#388E3C] border-[#B2DFDB]';
+      return 'bg-[#C8E6C9] text-[#2E7D32] border-[#C8E6C9]';
     default:
       return 'bg-white text-slate-600 border-blue-50';
+  }
+}
+
+function statusOptionClasses(status: DownloadRequestStatus): string {
+  switch (status) {
+    case '送付済':
+      return 'bg-[#FFD1D1] text-[#D32F2F]';
+    case 'リタ中':
+      return 'bg-[#FFF9C4] text-[#F57F17]';
+    case '契約':
+      return 'bg-[#C8E6C9] text-[#2E7D32]';
+    default:
+      return '';
   }
 }
 
@@ -91,6 +104,7 @@ function EntryDetailDialog({
     { k: 'ご質問・ご要望', v: entry.questions?.trim() || '—' },
     { k: '申請日時', v: formatRequestDate(entry.timestamp) },
     { k: '希望資料', v: entry.documentTitle ?? '—' },
+    { k: '使用したメール文面', v: entry.templateSubject ?? (entry.templateId ? '（件名未取得）' : '標準のメール') },
     { k: 'ステータス', v: normalizeDownloadRequestStatusForUi(entry.status) },
   ];
 
@@ -235,12 +249,10 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
       '役職',
       '資料請求の目的',
       'ご質問・ご要望',
-      '同意',
       '申請日時',
       '希望資料',
-      'ステータス',
       '使用したメール文面',
-      'メール送信',
+      'ステータス',
     ];
     const fmt = (v: string) => (/[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
     const rows = filteredEntries.map((entry, i) => [
@@ -253,15 +265,13 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
       entry.department ?? '',
       entry.requestPurpose ?? '',
       entry.questions ?? '',
-      entry.privacyConsent === true ? '同意' : '',
       new Date(entry.timestamp).toLocaleString('ja-JP', {
         year: 'numeric', month: '2-digit', day: '2-digit',
         hour: '2-digit', minute: '2-digit', second: '2-digit',
       }),
       entry.documentTitle ?? '—',
-      normalizeDownloadRequestStatusForUi(entry.status),
       entry.templateSubject ?? (entry.templateId ? '（件名未取得）' : '標準のメール'),
-      emailStatusLabel(entry.emailStatus),
+      normalizeDownloadRequestStatusForUi(entry.status),
     ]);
     const csvBody = [header.map(fmt).join(','), ...rows.map((r) => r.map(fmt).join(','))].join('\r\n');
     const blob = new Blob(['\uFEFF' + csvBody], { type: 'text/csv;charset=utf-8' });
@@ -312,16 +322,30 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
             </p>
             <label className="flex items-center gap-2 text-slate-600 text-sm">
               表示:
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as DownloadRequestStatus | 'all')}
-                className={`rounded-2xl border border-blue-100 px-2 py-1.5 bg-white text-sm text-slate-600 ${ADMIN_FOCUS_RING}`}
-              >
-                <option value="all">すべて</option>
-                {DOWNLOAD_REQUEST_STATUSES.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+              <div className="relative inline-flex w-[7.5rem] shrink-0">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as DownloadRequestStatus | 'all')}
+                  className={`w-full appearance-none rounded-full border py-0.5 pl-2.5 pr-7 text-xs font-bold shadow-sm cursor-pointer whitespace-nowrap transition-[filter] hover:brightness-95 ${ADMIN_FOCUS_RING} ${
+                    statusFilter === 'all'
+                      ? 'border-blue-100 bg-white text-slate-600'
+                      : statusSelectClasses(statusFilter)
+                  }`}
+                >
+                  <option value="all" className="bg-white text-slate-600">
+                    すべて
+                  </option>
+                  {DOWNLOAD_REQUEST_STATUSES.map((s) => (
+                    <option key={s} value={s} className={statusOptionClasses(s)}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-current opacity-45"
+                  aria-hidden
+                />
+              </div>
             </label>
             <button
               type="button"
@@ -335,15 +359,16 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
             <table className="w-full table-fixed border-collapse text-xs">
               <colgroup>
                 <col style={{ width: '3%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '14%' }} />
                 <col style={{ width: '10%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '7%' }} />
                 <col style={{ width: '8%' }} />
-                <col style={{ width: '10%' }} />
-                <col style={{ width: '10%' }} />
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '8%' }} />
                 <col style={{ width: '9%' }} />
                 <col style={{ width: '10%' }} />
-                <col style={{ width: '8%' }} />
+                <col style={{ width: '9%' }} />
                 <col style={{ width: '7%' }} />
               </colgroup>
               <thead>
@@ -376,6 +401,9 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
                     希望資料
                   </th>
                   <th className="min-w-0 px-1 py-2 text-left font-semibold text-slate-600">
+                    メール文面
+                  </th>
+                  <th className="w-[7.5rem] min-w-[7.5rem] max-w-[7.5rem] whitespace-nowrap px-1 py-2 text-left text-xs font-semibold text-slate-600">
                     対応
                   </th>
                   <th className="px-1 py-2 text-center font-semibold text-slate-600">
@@ -437,20 +465,27 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
                       <td className={cellWrap}>
                         <div className="leading-snug">{entry.documentTitle ?? '—'}</div>
                       </td>
-                      <td className={`${cellWrap} align-middle`}>
+                      <td className={cellWrap}>
+                        <div className="leading-snug text-[11px]">
+                          {entry.templateSubject ?? (entry.templateId ? '（件名未取得）' : '標準のメール')}
+                        </div>
+                      </td>
+                      <td className="w-[7.5rem] min-w-[7.5rem] max-w-[7.5rem] whitespace-nowrap px-1.5 py-1.5 align-middle text-slate-600">
                         <div className="relative inline-flex w-full min-w-0">
                           <select
                             value={st}
                             onChange={(e) => updateStatus(entry, e.target.value as DownloadRequestStatus)}
-                            className={`w-full min-w-0 appearance-none rounded-lg border py-1 pl-1.5 pr-6 text-[11px] font-semibold shadow-sm cursor-pointer ${ADMIN_FOCUS_RING} ${statusSelectClasses(st)}`}
+                            className={`w-full min-w-0 appearance-none rounded-full border py-0.5 pl-2.5 pr-7 text-xs font-bold shadow-sm cursor-pointer whitespace-nowrap transition-[filter] hover:brightness-95 ${ADMIN_FOCUS_RING} ${statusSelectClasses(st)}`}
                             aria-label={`${displayFullName(entry)} のステータス`}
                           >
                             {DOWNLOAD_REQUEST_STATUSES.map((s) => (
-                              <option key={s} value={s}>{s}</option>
+                              <option key={s} value={s} className={statusOptionClasses(s)}>
+                                {s}
+                              </option>
                             ))}
                           </select>
                           <ChevronDown
-                            className="pointer-events-none absolute right-1 top-1/2 h-3 w-3 -translate-y-1/2 text-current opacity-40"
+                            className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-current opacity-45"
                             aria-hidden
                           />
                         </div>

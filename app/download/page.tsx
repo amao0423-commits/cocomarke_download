@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const HERO_SELECT =
-  "id, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url, hero_image_2_url, hero_image_3_url, hero_image_4_url";
+  "id, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url";
 
 type HeroFields = {
   hero_description: string | null;
@@ -17,9 +17,6 @@ type HeroFields = {
   hero_highlight_3: string | null;
   hero_highlights_extra: string | null;
   hero_image_1_url: string | null;
-  hero_image_2_url: string | null;
-  hero_image_3_url: string | null;
-  hero_image_4_url: string | null;
 };
 
 export type PageDocument = {
@@ -75,9 +72,6 @@ async function getDownloadPageContext(
             hero_highlight_3: r.hero_highlight_3 ?? null,
             hero_highlights_extra: r.hero_highlights_extra ?? null,
             hero_image_1_url: r.hero_image_1_url ?? null,
-            hero_image_2_url: r.hero_image_2_url ?? null,
-            hero_image_3_url: r.hero_image_3_url ?? null,
-            hero_image_4_url: r.hero_image_4_url ?? null,
           },
         ])
       );
@@ -123,9 +117,6 @@ async function getDownloadPageContext(
         hero_highlight_3: document.hero_highlight_3 ?? null,
         hero_highlights_extra: document.hero_highlights_extra ?? null,
         hero_image_1_url: document.hero_image_1_url ?? null,
-        hero_image_2_url: document.hero_image_2_url ?? null,
-        hero_image_3_url: document.hero_image_3_url ?? null,
-        hero_image_4_url: document.hero_image_4_url ?? null,
       }
     : null;
 

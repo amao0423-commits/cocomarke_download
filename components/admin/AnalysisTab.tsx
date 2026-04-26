@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import {
   ENTERED_ID_STATUSES,
   type EnteredIdStatus,
@@ -17,15 +17,30 @@ function enteredIdStatusSelectClass(status: EnteredIdStatus | undefined): string
   const s = status ?? '未対応';
   switch (s) {
     case '未対応':
-      return 'bg-[#FFD1D1] text-[#FF6B6B] border-[#FFC4C4]';
+      return 'bg-[#FFD1D1] text-[#D32F2F] border-[#FFD1D1]';
     case 'リタ中':
-      return 'bg-[#FFF9C4] text-[#FBC02D] border-[#FFF59D]';
+      return 'bg-[#FFF9C4] text-[#F57F17] border-[#FFF9C4]';
     case '契約':
-      return 'bg-[#C8E6C9] text-[#388E3C] border-[#B2DFDB]';
+      return 'bg-[#C8E6C9] text-[#2E7D32] border-[#C8E6C9]';
     case 'NG':
-      return 'bg-violet-50 text-violet-500 border-violet-100';
+      return 'bg-[#F5F5F5] text-[#757575] border-[#F5F5F5]';
     default:
       return 'bg-white text-slate-600 border-blue-50';
+  }
+}
+
+function enteredIdStatusOptionClass(status: EnteredIdStatus): string {
+  switch (status) {
+    case '未対応':
+      return 'bg-[#FFD1D1] text-[#D32F2F]';
+    case 'リタ中':
+      return 'bg-[#FFF9C4] text-[#F57F17]';
+    case '契約':
+      return 'bg-[#C8E6C9] text-[#2E7D32]';
+    case 'NG':
+      return 'bg-[#F5F5F5] text-[#757575]';
+    default:
+      return '';
   }
 }
 
@@ -235,16 +250,30 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
             </p>
             <label className="flex items-center gap-2 text-slate-600 text-sm">
               表示:
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as EnteredIdStatus | 'all')}
-                className={`rounded-2xl border border-blue-100 px-2 py-1.5 bg-white text-sm text-slate-600 ${ADMIN_FOCUS_RING}`}
-              >
-                <option value="all">すべて</option>
-                {ENTERED_ID_STATUSES.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+              <div className="relative inline-flex w-[7.5rem] shrink-0">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as EnteredIdStatus | 'all')}
+                  className={`w-full appearance-none rounded-full border py-0.5 pl-2.5 pr-7 text-xs font-bold shadow-sm cursor-pointer whitespace-nowrap transition-[filter] hover:brightness-95 ${ADMIN_FOCUS_RING} ${
+                    statusFilter === 'all'
+                      ? 'border-blue-100 bg-white text-slate-600'
+                      : enteredIdStatusSelectClass(statusFilter)
+                  }`}
+                >
+                  <option value="all" className="bg-white text-slate-600">
+                    すべて
+                  </option>
+                  {ENTERED_ID_STATUSES.map((s) => (
+                    <option key={s} value={s} className={enteredIdStatusOptionClass(s)}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-current opacity-45"
+                  aria-hidden
+                />
+              </div>
             </label>
             <button
               type="button"
@@ -265,7 +294,9 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">入力ID</th>
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">Instagram ID</th>
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">入力日時</th>
-                  <th className="text-left py-3 px-4 text-slate-600 font-semibold">ステータス</th>
+                  <th className="w-[7.5rem] min-w-[7.5rem] max-w-[7.5rem] whitespace-nowrap py-3 px-4 text-left text-xs font-semibold text-slate-600">
+                    ステータス
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -300,17 +331,28 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                         hour: '2-digit', minute: '2-digit', second: '2-digit',
                       })}
                     </td>
-                    <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={entry.status ?? '未対応'}
-                        onChange={(e) => updateStatus(entry, e.target.value as EnteredIdStatus)}
-                        className={`text-sm rounded-xl border px-2 py-1.5 cursor-pointer appearance-none font-semibold shadow-sm ${ADMIN_FOCUS_RING} ${enteredIdStatusSelectClass(entry.status)}`}
-                        aria-label={`@${entry.id} のステータス`}
-                      >
-                        {ENTERED_ID_STATUSES.map((s) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                    <td
+                      className="w-[7.5rem] min-w-[7.5rem] max-w-[7.5rem] whitespace-nowrap py-2 px-3 align-middle"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="relative inline-flex w-full min-w-0">
+                        <select
+                          value={entry.status ?? '未対応'}
+                          onChange={(e) => updateStatus(entry, e.target.value as EnteredIdStatus)}
+                          className={`w-full min-w-0 appearance-none rounded-full border py-0.5 pl-2.5 pr-7 text-xs font-bold shadow-sm cursor-pointer whitespace-nowrap transition-[filter] hover:brightness-95 ${ADMIN_FOCUS_RING} ${enteredIdStatusSelectClass(entry.status)}`}
+                          aria-label={`@${entry.id} のステータス`}
+                        >
+                          {ENTERED_ID_STATUSES.map((s) => (
+                            <option key={s} value={s} className={enteredIdStatusOptionClass(s)}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-current opacity-45"
+                          aria-hidden
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -335,7 +377,10 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
             className="bg-white rounded-3xl border border-blue-50/90 shadow-xl shadow-blue-500/10 max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-blue-50/80">
-              <h2 id="modal-title" className="font-semibold text-slate-600">
+              <h2
+                id="modal-title"
+                className="text-[23px] leading-[34px] font-semibold text-slate-600 md:text-[29px] md:leading-[41px]"
+              >
                 {selectedEntry
                   ? `@${selectedEntry.id} の診断結果（${new Date(selectedEntry.timestamp).toLocaleString('ja-JP')}）`
                   : '診断結果'}

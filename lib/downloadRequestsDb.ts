@@ -23,19 +23,12 @@ export async function insertDownloadRequestRow(params: {
   templateId?: string | null;
   /** 後方互換: 単一資料。複数指定時は先頭と同一でよい */
   documentId?: string | null;
-  /** 紐づける資料（1件以上）。空のときは document_id のみ */
-  documentIds?: string[] | null;
+  /** フォームから送られた希望資料の表示名（一覧の希望資料に優先表示） */
+  requestedDocumentTitle?: string | null;
 }): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   const supabase = getSupabaseAdmin();
   if (!supabase) return false;
-
-  const docIds = params.documentIds?.length
-    ? params.documentIds
-    : params.documentId
-      ? [params.documentId]
-      : [];
-  const primaryDocId = docIds[0] ?? params.documentId ?? null;
 
   const { error } = await supabase.from('download_requests').insert({
     id: params.id,
@@ -53,22 +46,18 @@ export async function insertDownloadRequestRow(params: {
     workflow_status: '送付済',
     email_status: 'pending',
     template_id: params.templateId ?? null,
-    document_id: primaryDocId,
+    document_id: params.documentId ?? null,
+    requested_document_title: params.requestedDocumentTitle ?? null,
   });
   if (error) {
     console.error('insertDownloadRequestRow:', error);
     return false;
   }
 
-  if (docIds.length > 0) {
-    const rows = docIds.map((document_id, i) => ({
-      request_id: params.id,
-      document_id,
-      sort_order: i,
-    }));
+  if (params.documentId) {
     const { error: jErr } = await supabase
       .from('download_request_documents')
-      .insert(rows);
+      .insert({ request_id: params.id, document_id: params.documentId, sort_order: 0 });
     if (jErr) {
       console.error('insertDownloadRequestRow junction:', jErr);
       return false;
@@ -149,6 +138,7 @@ export type DownloadRequestDbRow = {
   email_status: EmailStatus;
   template_id: string | null;
   document_id: string | null;
+  requested_document_title?: string | null;
   template_subject?: string | null;
   document_title?: string | null;
 };
@@ -161,7 +151,7 @@ export async function listDownloadRequestsFromDb(
   const { data, error } = await supabase
     .from('download_requests')
     .select(
-      'id, name, last_name, first_name, email, company, department, phone, request_purpose, questions, privacy_consent, requested_at, workflow_status, email_status, template_id, document_id'
+      'id, name, last_name, first_name, email, company, department, phone, request_purpose, questions, privacy_consent, requested_at, workflow_status, email_status, template_id, document_id, requested_document_title'
     )
     .order('requested_at', { ascending: false })
     .limit(limit);
@@ -221,12 +211,17 @@ export async function listDownloadRequestsFromDb(
     const junctionIds = junctionDocIdsByRequest.get(r.id);
     const effectiveDocIds = junctionIds?.length ? junctionIds : r.document_id ? [r.document_id] : [];
     const titles = effectiveDocIds.map((id) => titleByDocId.get(id)).filter(Boolean) as string[];
+    const fromMaster = titles.length > 0 ? titles.join(' / ') : null;
+    const stored =
+      typeof r.requested_document_title === 'string' && r.requested_document_title.trim()
+        ? r.requested_document_title.trim()
+        : null;
     return {
       ...r,
       template_subject: r.template_id
         ? subjectById.get(r.template_id) ?? null
         : null,
-      document_title: titles.length > 0 ? titles.join(' / ') : null,
+      document_title: stored ?? fromMaster,
     };
   });
 }
@@ -239,7 +234,7 @@ export async function getDownloadRequestById(
   const { data, error } = await supabase
     .from('download_requests')
     .select(
-      'id, name, last_name, first_name, email, company, department, phone, request_purpose, questions, privacy_consent, requested_at, workflow_status, email_status, template_id, document_id'
+      'id, name, last_name, first_name, email, company, department, phone, request_purpose, questions, privacy_consent, requested_at, workflow_status, email_status, template_id, document_id, requested_document_title'
     )
     .eq('id', id)
     .maybeSingle();

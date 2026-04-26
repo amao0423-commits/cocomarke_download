@@ -1,27 +1,32 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useCallback, useMemo, useState } from 'react';
 import DownloadForm from './DownloadForm';
 import type { PageDocument } from './page';
 
 export const DEFAULT_HERO_DESCRIPTION =
-  'COCOマーケの支援内容や考え方を、短時間で把握しやすい形にまとめたご案内です。必要事項をご入力いただくと、すぐに確認できます。';
+  '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';
 
 /** 左カラム・グレー枠内の見出し（固定文言） */
 export const DOCUMENT_SUMMARY_HEADING = '資料概要';
 
 export const DEFAULT_HIGHLIGHT_2 =
-  '支援内容や進め方を、社内で共有しやすい形で整理しています。';
+  '検索・発見タブを活用した非フォロワー獲得施策';
 
-export function defaultHeroHighlight1(documentLabel: string) {
-  return `${documentLabel}の概要を短時間で把握できます。`;
+export function defaultHeroHighlight1(_documentLabel: string) {
+  return 'Instagram運用の「露出」に特化した最新アルゴリズム戦略';
 }
 
-export function defaultHeroHighlight3(formName: string) {
-  return `${formName}の比較検討に必要な要点をまとめています。`;
+export function defaultHeroHighlight3(_formName: string) {
+  return 'アカウント設計から運用改善まで一貫した支援内容';
 }
+
+const WIREFRAME_DEFAULT_HIGHLIGHTS = [
+  'Instagram運用の「露出」に特化した最新アルゴリズム戦略',
+  '検索・発見タブを活用した非フォロワー獲得施策',
+  'アカウント設計から運用改善まで一貫した支援内容',
+  '自社アカウントに足りていない改善ポイントが明確になる',
+] as const;
 
 export type HeroHighlightFields = {
   hero_highlight_1?: string | null;
@@ -37,15 +42,21 @@ export function buildHeroHighlights(
   documentLabel: string,
   doc?: HeroHighlightFields | null,
 ) {
-  const base = [
-    doc?.hero_highlight_1?.trim() || defaultHeroHighlight1(documentLabel),
-    doc?.hero_highlight_2?.trim() || DEFAULT_HIGHLIGHT_2,
-    doc?.hero_highlight_3?.trim() || defaultHeroHighlight3(formName),
-  ];
   const extra = (doc?.hero_highlights_extra ?? '')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
+  const h1 = doc?.hero_highlight_1?.trim();
+  const h2 = doc?.hero_highlight_2?.trim();
+  const h3 = doc?.hero_highlight_3?.trim();
+  if (!h1 && !h2 && !h3 && extra.length === 0) {
+    return [...WIREFRAME_DEFAULT_HIGHLIGHTS];
+  }
+  const base = [
+    h1 || defaultHeroHighlight1(documentLabel),
+    h2 || DEFAULT_HIGHLIGHT_2,
+    h3 || defaultHeroHighlight3(formName),
+  ];
   return [...base, ...extra];
 }
 
@@ -59,78 +70,59 @@ type DownloadPageShellProps = {
   initialDocuments: PreviewDocument[];
 };
 
-function CheckIcon() {
+/** 資料概要リスト用（Stat「無料」と同系色の sky-400） */
+export function HeroSummaryCheckIcon({
+  className = '',
+  size = 'md',
+}: {
+  className?: string;
+  size?: 'sm' | 'md';
+}) {
+  const box = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const glyph = size === 'sm' ? 'h-2 w-2' : 'h-2.5 w-2.5';
   return (
     <span
-      className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#01408D] text-white shadow-sm"
-      aria-hidden
+      className={`mt-0.5 flex shrink-0 items-center justify-center rounded-full bg-sky-400/15 ring-1 ring-sky-400/35 ${box} ${className}`}
     >
       <svg
-        className="h-2.5 w-2.5"
+        className={`${glyph} text-sky-400`}
         fill="none"
-        viewBox="0 0 24 24"
+        viewBox="0 0 12 12"
         stroke="currentColor"
-        strokeWidth={2.8}
+        strokeWidth={2}
+        aria-hidden
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
       </svg>
     </span>
   );
 }
 
-function ImageSlot({
-  url,
-  alt,
-  className = '',
-}: {
-  url?: string | null;
-  alt: string;
-  className?: string;
-}) {
+function DocPreviewSlot({ url, title }: { url?: string | null; title: string }) {
+  const src = url?.trim() ?? '';
   return (
-    <div
-      className={`relative min-h-0 overflow-hidden rounded-lg border border-white/18 shadow-[0_6px_18px_-10px_rgba(0,0,0,0.35)] ${className}`}
-    >
-      {url ? (
-        <Image
-          src={url}
-          alt={alt}
-          fill
-          className="object-cover"
-          sizes="(min-width: 1024px) 22rem, 50vw"
+    <div className="relative h-full w-full overflow-hidden rounded-lg bg-white">
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- 管理画面で任意ホストの公開URLを設定するため next/image の remotePatterns に縛らない
+        <img
+          src={src}
+          alt={title}
+          className="block h-full w-full object-contain object-top"
         />
       ) : (
-        <div className="h-full min-h-[48px] w-full bg-white/10" />
+        <div className="flex h-full w-full flex-col items-center justify-center gap-0.5">
+          <svg className="h-4 w-4 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+          <span className="text-[9px] font-medium leading-tight text-neutral-600">PDF</span>
+        </div>
       )}
     </div>
   );
 }
 
-/** 資料カードは常に2枚、同じ比率・同じ幅で横1列 */
-function DocumentHeroPreview({
-  heroTitle,
-  heroImage1,
-  heroImage2,
-}: {
-  heroTitle: string;
-  heroImage1?: string | null;
-  heroImage2?: string | null;
-}) {
-  return (
-    <div className="mx-auto grid min-h-0 w-full max-w-xl grid-cols-2 items-stretch gap-4">
-      <ImageSlot
-        url={heroImage1}
-        alt={`${heroTitle} 画像1`}
-        className="aspect-[4/3] w-full min-w-0 self-stretch"
-      />
-      <ImageSlot
-        url={heroImage2}
-        alt={`${heroTitle} 画像2`}
-        className="aspect-[4/3] w-full min-w-0 self-stretch"
-      />
-    </div>
-  );
-}
+/** 左カラム固定見出し（ワイヤーフレーム準拠） */
+export const DOWNLOAD_PAGE_SECTION_TITLE = '資料をダウンロード';
 
 export default function DownloadPageShell({
   formSlug,
@@ -194,52 +186,90 @@ export default function DownloadPageShell({
           className={
             thanksMode
               ? ''
-              : 'grid min-h-0 gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-stretch lg:gap-6'
+              : 'grid min-h-0 w-full min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 sm:items-start sm:gap-5 md:gap-6 lg:gap-8'
           }
         >
           {!thanksMode && (
-          <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-[0_26px_70px_-42px_rgba(15,23,42,0.28),inset_-10px_0_24px_-18px_rgba(15,23,42,0.06)]">
-            <div className="relative isolate flex min-h-0 flex-1 flex-col gap-8 overflow-hidden bg-gradient-to-b from-[#01408D] to-[#001A3D] px-10 py-8 text-white sm:gap-10 sm:px-12 sm:py-10">
-              <div className="pointer-events-none absolute inset-y-0 left-[-12%] hidden w-[64%] -skew-x-[24deg] bg-white/[0.07] lg:block" />
-              <header className="relative z-10 mx-auto w-full min-w-0 max-w-xl shrink-0">
-                <div className="flex flex-col gap-2.5 sm:gap-3">
-                  <h1 className="text-base font-extrabold leading-tight tracking-tight text-white sm:text-[17px]">
+          <div className="relative flex h-fit min-h-0 w-full min-w-0 max-w-full flex-col self-start overflow-hidden rounded-2xl border border-white/10 shadow-lg [contain:paint]"
+            style={{ background: 'linear-gradient(160deg, #1a3a6b 0%, #0d2a55 60%, #0a2040 100%)' }}
+          >
+            {/* 装飾グロー */}
+            <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(99,179,237,0.12) 0%, transparent 70%)' }}
+            />
+            <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full"
+              style={{ background: 'radial-gradient(circle, rgba(99,179,237,0.08) 0%, transparent 70%)' }}
+            />
+
+            <div className="relative z-10 flex min-w-0 w-full max-w-full flex-col gap-3 overflow-hidden p-4 md:gap-4 md:p-6">
+              {/* バッジ */}
+              <div className="flex max-w-full items-center gap-1.5 self-start rounded-full border border-sky-400/35 bg-sky-400/18 px-3 py-1">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
+                <span className="max-w-full break-words text-[11px] font-medium tracking-wide text-white/85">
+                  お役立ち資料
+                </span>
+              </div>
+
+              {/* 見出し（資料名） */}
+              <h1 className="min-w-0 break-words text-base font-bold leading-snug text-white sm:text-lg">
+                {heroTitle}
+              </h1>
+
+              {/* 説明文 */}
+              <p className="min-w-0 whitespace-pre-line break-words text-sm font-normal leading-relaxed text-white/90 sm:text-[13px] sm:leading-snug">
+                {heroDescription}
+              </p>
+
+              {/* プレビュー行（1枠＋メタ） */}
+              <div className="flex min-w-0 max-w-full items-start gap-2 overflow-hidden rounded-xl border border-white/10 bg-white/5 p-2.5 sm:items-center sm:gap-3 sm:p-3">
+                <div className="h-[4.5rem] w-[5.5rem] shrink-0 overflow-hidden rounded-lg sm:h-[5rem] sm:w-24 md:h-[5.5rem] md:w-28">
+                  <DocPreviewSlot url={activeDocument?.hero_image_1_url} title={heroTitle} />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5 overflow-hidden">
+                  <p className="min-w-0 break-words text-xs font-bold leading-snug text-white line-clamp-3 md:text-[13px] md:line-clamp-2">
                     {heroTitle}
-                  </h1>
-                  <p className="whitespace-pre-line text-xs leading-relaxed text-white/[0.88] sm:text-sm sm:leading-relaxed">
-                    {heroDescription}
+                  </p>
+                  <p className="min-w-0 shrink-0 break-words text-[10px] font-medium text-white/85 md:text-[11px]">
+                    PDF · 無料ダウンロード
                   </p>
                 </div>
-              </header>
-
-              <div className="relative z-10 flex min-h-0 w-full min-w-0 flex-1 flex-col justify-center py-2 sm:py-3">
-                <DocumentHeroPreview
-                  heroTitle={heroTitle}
-                  heroImage1={activeDocument?.hero_image_1_url}
-                  heroImage2={activeDocument?.hero_image_2_url}
-                />
               </div>
-            </div>
 
-            <div className="flex min-h-0 min-w-0 shrink-0 flex-col border-t border-slate-100/90 bg-white px-5 py-4 sm:px-6 sm:py-5">
-              <div className="flex w-full min-w-0 flex-col gap-1.5 rounded-xl bg-slate-50 p-3 sm:p-4">
-                <div className="min-w-0 shrink-0">
-                  <h2 className="text-sm font-bold leading-tight text-[#01408D] sm:text-[15px]">
-                    {DOCUMENT_SUMMARY_HEADING}
-                  </h2>
-                </div>
+              {/* 区切り */}
+              <div className="h-px min-h-px w-full min-w-0 max-w-full shrink-0 bg-white/10" role="separator" />
 
-                <ul className="flex min-h-0 w-full min-w-0 flex-col gap-1.5 rounded-lg border border-slate-200/80 bg-white/90 p-2.5 shadow-sm sm:p-3">
+              {/* このガイドでわかること */}
+              <div className="min-w-0 max-w-full">
+                <p className="mb-2 text-[13px] font-bold uppercase tracking-widest text-white">
+                  {DOCUMENT_SUMMARY_HEADING}
+                </p>
+                <ul className="flex min-w-0 flex-col gap-2">
                   {heroHighlights.map((item, idx) => (
-                    <li
-                      key={`hero-hl-${idx}`}
-                      className="flex min-w-0 w-full items-start gap-2 text-xs leading-snug text-slate-600 sm:text-sm sm:leading-snug"
-                    >
-                      <CheckIcon />
-                      <span className="min-w-0 flex-1">{item}</span>
+                    <li key={`hero-hl-${idx}`} className="flex w-full min-w-0 items-start gap-2">
+                      <HeroSummaryCheckIcon />
+                      <span className="min-w-0 flex-1 break-words text-sm font-normal leading-relaxed text-white/90 sm:text-[13px] sm:leading-snug">
+                        {item}
+                      </span>
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* Stat バー */}
+              <div className="grid min-w-0 w-full max-w-full grid-cols-2 gap-2">
+                {([['無料', 'ダウンロード'], ['5分', '読了目安']] as const).map(([num, label]) => (
+                  <div
+                    key={label}
+                    className="flex min-w-0 flex-col items-center rounded-xl border border-white/8 bg-white/5 px-1 py-2.5"
+                  >
+                    <span className="max-w-full truncate text-center text-base font-bold text-sky-400 md:text-lg">
+                      {num}
+                    </span>
+                    <span className="mt-0.5 max-w-full break-words text-center text-[10px] leading-tight text-white/85">
+                      {label}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -249,10 +279,10 @@ export default function DownloadPageShell({
             className={
               thanksMode
                 ? ''
-                : 'flex h-full min-h-0 flex-col gap-3 lg:mx-auto lg:w-full lg:max-w-[800px]'
+                : 'flex w-full min-w-0 min-h-0 flex-1 flex-col gap-3'
             }
           >
-            <div className={thanksMode ? '' : 'flex h-full min-h-0 flex-1 flex-col'}>
+            <div className={thanksMode ? '' : 'flex min-h-0 min-w-0 flex-1 flex-col'}>
               <DownloadForm
                 formSlug={formSlug}
                 documentId={documentId}
@@ -262,16 +292,6 @@ export default function DownloadPageShell({
               />
             </div>
 
-            {!thanksMode && (
-              <div className="shrink-0 pl-1">
-                <Link
-                  href="/"
-                  className="text-sm font-medium text-cocomarke-teal underline-offset-2 transition hover:underline"
-                >
-                  ← トップページに戻る
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </section>

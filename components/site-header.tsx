@@ -13,14 +13,14 @@ type SiteHeaderProps = {
   className?: string;
   /** 資料DL Thanks 完了時：下線・影を抑えて軽く見せる */
   isDownloadThanks?: boolean;
+  /** メニュー「資料をダウンロード」のリンク先 */
+  serviceDocumentHref?: string;
 };
 
 type NavItem = {
   label: string;
   href: string;
   external?: boolean;
-  /** ボタン見た目のCTA */
-  button?: boolean;
 };
 
 const SERVICE_URL = "https://www.cocomarke.com/";
@@ -28,14 +28,12 @@ const USEFUL_INFO_URL = "https://www.cocomarke.com/blog";
 const COMPANY_INFO_URL = "https://www.cocomarke.com/company";
 const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
-const SERVICE_DOCUMENT_URL = "/download";
+const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
+const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
-/** 無料相談：白背景・ネイビーグラデ文字（右CTA列のバランス用にやや抑える） */
-const HEADER_CTA_CLASS =
-  "inline-flex shrink-0 min-w-[11.5rem] items-center justify-center rounded-full border border-slate-200/90 bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg";
-
-const HEADER_CTA_TEXT_CLASS =
-  "bg-gradient-to-r from-[#01408D] to-[#001A3D] bg-clip-text text-transparent";
+/** 飲食店向け診断：Instagram 風グラデをやや落ち着かせた色・白文字・薄枠 */
+const HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS =
+  "inline-flex shrink-0 min-w-[9.5rem] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
 /** 資料をダウンロード：ネイビーグラデ背景・白文字・薄枠・軽い影 */
 const HEADER_DOWNLOAD_CTA_CLASS =
@@ -67,6 +65,7 @@ export function SiteHeader({
   logoHref = SERVICE_URL,
   className = "",
   isDownloadThanks = false,
+  serviceDocumentHref = DEFAULT_SERVICE_DOCUMENT_HREF,
 }: SiteHeaderProps) {
   const navItems = useMemo<NavItem[]>(() => {
     switch (currentState) {
@@ -76,7 +75,7 @@ export function SiteHeader({
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
           { label: "資料一覧", href: DOCUMENTS_URL },
-          { label: "無料相談", href: CONTACT_URL, external: true, button: true },
+          { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
       case "afterContact":
         return [
@@ -92,19 +91,10 @@ export function SiteHeader({
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
           { label: "資料一覧", href: DOCUMENTS_URL },
-          { label: "無料相談", href: CONTACT_URL, external: true, button: true },
+          { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
     }
   }, [currentState]);
-
-  const centerNavItems = useMemo(
-    () => navItems.filter((item) => !item.button),
-    [navItems],
-  );
-  const ctaNavButtons = useMemo(
-    () => navItems.filter((item) => item.button),
-    [navItems],
-  );
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -159,7 +149,7 @@ export function SiteHeader({
           className="flex min-w-0 shrink items-center justify-center gap-4 xl:gap-5"
           aria-label="メインナビゲーション"
         >
-          {centerNavItems.map((item) => {
+          {navItems.map((item) => {
             const isActive =
               !item.external &&
               (currentPath === item.href ||
@@ -193,20 +183,15 @@ export function SiteHeader({
           })}
         </nav>
 
-        {/* 右：CTA（右列いっぱいに寄せ、左列と対称にバランス） */}
+        {/* 右：飲食店診断 + 資料DL CTA */}
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-2.5">
-          {ctaNavButtons.map((item) => (
-            <a
-              key={`${item.label}-${item.href}`}
-              href={item.href}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-              className={HEADER_CTA_CLASS}
-            >
-              <span className={HEADER_CTA_TEXT_CLASS}>{item.label}</span>
-            </a>
-          ))}
-          <Link href={SERVICE_DOCUMENT_URL} className={HEADER_DOWNLOAD_CTA_CLASS}>
+          <Link
+            href={RESTAURANT_DIAGNOSIS_URL}
+            className={HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS}
+          >
+            飲食店診断
+          </Link>
+          <Link href={serviceDocumentHref} className={HEADER_DOWNLOAD_CTA_CLASS}>
             資料をダウンロード
           </Link>
         </div>

@@ -111,3 +111,34 @@ export async function loadHomeDocumentSections(): Promise<{
 
   return { sections };
 }
+
+/**
+ * トップ「人気資料 TOP 3」用: 「非公開」「未分類」以外を sort_order → title 昇順で最大3件。
+ */
+export async function loadTopDocuments(): Promise<HomeDocument[]> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return [];
+  }
+
+  const trySelect = async (cols: string) => {
+    const res = await supabase
+      .from('documents')
+      .select(cols)
+      .neq('category', PRIVATE_CATEGORY_NAME)
+      .neq('category', UNCATEGORIZED_CATEGORY_NAME)
+      .order('sort_order', { ascending: true })
+      .order('title', { ascending: true })
+      .limit(3);
+    return res;
+  };
+
+  let docsRes = await trySelect('id, title, category, thumbnail_url, sort_order');
+  if (docsRes.error) {
+    docsRes = await trySelect('id, title, category, sort_order');
+  }
+
+  const raw = !docsRes.error ? docsRes.data : null;
+  const rows = (Array.isArray(raw) ? raw : []) as unknown as DocumentRow[];
+  return rows.map(mapDocumentRow);
+}

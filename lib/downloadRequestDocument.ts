@@ -22,36 +22,3 @@ export async function normalizeDownloadRequestDocumentId(
   return data?.id ?? null;
 }
 
-const MAX_DOCUMENT_IDS = 30;
-
-/**
- * フォームから送られた資料 ID の配列（および単一 documentId）を検証し、
- * 存在する documents の UUID のみ重複なく返す。
- */
-export async function normalizeDownloadRequestDocumentIds(
-  rawList: unknown,
-  rawSingle: unknown
-): Promise<string[]> {
-  const ordered: string[] = [];
-  const seen = new Set<string>();
-
-  const pushId = (id: string | null) => {
-    if (!id || seen.has(id)) return;
-    if (ordered.length >= MAX_DOCUMENT_IDS) return;
-    seen.add(id);
-    ordered.push(id);
-  };
-
-  if (Array.isArray(rawList)) {
-    for (const item of rawList) {
-      if (typeof item !== 'string') continue;
-      const id = await normalizeDownloadRequestDocumentId(item);
-      pushId(id);
-    }
-  }
-
-  const single = await normalizeDownloadRequestDocumentId(rawSingle);
-  pushId(single);
-
-  return ordered;
-}

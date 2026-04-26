@@ -23,18 +23,20 @@ export function normalizeDownloadRequestStatusForUi(
 
 /** 資料請求フォーム「目的」選択肢（API と同一） */
 export const DOWNLOAD_REQUEST_PURPOSE_OPTIONS = [
-  '特に具体的な課題はないが、情報収集をしている',
-  '具体的な課題があり、解決方法を探している',
-  '導入を検討している',
-  'その他',
+  '運用改善したい',
+  '外注を検討中',
+  '情報収集',
 ] as const;
 
 /** 資料請求フォーム「役職」選択肢（DB 列名は department のまま保存）（API と同一） */
 export const DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS = [
-  '一般社員',
-  '課長・マネージャー',
-  '部長・事業責任者',
+  '経営者',
   '役員',
+  '本部長・部長',
+  '課長・主任クラス',
+  'マネージャー・リーダー',
+  '一般社員',
+  'その他',
 ] as const;
 
 export type DownloadRequestEntry = {
@@ -47,6 +49,7 @@ export type DownloadRequestEntry = {
   company: string;
   /** 役職（必須・選択肢は DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS） */
   department?: string;
+  /** 未入力可（任意） */
   phone: string;
   /** 資料請求の目的（選択ラベル） */
   requestPurpose?: string;
@@ -64,5 +67,6 @@ export type DownloadRequestEntry = {
   templateSubject?: string | null;
   /** 資料請求の対象資料（DB 連携時） */
   documentId?: string | null;
+  /** 希望資料の表示名（申請時スナップショット。DB の requested_document_title と対応） */
   documentTitle?: string | null;
 };

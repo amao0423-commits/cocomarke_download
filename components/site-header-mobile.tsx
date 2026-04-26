@@ -14,13 +14,14 @@ type SiteHeaderMobileProps = {
   className?: string;
   /** 資料DL Thanks 完了時：下線・影を抑えて軽く見せる */
   isDownloadThanks?: boolean;
+  /** メニュー「資料ダウンロード」のリンク先 */
+  serviceDocumentHref?: string;
 };
 
 type NavItem = {
   label: string;
   href: string;
   external?: boolean;
-  button?: boolean;
 };
 
 const SERVICE_URL = "https://www.cocomarke.com/";
@@ -28,18 +29,20 @@ const USEFUL_INFO_URL = "https://www.cocomarke.com/blog";
 const COMPANY_INFO_URL = "https://www.cocomarke.com/company";
 const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
-const SERVICE_DOCUMENT_URL = "/download";
+const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
+const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
-/** ドロワー内の無料相談（横幅いっぱい・高さはデスクトップCTAと同系） */
-const HEADER_CTA_MENU_CLASS =
-  "flex w-full items-center justify-center rounded-full border border-slate-200/90 bg-white px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg";
-
-const HEADER_CTA_TEXT_CLASS =
-  "bg-gradient-to-r from-[#01408D] to-[#001A3D] bg-clip-text text-transparent";
+/** 上部バー「飲食店診断」：Instagram 風グラデをやや落ち着かせた色 */
+const HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS =
+  "inline-flex max-w-[42vw] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-2.5 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:max-w-none sm:px-3.5 sm:text-xs";
 
 /** 上部バー「資料ダウンロード」：グラデ背景・白文字 */
 const HEADER_DOWNLOAD_COMPACT_CLASS =
   "inline-flex items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#01408D] to-[#001A3D] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
+
+/** ドロワー下部「飲食店向け診断」 */
+const HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS =
+  "flex w-full items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
 /** ドロワー下部「サービス資料をダウンロード」 */
 const HEADER_DOWNLOAD_MENU_CLASS =
@@ -51,6 +54,7 @@ export function SiteHeaderMobile({
   logoHref = SERVICE_URL,
   className = "",
   isDownloadThanks = false,
+  serviceDocumentHref = DEFAULT_SERVICE_DOCUMENT_HREF,
 }: SiteHeaderMobileProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,7 +67,7 @@ export function SiteHeaderMobile({
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
           { label: "資料一覧", href: DOCUMENTS_URL },
-          { label: "無料相談", href: CONTACT_URL, external: true, button: true },
+          { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
       case "afterContact":
         return [
@@ -79,7 +83,7 @@ export function SiteHeaderMobile({
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
           { label: "資料一覧", href: DOCUMENTS_URL },
-          { label: "無料相談", href: CONTACT_URL, external: true, button: true },
+          { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
     }
   }, [currentState]);
@@ -142,8 +146,14 @@ export function SiteHeaderMobile({
           />
         </Link>
 
-        <div className="flex items-center gap-2">
-          <Link href={SERVICE_DOCUMENT_URL} className={HEADER_DOWNLOAD_COMPACT_CLASS}>
+        <div className="flex min-w-0 shrink items-center gap-1.5 sm:gap-2">
+          <Link
+            href={RESTAURANT_DIAGNOSIS_URL}
+            className={HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS}
+          >
+            飲食店診断
+          </Link>
+          <Link href={serviceDocumentHref} className={HEADER_DOWNLOAD_COMPACT_CLASS}>
             資料ダウンロード
           </Link>
 
@@ -187,21 +197,6 @@ export function SiteHeaderMobile({
                       : "text-design-text-primary hover:bg-design-bg-sub",
                   ].join(" ");
 
-                  if (item.button) {
-                    return (
-                      <a
-                        key={`${item.label}-${item.href}`}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={closeMenu}
-                        className={HEADER_CTA_MENU_CLASS}
-                      >
-                        <span className={HEADER_CTA_TEXT_CLASS}>{item.label}</span>
-                      </a>
-                    );
-                  }
-
                   if (item.external) {
                     return (
                       <a
@@ -230,9 +225,16 @@ export function SiteHeaderMobile({
                 })}
               </nav>
 
-              <div className="mt-4 border-t border-design-border pt-4">
+              <div className="mt-4 flex flex-col gap-3 border-t border-design-border pt-4">
                 <Link
-                  href={SERVICE_DOCUMENT_URL}
+                  href={RESTAURANT_DIAGNOSIS_URL}
+                  onClick={closeMenu}
+                  className={HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS}
+                >
+                  飲食店向け無料診断
+                </Link>
+                <Link
+                  href={serviceDocumentHref}
                   onClick={closeMenu}
                   className={HEADER_DOWNLOAD_MENU_CLASS}
                 >

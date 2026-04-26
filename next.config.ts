@@ -17,6 +17,9 @@ const { resolveDistDir } = require("./scripts/resolve-next-dist-dir.cjs") as {
  * - GET / が 500 かつ `routes-manifest.json` が無い（ENOENT）→ 多くは本番ビルド未実行。`npm run build` を試す。
  *   `ensure-dist-complete.mjs` は `npm run build` 時のみ routes-manifest 欠落・server/chunks 欠落で dist を削除する。
  *   `next dev` では上記が無い／空の状態があり得るため触らない。手動で消したい場合は `npm run dev:clean`。
+ * - `app-build-manifest.json` や `_buildManifest.js` の ENOENT → 多くは `.next-local` 欠損または同期・rename 競合。
+ *   `npm run dev` 前に ensure-dist が破損検知・Windows では static/development をリセット（OneDrive に限らない）。抑止は `NEXT_SKIP_DEV_DIST_REPAIR=1` / `NEXT_SKIP_DEV_STATIC_WIPE=1`。
+ *   Windows では既定で webpack の `next dev`（Turbopack は `NEXT_DEV_TURBOPACK=1`、tmp ENOENT が出やすい）。
  * - `readlink` / EINVAL（OneDrive 配下でシンボリックリンク周りが壊れる）→ `.env.local` に
  *   `NEXT_DIST_DIR=.next` を追加するか、プロジェクトを同期フォルダ外へ移す。
  */

@@ -19,7 +19,12 @@ function resolveHeaderState(pathname: string): HeaderState {
   return "default";
 }
 
-function HeaderBar() {
+type HeaderProps = {
+  /** メニュー「資料ダウンロード」先。サービス概要資料の documentId 付き推奨 */
+  serviceDocumentHref?: string;
+};
+
+function HeaderBar({ serviceDocumentHref = "/download" }: HeaderProps) {
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
 
@@ -38,11 +43,13 @@ function HeaderBar() {
         currentState={currentState}
         currentPath={pathname}
         isDownloadThanks={isDownloadThanks}
+        serviceDocumentHref={serviceDocumentHref}
       />
       <SiteHeaderMobile
         currentState={currentState}
         currentPath={pathname}
         isDownloadThanks={isDownloadThanks}
+        serviceDocumentHref={serviceDocumentHref}
       />
     </>
   );
@@ -57,10 +64,10 @@ function HeaderFallback() {
   );
 }
 
-export default function Header() {
+export default function Header({ serviceDocumentHref }: HeaderProps) {
   return (
     <Suspense fallback={<HeaderFallback />}>
-      <HeaderBar />
+      <HeaderBar serviceDocumentHref={serviceDocumentHref} />
     </Suspense>
   );
 }

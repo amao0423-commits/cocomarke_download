@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import type { HomeDocument } from '@/lib/homeDocuments';
 import { DocumentThumbnail } from '@/components/home/DocumentThumbnail';

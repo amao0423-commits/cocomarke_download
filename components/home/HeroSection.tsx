@@ -128,17 +128,21 @@ export function HeroSection({
             <div className={`relative z-10 ${gridClass}`}>
               <div className={visual ? "max-w-2xl" : "mx-auto max-w-2xl"}>
                 {eyebrow ? (
-                  <p className="text-sm font-semibold text-design-primary">
+                  <p
+                    className={`text-sm font-semibold ${isPhotoHero ? "text-white/85 drop-shadow-sm" : "text-design-primary"}`}
+                  >
                     {eyebrow}
                   </p>
                 ) : null}
                 <h1
-                  className={`font-bold tracking-tight ${isPhotoHero ? "text-white drop-shadow-sm" : "text-cocomarke-navy"} ${eyebrow ? "mt-4" : "mt-0"}`}
+                  className={`font-bold tracking-tight ${isPhotoHero ? "text-white drop-shadow-sm leading-snug" : "text-cocomarke-navy"} ${eyebrow ? "mt-4" : "mt-0"}`}
                 >
                   {title}
                 </h1>
                 {description ? (
-                  <p className="mt-5 text-design-text-secondary">
+                  <p
+                    className={`mt-5 ${isPhotoHero ? "text-base text-white/90 drop-shadow-sm sm:text-lg" : "text-design-text-secondary"}`}
+                  >
                     {description}
                   </p>
                 ) : null}

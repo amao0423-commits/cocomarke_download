@@ -35,7 +35,7 @@ const COCO_MARKETING_SITE = "https://www.cocomarke.com/" as const;
 
 const quickLinks = [
   { label: "サービス概要", href: COCO_MARKETING_SITE },
-  { label: "ブログ", href: "https://www.cocomarke.com/blog" },
+  { label: "お役立ち記事", href: "https://www.cocomarke.com/blog" },
   { label: "プライバシーポリシー", href: "https://www.cocomarke.com/privacy" },
 ] as const;
 
@@ -155,6 +155,14 @@ export function Footer() {
                 ))}
                 <li>
                   <DiagnosisFooterLink />
+                </li>
+                <li>
+                  <Link
+                    href="/restaurant-diagnosis"
+                    className="text-design-text-secondary transition-colors hover:text-design-primary"
+                  >
+                    飲食店診断
+                  </Link>
                 </li>
               </ul>
             </nav>

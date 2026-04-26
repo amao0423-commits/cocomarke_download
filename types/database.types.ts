@@ -215,6 +215,7 @@ export interface Database {
           email_status: EmailStatus;
           template_id: string | null;
           document_id: string | null;
+          requested_document_title: string | null;
           created_at: string;
         };
         Insert: {
@@ -234,6 +235,7 @@ export interface Database {
           email_status?: EmailStatus;
           template_id?: string | null;
           document_id?: string | null;
+          requested_document_title?: string | null;
           created_at?: string;
         };
         Update: {
@@ -253,6 +255,7 @@ export interface Database {
           email_status?: EmailStatus;
           template_id?: string | null;
           document_id?: string | null;
+          requested_document_title?: string | null;
           created_at?: string;
         };
         Relationships: [];

@@ -109,11 +109,14 @@ export default function TotalAnalysisCounter({
     return () => clearTimeout(timeoutId);
   }, [canStartLiveIncrement]);
 
+  const titleGradient =
+    'bg-gradient-to-r from-[#E1306C] to-[#F77737] bg-clip-text text-transparent';
+
   return (
-    <div className={`flex flex-col items-center ${className}`}>
-      <p className="text-sm sm:text-base font-bold text-gray-500 mb-1.5">{label}</p>
+    <div className={`flex flex-col items-center gap-1 ${className}`}>
+      <p className={`text-xl font-bold tracking-wide ${titleGradient}`}>{label}</p>
       <div
-        className="text-4xl sm:text-5xl font-bold text-gray-900 transition-[filter] duration-300"
+        className={`text-4xl sm:text-5xl font-extrabold tracking-tight transition-[filter] duration-300 ${titleGradient}`}
         style={{
           fontVariantNumeric: 'tabular-nums',
           filter: isCountingUp ? 'blur(0.4px)' : 'blur(0px)',

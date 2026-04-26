@@ -9,6 +9,7 @@ import {
   DOCUMENT_SUMMARY_HEADING,
   defaultHeroHighlight1,
   defaultHeroHighlight3,
+  HeroSummaryCheckIcon,
 } from '@/app/download/DownloadPageShell';
 
 /** 管理プレビュー用（実ページではフォーム設定名が使われます） */
@@ -65,10 +66,6 @@ function docToHeroForm(doc: DocumentRow): HeroForm {
 
 function HeroPreview({ title, form }: { title: string; form: HeroForm }) {
   const description = form.hero_description.trim() || DEFAULT_HERO_DESCRIPTION;
-  const images = [
-    form.hero_image_1_url,
-    form.hero_image_2_url,
-  ];
   const highlights = buildHeroHighlights(HERO_PREVIEW_FORM_NAME, title, {
     hero_highlight_1: form.hero_highlight_1,
     hero_highlight_2: form.hero_highlight_2,
@@ -77,36 +74,83 @@ function HeroPreview({ title, form }: { title: string; form: HeroForm }) {
   });
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-blue-50/90 shadow-xl shadow-blue-500/5 text-left">
-      <div className="bg-[#0369a1] p-4 text-white">
-        <h4 className="font-bold text-white">{title}</h4>
-        <p className="mt-1.5 whitespace-pre-line text-[10px] text-white/82 leading-[1.6]">{description}</p>
-        <div className="mt-3 grid grid-cols-2 gap-1.5">
-          {images.map((url, i) => (
+    <div
+      className="overflow-hidden rounded-2xl border border-white/10 shadow-lg text-left"
+      style={{ background: 'linear-gradient(160deg, #1a3a6b 0%, #0d2a55 60%, #0a2040 100%)' }}
+    >
+      <div className="relative flex min-w-0 max-w-full flex-col gap-3 overflow-hidden p-4 text-white">
+        {/* バッジ */}
+        <div className="flex max-w-full items-center gap-1.5 self-start rounded-full border border-sky-400/35 bg-sky-400/18 px-2.5 py-0.5">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
+          <span className="max-w-full break-words text-[10px] font-medium tracking-wide text-white/85">
+            お役立ち資料
+          </span>
+        </div>
+
+        {/* 資料名 */}
+        <h4 className="min-w-0 break-words text-[13px] font-bold leading-snug text-white">{title}</h4>
+
+        {/* 説明文 */}
+        <p className="min-w-0 whitespace-pre-line break-words text-[10px] leading-relaxed text-white/90">
+          {description}
+        </p>
+
+        {/* プレビュー行 */}
+        <div className="flex min-w-0 max-w-full items-start gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
+          <div className="h-12 w-[68px] shrink-0 overflow-hidden rounded-lg bg-white sm:h-12 sm:w-20 min-h-0 min-w-0">
+            {form.hero_image_1_url.trim() ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={form.hero_image_1_url.trim()}
+                alt=""
+                className="block h-full w-full min-h-0 min-w-0 max-h-full max-w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[9px] font-medium text-neutral-600">
+                画像1
+              </div>
+            )}
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
+            <p className="min-w-0 break-words text-[11px] font-bold leading-snug text-white line-clamp-3">
+              {title}
+            </p>
+            <p className="min-w-0 shrink-0 break-words text-[9px] font-medium text-white/85">PDF · 無料ダウンロード</p>
+          </div>
+        </div>
+
+        {/* 区切り */}
+        <div className="h-px bg-white/8" />
+
+        {/* 資料概要 */}
+        <div className="min-w-0 max-w-full">
+          <p className="mb-1.5 text-[12px] font-bold uppercase tracking-widest text-white">
+            {DOCUMENT_SUMMARY_HEADING}
+          </p>
+          <ul className="flex min-w-0 flex-col gap-1.5">
+            {highlights.map((item, i) => (
+              <li key={i} className="flex min-w-0 items-start gap-1.5 text-[10px] leading-relaxed text-white/90">
+                <HeroSummaryCheckIcon size="sm" />
+                <span className="min-w-0 flex-1 break-words">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Stat バー */}
+        <div className="grid min-w-0 grid-cols-2 gap-2">
+          {([['無料', 'ダウンロード'], ['5分', '読了目安']] as const).map(([num, label]) => (
             <div
-              key={i}
-              className="relative aspect-[4/3] overflow-hidden rounded-xl bg-white/12 border border-white/15"
+              key={label}
+              className="flex min-w-0 flex-col items-center rounded-xl border border-white/8 bg-white/5 px-1 py-2"
             >
-              {url.trim() && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={url.trim()} alt="" className="h-full w-full object-cover" />
-              )}
+              <span className="max-w-full truncate text-center text-sm font-bold text-sky-400">{num}</span>
+              <span className="max-w-full break-words text-center text-[9px] leading-tight text-white/85">
+                {label}
+              </span>
             </div>
           ))}
         </div>
-      </div>
-      <div className="p-4 bg-white space-y-2.5">
-        <p className="font-semibold text-[11px] leading-[1.5] text-slate-600">
-          {DOCUMENT_SUMMARY_HEADING}
-        </p>
-        <ul className="space-y-1.5 rounded-xl border border-yellow-200 bg-yellow-50 p-2.5">
-          {highlights.map((item, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-[10px] text-gray-700 leading-[1.5]">
-              <span className="text-yellow-500 mt-px shrink-0">✓</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
@@ -249,23 +293,19 @@ function HeroEditModal({ doc, secretKey, onSaved, onClose }: HeroEditModalProps)
 
             <fieldset className="space-y-2">
               <legend className="text-xs font-medium text-gray-600">
-                ③ 画像URL（1〜2）
-                <span className="ml-1 font-normal text-gray-400">各スロットに公開URLを入力</span>
+                ③ プレビュー画像URL
+                <span className="ml-1 font-normal text-gray-400">（公開URLを入力）</span>
               </legend>
-              {(['hero_image_1_url', 'hero_image_2_url'] as const).map(
-                (key, i) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className="shrink-0 text-xs text-gray-500 w-12">画像 {i + 1}</span>
-                    <input
-                      type="url"
-                      value={form[key]}
-                      onChange={set(key)}
-                      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                      placeholder="https://…"
-                    />
-                  </div>
-                ),
-              )}
+              <div className="flex items-center gap-2">
+                <span className="shrink-0 text-xs text-gray-500 w-12">画像</span>
+                <input
+                  type="url"
+                  value={form.hero_image_1_url}
+                  onChange={set('hero_image_1_url')}
+                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
+                  placeholder="https://…"
+                />
+              </div>
             </fieldset>
           </div>
 

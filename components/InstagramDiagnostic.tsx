@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
@@ -10,9 +10,10 @@ import {
   Heart,
   MessageCircle,
   Clock,
-  Lock,
   Check,
   X,
+  Award,
+  ChevronDown,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -142,13 +143,44 @@ function normalizeGradeToLetter(raw: string | undefined): string {
   return 'B';
 }
 
+function gradeBadgeClasses(grade: string): { dot: string; pill: string } {
+  const g = grade;
+  const dotClass =
+    g === 'S' || g === 'A'
+      ? 'bg-[#2E7D32]'
+      : g === 'B'
+        ? 'bg-[#2E7D32]'
+        : g === 'C'
+          ? 'bg-[#F57F17]'
+          : g === 'D'
+            ? 'bg-[#E65100]'
+            : 'bg-[#D580A0]';
+  const tagClass =
+    g === 'S' || g === 'A'
+      ? 'bg-[#C8E6C9] text-[#1B5E20] border border-[#81C784]/40'
+      : g === 'B'
+        ? 'bg-[#C8E6C9] text-[#2E7D32] border border-[#81C784]/40'
+        : g === 'C'
+          ? 'bg-[#FFF9C4] text-[#F57F17] border border-[#FFE082]/50'
+          : g === 'D'
+            ? 'bg-[#FFE0B2] text-[#E65100] border border-[#FFCC80]/50'
+            : 'bg-[#FCE4EC] text-[#D580A0] border border-[#F8BBD0]/50';
+  return { dot: dotClass, pill: tagClass };
+}
+
 const DIAGNOSIS_STEPS = [
   'アカウントデータの読み込み中...',
   'エンゲージメント率の精密計算中...',
   'アルゴリズムに基づいた改善案を生成中...',
 ] as const;
 
-const PROGRESS_DURATION_MS = 3000;
+const PROGRESS_DURATION_MS = 7500;
+/** API応答前はこの％までイージングで進める（その後は 1% ずつゆっくり増やす） */
+const MAX_PROGRESS_UNTIL_API_COMPLETE = 90;
+/** 90% 以降、1% ずつ上げる間隔（ms）。API 完了で 100 へ飛ぶまでの待ち時間を埋める */
+const SLOW_INCREMENT_AFTER_90_MS = 850;
+/** 1% 刻みの上限（100 は API 成功時のみ） */
+const MAX_PROGRESS_BEFORE_API_SUCCESS = 99;
 const TRANSITION_DURATION_MS = 0;
 
 const METRIC_ICONS = {
@@ -158,6 +190,30 @@ const METRIC_ICONS = {
   likes: Heart,
   comments: MessageCircle,
 } as const;
+
+/** 主要タイトル（累計数・ヒーロー見出しなど） */
+const IG_TITLE_GRADIENT_CLASS =
+  'bg-gradient-to-r from-[#E1306C] to-[#F77737] bg-clip-text text-transparent';
+
+/** 診断する / お問い合わせ（活性時）— Instagram ブランドグラデーション */
+const IG_CTA_GRADIENT_CLASS =
+  'bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#FCB045] text-white shadow-lg shadow-[#E1306C]/30 hover:shadow-xl hover:shadow-[#FD1D1D]/35 hover:brightness-[1.02] active:brightness-[0.98] transition-all';
+
+const IG_PURPLE = '#833AB4';
+const IG_RED = '#FD1D1D';
+const IG_ORANGE = '#FCB045';
+const IG_MAGENTA = '#E1306C';
+const IG_CORAL = '#F77737';
+
+const IG_CHART_GRID = 'rgba(131, 58, 180, 0.14)';
+const IG_BAR_PALETTE = [IG_PURPLE, '#C13584', IG_MAGENTA, IG_RED, '#F56040', IG_CORAL, IG_ORANGE] as const;
+
+const IG_TOOLTIP_CONTENT_STYLE: CSSProperties = {
+  borderRadius: 8,
+  border: '1px solid rgba(225, 48, 108, 0.22)',
+  backgroundColor: '#FFFBFC',
+  color: '#9D174D',
+};
 
 export default function InstagramDiagnostic({
   variant = 'page',
@@ -175,13 +231,27 @@ export default function InstagramDiagnostic({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const analysisStartTimeRef = useRef<number>(0);
+  /** 90% イージング終了後、1% 刻みフェーズの開始時刻 */
+  const slowPhaseAnchorRef = useRef<number | null>(null);
   const apiCompletedRef = useRef<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
   const resultContainerRef = useRef<HTMLDivElement>(null);
   const refParamRef = useRef<string | null>(null);
   const [resultFitScale, setResultFitScale] = useState(1);
+  /** md 以上でのみ診断カードに高さフィット用 scale をかける（モバイルは常に等倍＋スクロール） */
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false);
+  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
+  const [improvementExpanded, setImprovementExpanded] = useState(false);
 
   const searchParams = useSearchParams();
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const sync = () => setIsDesktopViewport(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
   useEffect(() => {
     const refVal = searchParams.get('ref')?.trim();
     if (refVal) {
@@ -209,22 +279,42 @@ export default function InstagramDiagnostic({
     if (!isAnalyzing || isTransitioningToResult) return;
     apiCompletedRef.current = false;
     analysisStartTimeRef.current = Date.now();
-    
+    slowPhaseAnchorRef.current = null;
+
     const interval = setInterval(() => {
       try {
-        if (apiCompletedRef.current) return;
+        if (apiCompletedRef.current) {
+          clearInterval(interval);
+          return;
+        }
         const elapsed = Date.now() - analysisStartTimeRef.current;
-        const t = Math.min(1, elapsed / PROGRESS_DURATION_MS);
-        const easeOut = 1 - (1 - t) * (1 - t);
-        const progress = Math.min(100, easeOut * 100);
-        setDiagnosisProgress(progress);
-        if (progress >= 100) clearInterval(interval);
+        if (elapsed < PROGRESS_DURATION_MS) {
+          slowPhaseAnchorRef.current = null;
+          const t = Math.min(1, elapsed / PROGRESS_DURATION_MS);
+          const easeOut = 1 - (1 - t) * (1 - t);
+          const progress = Math.min(
+            MAX_PROGRESS_UNTIL_API_COMPLETE,
+            easeOut * MAX_PROGRESS_UNTIL_API_COMPLETE
+          );
+          setDiagnosisProgress(progress);
+        } else {
+          if (slowPhaseAnchorRef.current === null) {
+            slowPhaseAnchorRef.current = Date.now();
+          }
+          const slowElapsed = Date.now() - slowPhaseAnchorRef.current;
+          const steps = Math.floor(slowElapsed / SLOW_INCREMENT_AFTER_90_MS);
+          const progress = Math.min(
+            MAX_PROGRESS_BEFORE_API_SUCCESS,
+            MAX_PROGRESS_UNTIL_API_COMPLETE + steps
+          );
+          setDiagnosisProgress(progress);
+        }
       } catch (error) {
         console.error('Progress update error:', error);
         clearInterval(interval);
       }
     }, 50);
-    
+
     return () => {
       clearInterval(interval);
     };
@@ -350,6 +440,7 @@ export default function InstagramDiagnostic({
       setPendingResult(null);
       setIsTransitioningToResult(false);
       apiCompletedRef.current = false;
+      slowPhaseAnchorRef.current = null;
     } catch (error) {
       console.error('Reset error:', error);
     }
@@ -368,6 +459,10 @@ export default function InstagramDiagnostic({
     const el = resultContainerRef.current;
     const updateScale = () => {
       if (!el) return;
+      if (!window.matchMedia('(min-width: 768px)').matches) {
+        setResultFitScale(1);
+        return;
+      }
       const contentHeight = el.offsetHeight;
       const vh = window.innerHeight;
       const padding = 40;
@@ -386,6 +481,13 @@ export default function InstagramDiagnostic({
       window.removeEventListener('resize', updateScale);
       if (ro && el) ro.unobserve(el);
     };
+  }, [result]);
+
+  useEffect(() => {
+    if (!result) {
+      setFeedbackExpanded(false);
+      setImprovementExpanded(false);
+    }
   }, [result]);
 
   // レンダリング条件: 優先順位順に評価
@@ -424,26 +526,81 @@ export default function InstagramDiagnostic({
     if ((result.carousel_rate ?? 0) > 0) contentPieRows.push({ name: 'カルーセル', value: result.carousel_rate! });
     const contentPieData = contentPieRows;
 
+    const activityHourDisplay =
+      result.average_post_hour != null
+        ? `${Math.floor(result.average_post_hour / 24)}日${(result.average_post_hour % 24).toFixed(0)}h`
+        : '—';
+
+    const unifiedGridCells: {
+      label: string;
+      icon: typeof Users;
+      display: string;
+      grade: string;
+      isGradeOnly?: boolean;
+    }[] = [
+      {
+        label: '総合',
+        icon: Award,
+        display: normalizeGradeToLetter(result.total_grade),
+        grade: normalizeGradeToLetter(result.total_grade),
+        isGradeOnly: true,
+      },
+      {
+        label: 'フォロワー',
+        icon: Users,
+        display: result.follower_count != null ? result.follower_count.toLocaleString() : '—',
+        grade: normalizeGradeToLetter(result.follower_grade),
+      },
+      {
+        label: '投稿数',
+        icon: LayoutGrid,
+        display: result.post_count != null ? result.post_count.toLocaleString() : '—',
+        grade: normalizeGradeToLetter(result.post_count_grade),
+      },
+      {
+        label: '活動性',
+        icon: Clock,
+        display: activityHourDisplay,
+        grade: normalizeGradeToLetter(result.activity_grade),
+      },
+      {
+        label: 'フォロー',
+        icon: UserPlus,
+        display: result.follow_count != null ? result.follow_count.toLocaleString() : '—',
+        grade: '—',
+      },
+      {
+        label: '平均いいね',
+        icon: Heart,
+        display: result.average_like_count != null ? result.average_like_count.toLocaleString() : '—',
+        grade: '—',
+      },
+    ];
+
     return (
       <div
-        className={`fixed inset-0 w-full h-full flex items-center justify-center p-4 z-50 overflow-hidden ${variant === 'overlay' ? 'bg-black/50 backdrop-blur-sm' : 'bg-gray-50/90'}`}
+        className={`fixed inset-0 z-50 flex w-full min-h-0 flex-col items-center justify-start overflow-y-auto overflow-x-hidden p-3 pt-4 pb-4 md:justify-center md:overflow-hidden md:p-4 ${variant === 'overlay' ? 'bg-black/50 backdrop-blur-sm' : 'bg-gray-50/90'}`}
         onClick={(e) => { if (variant === 'overlay' && e.target === e.currentTarget) handleCloseResult(); }}
         data-debug-state="result"
       >
         <div
           ref={resultContainerRef}
-          className="w-full max-w-[800px] flex-shrink-0 transition-transform duration-200"
-          style={{
-            transform: `scale(${resultFitScale})`,
-            transformOrigin: 'center center',
-          }}
+          className="w-full max-w-[800px] flex-shrink-0 transition-transform duration-200 md:origin-center"
+          style={
+            isDesktopViewport
+              ? {
+                  transform: `scale(${resultFitScale})`,
+                  transformOrigin: 'center center',
+                }
+              : { transform: 'none' }
+          }
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="w-full"
           >
-          <div className={`rounded-xl border border-gray-200 shadow-sm p-6 md:p-6 relative md:flex md:flex-col pb-8 md:pb-8 ${variant === 'overlay' ? 'bg-design-accent-lavender-soft' : 'bg-white'}`}>
+          <div className={`rounded-xl border border-gray-200 shadow-sm p-4 pt-5 md:p-6 relative md:flex md:flex-col pb-4 md:pb-8 ${variant === 'overlay' ? 'bg-design-accent-lavender-soft' : 'bg-white'}`}>
             <button
               type="button"
               onClick={handleCloseResult}
@@ -454,52 +611,52 @@ export default function InstagramDiagnostic({
             </button>
             <svg aria-hidden="true" className="absolute w-0 h-0" style={{ position: 'absolute', width: 0, height: 0 }}>
               <defs>
-                <linearGradient id="instagram-icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#404040" />
-                  <stop offset="50%" stopColor="#737373" />
-                  <stop offset="100%" stopColor="#a3a3a3" />
+                <linearGradient id="instagram-icon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#833AB4" />
+                  <stop offset="50%" stopColor="#FD1D1D" />
+                  <stop offset="100%" stopColor="#FCB045" />
                 </linearGradient>
               </defs>
             </svg>
             {/* 診断結果タイトル（中央） */}
-            <div className="w-full text-center mb-8">
-              <h2 className="font-bold bg-[linear-gradient(to_top_right,#171717,#404040,#737373,#525252)] bg-clip-text text-transparent">
+            <div className="w-full text-center mb-4 md:mb-8">
+              <h2 className="font-bold text-gray-900 text-lg md:text-xl">
                 診断結果
               </h2>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-[11px] md:text-xs text-gray-500 mt-1 leading-snug">
                 ※アカウントの公開設定や投稿の設定により、一部の数値が正確に反映されない場合があります。
               </p>
             </div>
 
             {/* 1行目（PC）: 左＝プロフィール紹介、右＝診断結果評価 */}
-<div className="md:grid md:grid-cols-[55%_1fr] md:gap-6 md:items-stretch mb-6">
-            {/* 左: プロフィール紹介 */}
+            <div className="md:grid md:grid-cols-[55%_1fr] md:gap-6 md:items-stretch mb-3 md:mb-6">
+              {/* 左: プロフィール紹介 */}
               <div className="flex flex-col flex-shrink-0 md:min-w-0">
-                <div className="flex flex-col sm:flex-row gap-4 md:items-center">
+                <div className="flex flex-row gap-3 items-start md:items-center md:gap-4">
                   {result.profile_image_url && (
                     <img
                       src={result.profile_image_url}
                       alt=""
-                      className="w-20 h-20 rounded-full object-cover flex-shrink-0 md:w-12 md:h-12"
+                      className="w-14 h-14 rounded-full object-cover flex-shrink-0 md:w-12 md:h-12"
                     />
                   )}
                   <div className="flex-1 min-w-0">
                     {result.full_name && (
-                      <p className="text-lg font-semibold text-gray-900 md:text-base">{result.full_name}</p>
+                      <p className="text-base font-semibold text-gray-900 md:text-base leading-tight">{result.full_name}</p>
                     )}
                     {result.username && (
-                      <p className="text-accent font-medium text-sm">@{result.username}</p>
+                      <p className="text-accent font-medium text-xs md:text-sm">@{result.username}</p>
                     )}
                     {result.biography && (
-                      <p className="text-gray-600 mt-2 text-sm leading-relaxed whitespace-pre-wrap">
+                      <p className="text-gray-600 mt-1 text-xs md:text-sm leading-relaxed whitespace-pre-wrap line-clamp-3 md:line-clamp-none md:mt-2">
                         {result.biography}
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-              {/* 右: 診断結果評価 */}
-              <div className="md:flex md:flex-col md:items-start md:min-w-0 w-full">
+              {/* 右: 診断結果評価（タブレット以上） */}
+              <div className="hidden md:flex md:flex-col md:items-start md:min-w-0 w-full">
                 {hasGrades && (
                   <div className="mb-6 md:mb-0 md:flex-1 md:flex md:flex-col md:min-h-0 w-full text-left">
                     <h4 className="font-semibold text-gray-900 mb-3 md:mb-1 text-left">評価</h4>
@@ -507,29 +664,10 @@ export default function InstagramDiagnostic({
                       <div className="grid grid-cols-2 gap-3">
                         {gradeItems.map(({ label, grade }) => {
                           const g = grade;
-                          const dotClass =
-                            g === 'S' || g === 'A'
-                              ? 'bg-[#059669]'
-                              : g === 'B'
-                                ? 'bg-[#525252]'
-                                : g === 'C'
-                                  ? 'bg-[#D97706]'
-                                  : g === 'D'
-                                    ? 'bg-[#DC2626]'
-                                    : 'bg-gray-400';
-                          const tagClass =
-                            g === 'S' || g === 'A'
-                              ? 'bg-[#D1FAE5] text-[#059669] border border-[#059669]/30'
-                              : g === 'B'
-                                ? 'bg-slate-100 text-slate-800 border border-slate-400/50'
-                                : g === 'C'
-                                  ? 'bg-[#FFEDD5] text-[#D97706] border border-[#D97706]/30'
-                                  : g === 'D'
-                                    ? 'bg-[#FEE2E2] text-[#DC2626] border border-[#DC2626]/30'
-                                    : 'bg-gray-100 text-gray-500 border border-gray-300';
+                          const { dot: dotClass, pill: tagClass } = gradeBadgeClasses(g);
                           return (
-                            <div key={label} className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-gray-50/50">
-                              <span className="text-sm text-gray-600">{label}</span>
+                            <div key={label} className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#FDF8FB]/90">
+                              <span className="text-sm text-[#B5658C]">{label}</span>
                               <div className="flex items-center gap-2">
                                 <span className={`h-2 w-2 rounded-full flex-shrink-0 ${dotClass}`} aria-hidden />
                                 <span className={`rounded-md px-2 py-0.5 text-sm font-medium border ${tagClass}`}>
@@ -546,13 +684,49 @@ export default function InstagramDiagnostic({
               </div>
             </div>
 
+            {/* モバイル: 評価＋主要数値 統合グリッド（2列で余白・文字を確保） */}
+            <div className="md:hidden mb-4">
+              <div className="grid grid-cols-2 gap-2.5">
+                {unifiedGridCells.map(({ label, icon: Icon, display, grade, isGradeOnly }) => {
+                  const g = grade;
+                  const { dot: dotClass, pill: tagClass } = gradeBadgeClasses(g);
+                  return (
+                    <div
+                      key={label}
+                      className="min-w-0 min-h-[96px] bg-white rounded-xl border border-gray-200 shadow-sm px-3 py-2.5 flex flex-col items-center justify-center text-center gap-1"
+                    >
+                      <Icon className="w-5 h-5 flex-shrink-0" stroke={IG_PURPLE} strokeWidth={1.75} aria-hidden />
+                      <p
+                        className={`font-semibold text-[#111827] tabular-nums leading-tight tracking-tight ${isGradeOnly ? 'text-2xl' : 'text-lg'}`}
+                      >
+                        {display}
+                      </p>
+                      <span className="text-[11px] text-[#B5658C] leading-snug line-clamp-2 break-words w-full px-0.5">
+                        {label}
+                      </span>
+                      {g !== '—' ? (
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium border mt-0.5 ${tagClass}`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${dotClass}`} aria-hidden />
+                          {g}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-gray-300 leading-none py-0.5">—</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* 2行目（PC）: 左＝主要数値・投稿統計、右＝コンテンツ構成 */}
-            <div className="md:grid md:grid-cols-[55%_1fr] md:gap-6 md:items-stretch mb-8">
+            <div className="md:grid md:grid-cols-[55%_1fr] md:gap-6 md:items-stretch mb-4 md:mb-8">
               {/* 左カラム: 主要数値・投稿統計・グラフ */}
               <div className="md:flex md:flex-col md:gap-4 md:items-start">
-            {/* 主要数値（アイコン付きカード） */}
+            {/* 主要数値（アイコン付きカード・md以上） */}
             {(metricsCards.length > 0 || result.average_post_hour != null) && (
-              <div className="mb-6 md:mb-0">
+              <div className="mb-6 md:mb-0 hidden md:block">
                 <h4 className="font-semibold text-gray-900 mb-3 md:mb-1">主要数値</h4>
                 <div className="grid grid-cols-3 gap-2 md:gap-4">
                   {metricsCards.map((m) => {
@@ -562,19 +736,19 @@ export default function InstagramDiagnostic({
                         key={m.name}
                         className="min-w-0 w-full md:w-auto bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-3 md:p-4 flex flex-col items-center text-center"
                       >
-                        <Icon className="w-5 h-5 mb-1.5" stroke="#1a1a1a" strokeWidth={1.5} />
+                        <Icon className="w-5 h-5 mb-1.5" stroke={IG_PURPLE} strokeWidth={1.5} />
                         <p className="text-xl md:text-2xl font-semibold text-[#111827]">{m.display}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">{m.name}</p>
+                        <p className="text-xs text-[#C13584] mt-0.5">{m.name}</p>
                       </div>
                     );
                   })}
                   {result.average_post_hour != null && (
                     <div className="min-w-0 w-full md:w-auto bg-white rounded-lg border border-[#E5E7EB] shadow-sm p-3 md:p-4 flex flex-col items-center justify-center text-center">
-                      <Clock className="w-5 h-5 mb-1.5" stroke="#1a1a1a" strokeWidth={1.5} />
+                      <Clock className="w-5 h-5 mb-1.5" stroke={IG_PURPLE} strokeWidth={1.5} />
                       <p className="text-lg md:text-xl font-semibold text-[#111827]">
                         {Math.floor(result.average_post_hour / 24)}日 {(result.average_post_hour % 24).toFixed(1)}時間
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">投稿間隔</p>
+                      <p className="text-xs text-[#C13584] mt-0.5">投稿間隔</p>
                     </div>
                   )}
                 </div>
@@ -586,7 +760,7 @@ export default function InstagramDiagnostic({
               <div className="mb-6 md:mb-0">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-2">
                   <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
-                    <p className="text-xs text-gray-500 mb-1">1日あたりの投稿数</p>
+                    <p className="text-xs text-[#C13584] mb-1">1日あたりの投稿数</p>
                     <p className="text-xl font-semibold text-gray-900">
                       {postsPerDaySeries.length ? dailyAvg.toFixed(1) : '—'}
                     </p>
@@ -594,33 +768,33 @@ export default function InstagramDiagnostic({
                       <div className="h-12 mt-2">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={sparklineData}>
-                            <Line type="monotone" dataKey="count" stroke="#1a1a1a" strokeWidth={1.5} dot={false} />
+                            <Line type="monotone" dataKey="count" stroke={IG_PURPLE} strokeWidth={1.5} dot={false} />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
                     )}
                   </div>
                   <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
-                    <p className="text-xs text-gray-500 mb-1">週間の投稿数</p>
+                    <p className="text-xs text-[#C13584] mb-1">週間の投稿数</p>
                     <p className="text-xl font-semibold text-gray-900">{postsPerDaySeries.length ? last7 : '—'}</p>
                     {sparklineData.length > 0 && (
                       <div className="h-12 mt-2">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={sparklineData}>
-                            <Line type="monotone" dataKey="count" stroke="#9CA3AF" strokeWidth={1.5} dot={false} />
+                            <Line type="monotone" dataKey="count" stroke={IG_RED} strokeWidth={1.5} dot={false} />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
                     )}
                   </div>
                   <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
-                    <p className="text-xs text-gray-500 mb-1">月間の投稿数</p>
+                    <p className="text-xs text-[#C13584] mb-1">月間の投稿数</p>
                     <p className="text-xl font-semibold text-gray-900">{postsPerDaySeries.length ? last30 : '—'}</p>
                     {sparklineData.length > 0 && (
                       <div className="h-12 mt-2">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={sparklineData}>
-                            <Line type="monotone" dataKey="count" stroke="#D1D5DB" strokeWidth={1.5} dot={false} />
+                            <Line type="monotone" dataKey="count" stroke={IG_ORANGE} strokeWidth={1.5} dot={false} />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
@@ -634,11 +808,24 @@ export default function InstagramDiagnostic({
                       <div className="h-48 md:h-32">
                         <ResponsiveContainer width="100%" height="100%">
                           <AreaChart data={postsPerDaySeries.map((x) => ({ ...x, name: x.date.slice(5) }))}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                            <YAxis tick={{ fontSize: 10 }} />
-                            <Tooltip />
-                            <Area type="monotone" dataKey="count" stroke="#1a1a1a" fill="#1a1a1a" fillOpacity={0.12} />
+                            <defs>
+                              <linearGradient id="instagram-posts-area-fill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#FD1D1D" stopOpacity={0.35} />
+                                <stop offset="55%" stopColor="#F77737" stopOpacity={0.18} />
+                                <stop offset="100%" stopColor="#FCB045" stopOpacity={0.06} />
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke={IG_CHART_GRID} />
+                            <XAxis dataKey="name" tick={{ fontSize: 10, fill: IG_MAGENTA }} />
+                            <YAxis tick={{ fontSize: 10, fill: IG_MAGENTA }} />
+                            <Tooltip contentStyle={IG_TOOLTIP_CONTENT_STYLE} />
+                            <Area
+                              type="monotone"
+                              dataKey="count"
+                              stroke={IG_PURPLE}
+                              strokeWidth={2}
+                              fill="url(#instagram-posts-area-fill)"
+                            />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
@@ -650,16 +837,20 @@ export default function InstagramDiagnostic({
                       <div className="h-48 md:h-32">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={weekdaySeries} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="day" tick={{ fontSize: 10 }} />
-                            <YAxis tick={{ fontSize: 10 }} />
-                            <Tooltip />
-                            <Bar dataKey="count" fill="#1a1a1a" radius={[4, 4, 0, 0]} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={IG_CHART_GRID} />
+                            <XAxis dataKey="day" tick={{ fontSize: 10, fill: IG_MAGENTA }} />
+                            <YAxis tick={{ fontSize: 10, fill: IG_MAGENTA }} />
+                            <Tooltip contentStyle={IG_TOOLTIP_CONTENT_STYLE} />
+                            <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                              {weekdaySeries.map((_, idx) => (
+                                <Cell key={`wd-${idx}`} fill={IG_BAR_PALETTE[idx % IG_BAR_PALETTE.length]} />
+                              ))}
+                            </Bar>
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
                     ) : (
-                      <div className="h-48 md:h-32 flex items-center justify-center text-gray-500 text-sm">
+                      <div className="h-48 md:h-32 flex items-center justify-center text-sm text-[#C13584]">
                         データがありません
                       </div>
                     )}
@@ -672,52 +863,84 @@ export default function InstagramDiagnostic({
               {/* 右カラム: コンテンツ構成 */}
               <div className="w-full md:min-w-0 flex flex-col md:items-start">
                 {contentPieData.length > 0 && (() => {
-                  const contentPieColor = (name: string) =>
-                    name === 'カルーセル' ? '#262626' : name === '写真' ? '#737373' : '#a3a3a3';
+                  const contentPieFill = (name: string) =>
+                    name === '写真'
+                      ? 'url(#instagram-content-pie-photo)'
+                      : name === 'カルーセル'
+                        ? 'url(#instagram-content-pie-carousel)'
+                        : 'url(#instagram-content-pie-reels)';
+                  const contentPieLegendBg = (name: string) =>
+                    name === '写真'
+                      ? 'linear-gradient(to bottom right, #833AB4, #C13584)'
+                      : name === 'カルーセル'
+                        ? 'linear-gradient(to bottom right, #E1306C, #FD1D1D)'
+                        : 'linear-gradient(to bottom right, #F77737, #FCB045)';
                   const total = contentPieData.reduce((s, x) => s + x.value, 0) || 1;
                   return (
                     <div className="mb-6 md:mb-0 md:flex-1 md:flex md:flex-col md:min-h-0 w-full text-left">
-                      <h4 className="font-semibold text-gray-900 mb-3 md:mb-1 text-left">コンテンツ構成</h4>
-                      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4 md:flex-1 md:min-h-0 w-full">
-                        <div className="h-40 md:h-[7.5rem] min-h-[6rem] flex items-center justify-center w-full">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                              <Pie
-                                data={contentPieData}
-                                dataKey="value"
-                                nameKey="name"
-                                cx="50%"
-                                cy="50%"
-                                innerRadius="50%"
-                                outerRadius="80%"
-                                paddingAngle={2}
-                                stroke="#FFFFFF"
-                                strokeWidth={2}
-                              >
-                                {contentPieData.map((entry, i) => (
-                                  <Cell key={i} fill={contentPieColor(entry.name)} />
-                                ))}
-                              </Pie>
-                              <Tooltip formatter={(v: number) => [`${v}%`, '割合']} contentStyle={{ borderRadius: 8 }} />
-                            </PieChart>
-                          </ResponsiveContainer>
-                        </div>
-                        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-2 text-sm text-gray-700" aria-label="コンテンツ構成の凡例">
-                          {contentPieData.map((entry, i) => {
-                            const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
-                            return (
-                              <li key={i} className="flex items-center gap-1.5 min-w-0">
-                                <span
-                                  className="flex-shrink-0 w-3 h-3 rounded-full"
-                                  style={{ backgroundColor: contentPieColor(entry.name) }}
-                                  aria-hidden
+                      <h4 className="font-semibold text-gray-900 mb-2 md:mb-1 text-left">コンテンツ構成</h4>
+                      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-2 md:p-4 md:flex-1 md:min-h-0 w-full">
+                        <div className="flex flex-row md:flex-col items-center md:items-stretch gap-1.5 md:gap-0">
+                          <div className="w-[42%] max-w-[8.25rem] shrink-0 h-[6.5rem] md:w-full md:max-w-none md:h-[7.5rem] md:min-h-[6rem] flex items-center justify-center scale-[0.82] md:scale-100 origin-center">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <defs>
+                                  <linearGradient id="instagram-content-pie-photo" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#833AB4" />
+                                    <stop offset="100%" stopColor="#C13584" />
+                                  </linearGradient>
+                                  <linearGradient id="instagram-content-pie-carousel" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#E1306C" />
+                                    <stop offset="100%" stopColor="#FD1D1D" />
+                                  </linearGradient>
+                                  <linearGradient id="instagram-content-pie-reels" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#F77737" />
+                                    <stop offset="100%" stopColor="#FCB045" />
+                                  </linearGradient>
+                                </defs>
+                                <Pie
+                                  data={contentPieData}
+                                  dataKey="value"
+                                  nameKey="name"
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius="40%"
+                                  outerRadius="64%"
+                                  paddingAngle={2}
+                                  stroke="#FDF8FB"
+                                  strokeWidth={2}
+                                >
+                                  {contentPieData.map((entry, i) => (
+                                    <Cell key={i} fill={contentPieFill(entry.name)} />
+                                  ))}
+                                </Pie>
+                                <Tooltip
+                                  formatter={(v: number) => [`${v}%`, '割合']}
+                                  contentStyle={IG_TOOLTIP_CONTENT_STYLE}
                                 />
-                                <span className="truncate">{entry.name}</span>
-                                <span className="flex-shrink-0 tabular-nums">{pct}%</span>
-                              </li>
-                            );
-                          })}
-                        </ul>
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                          <ul
+                            className="flex-1 min-w-0 flex flex-col justify-center gap-1 md:flex-row md:flex-wrap md:justify-center md:gap-x-4 md:gap-y-1.5 text-xs md:text-sm text-[#C13584] md:mt-2 pl-0.5 md:pl-0"
+                            aria-label="コンテンツ構成の凡例"
+                          >
+                            {contentPieData.map((entry, i) => {
+                              const pct = total > 0 ? ((entry.value / total) * 100).toFixed(1) : '0';
+                              return (
+                                <li key={i} className="flex items-center gap-1.5 min-w-0">
+                                  <span
+                                    className="flex-shrink-0 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full"
+                                    style={{ backgroundImage: contentPieLegendBg(entry.name) }}
+                                    aria-hidden
+                                  />
+                                  <span className="truncate">{entry.name}</span>
+                                  <span className="flex-shrink-0 tabular-nums">{pct}%</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   );
@@ -726,7 +949,7 @@ export default function InstagramDiagnostic({
             </div>
 
             {/* 3行目（PC）: 中央＝最近のハッシュタグ（横長・全幅） */}
-            <div className="w-full mb-8">
+            <div className="w-full mb-4 md:mb-8">
               {result.recent_hashtag_list && result.recent_hashtag_list.length > 0 && (() => {
                 const list = (result.recent_hashtag_list ?? []).slice(0, 10);
                 const counts = list.map((x) => x.count);
@@ -735,18 +958,18 @@ export default function InstagramDiagnostic({
                 const range = maxC - minC || 1;
                 const sizeClasses = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'];
                 const colorClasses = [
-                  'text-slate-400',
-                  'text-slate-500',
-                  'text-slate-600',
-                  'text-gray-600',
-                  'text-gray-700',
-                  'text-neutral-700',
+                  'text-[#833AB4]',
+                  'text-[#C13584]',
+                  'text-[#E1306C]',
+                  'text-[#FD1D1D]',
+                  'text-[#F56040]',
+                  'text-[#F77737]',
                 ];
                 const rotations = ['-rotate-2', 'rotate-0', 'rotate-1', '-rotate-1', 'rotate-2', 'rotate-0', '-rotate-1', 'rotate-1', '-rotate-2', 'rotate-0'];
                 return (
                   <div className="w-full">
                     <h4 className="font-semibold text-gray-900 mb-3 md:mb-1">最近のハッシュタグ</h4>
-                    <div className="flex flex-wrap justify-center items-center gap-3 md:gap-2 py-4 md:py-3 px-4 bg-gradient-to-br from-slate-50/90 to-gray-100/80 rounded-xl border border-slate-200/80 w-full min-h-[3.5rem]">
+                    <div className="flex flex-wrap justify-center items-center gap-3 md:gap-2 py-4 md:py-3 px-4 bg-gradient-to-br from-[#FDF2F6]/95 to-[#F3E8FC]/90 rounded-xl border border-[#F5C6D6]/50 w-full min-h-[3.5rem]">
                       {list.map((item, i) => {
                         const t = minC === maxC ? 0.5 : (item.count - minC) / range;
                         const sizeIdx = Math.min(Math.floor(t * (sizeClasses.length - 1)), sizeClasses.length - 1);
@@ -771,100 +994,114 @@ export default function InstagramDiagnostic({
               })()}
             </div>
 
-            {/* 4. 詳細フィードバック ＋ 5. 改善点（余白で重なり防止） */}
-            <div className="md:flex md:flex-row md:gap-6 md:items-start mb-8 pb-8">
-            {/* 現状のアカウントに関するフィードバック */}
-            {result.feedback_message && result.feedback_message.length > 0 && (
-              <div className="mb-6 md:mb-0 md:max-w-[320px] md:flex-shrink-0">
-                <h4 className="font-semibold text-gray-900 mb-3 md:mb-1">現状のアカウントに関するフィードバック</h4>
+            {/* 4. 詳細フィードバック ＋ 5. 改善点 */}
+            <div className="md:flex md:flex-row md:gap-6 md:items-start mb-4 md:mb-8 pb-4 md:pb-8">
+              {/* 現状のアカウントに関するフィードバック */}
+              {result.feedback_message && result.feedback_message.length > 0 && (() => {
+                const list = result.feedback_message;
+                const mobileVisible = feedbackExpanded ? list : list.slice(0, 3);
+                return (
+                  <div className="mb-4 md:mb-0 md:max-w-[320px] md:flex-shrink-0">
+                    <h4 className="font-semibold text-gray-900 mb-2 md:mb-1">現状のアカウントに関するフィードバック</h4>
+                    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
+                      <ul className="list-disc list-inside space-y-1.5 text-sm text-gray-700 [&_li]:marker:text-neutral-600">
+                        {mobileVisible.map((msg, i) => (
+                          <li key={i}>{msg}</li>
+                        ))}
+                      </ul>
+                      {list.length > 3 && (
+                        <button
+                          type="button"
+                          onClick={() => setFeedbackExpanded((v) => !v)}
+                          className="mt-2 flex w-full items-center justify-center gap-1 text-xs font-medium text-[#C13584] hover:text-[#9D174D]"
+                        >
+                          {feedbackExpanded ? '閉じる' : 'もっと見る'}
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${feedbackExpanded ? 'rotate-180' : ''}`}
+                            aria-hidden
+                          />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* 今後の運用への改善点 */}
+              <div className="mb-0 md:flex-1 md:min-w-0">
+                <h4 className="font-semibold text-gray-900 mb-2 md:mb-1">今後の運用への改善点</h4>
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
-                  <ul className="list-disc list-inside space-y-1.5 text-sm text-gray-700 [&_li]:marker:text-neutral-600">
-                    {result.feedback_message.map((msg, i) => (
-                      <li key={i}>{msg}</li>
-                    ))}
-                  </ul>
+                  {(() => {
+                    const improvementParagraphs =
+                      result.improvement_message && result.improvement_message.length > 0
+                        ? result.improvement_message
+                        : [
+                            'エンゲージメント率を向上させるため、投稿時間を最適化し、フォロワーが最もアクティブな時間帯に合わせた投稿スケジュールを構築することをお勧めします。',
+                            'ストーリーズ機能を活用し、フォロワーとの双方向コミュニケーションを強化することで、親近感を高め、リーチの拡大につなげることができます。',
+                            'リール動画の投稿頻度を増やし、トレンドに合わせたコンテンツ制作を行うことで、新規フォロワーの獲得が期待できます。',
+                            'ハッシュタグ戦略を見直し、ニッチで競合が少ないタグを組み合わせることで、ターゲット層へのリーチ精度を高めることができます。',
+                          ];
+                    const mobileVisible = improvementExpanded
+                      ? improvementParagraphs
+                      : improvementParagraphs.slice(0, 3);
+                    return (
+                      <div className="text-sm text-gray-700 leading-relaxed">
+                        <div className="relative text-sm text-gray-700 leading-relaxed">
+                          {mobileVisible.map((p, i) => (
+                            <p key={i} className="mb-2 last:mb-0">
+                              {p}
+                            </p>
+                          ))}
+                          <div
+                            className="pointer-events-none absolute inset-x-0 bottom-0 top-[5lh] bg-gradient-to-b from-transparent via-white/60 to-white/90 backdrop-blur-sm"
+                            aria-hidden
+                          />
+                        </div>
+                        {improvementParagraphs.length > 3 && (
+                          <button
+                            type="button"
+                            onClick={() => setImprovementExpanded((v) => !v)}
+                            className="mt-1 flex w-full items-center justify-center gap-1 text-xs font-medium text-[#C13584] hover:text-[#9D174D]"
+                          >
+                            {improvementExpanded ? '閉じる' : 'もっと見る'}
+                            <ChevronDown
+                              className={`h-4 w-4 transition-transform ${improvementExpanded ? 'rotate-180' : ''}`}
+                              aria-hidden
+                            />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
-            )}
-
-            {/* 今後の運用への改善点（先頭4行は全文表示、5行目以降はモザイク＋一部公開表示） */}
-            <div className="mb-6 md:mb-0 md:flex-1 md:min-w-0">
-              <h4 className="font-semibold text-gray-900 mb-3 md:mb-1">今後の運用への改善点</h4>
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 md:p-4">
-                {(() => {
-                  const improvementParagraphs =
-                    result.improvement_message && result.improvement_message.length > 0
-                      ? result.improvement_message
-                      : [
-                          'エンゲージメント率を向上させるため、投稿時間を最適化し、フォロワーが最もアクティブな時間帯に合わせた投稿スケジュールを構築することをお勧めします。',
-                          'ストーリーズ機能を活用し、フォロワーとの双方向コミュニケーションを強化することで、親近感を高め、リーチの拡大につなげることができます。',
-                          'リール動画の投稿頻度を増やし、トレンドに合わせたコンテンツ制作を行うことで、新規フォロワーの獲得が期待できます。',
-                          'ハッシュタグ戦略を見直し、ニッチで競合が少ないタグを組み合わせることで、ターゲット層へのリーチ精度を高めることができます。',
-                        ];
-                  const content = (
-                    <>
-                      {improvementParagraphs.map((p, i) => (
-                        <p key={i} className="mb-2 last:mb-0">
-                          {p}
-                        </p>
-                      ))}
-                    </>
-                  );
-                  return (
-                    <div className="relative text-sm text-gray-700 leading-relaxed">
-                      {/* 全文をぼかしたレイヤー（5行目以降に見える） */}
-                      <div className="blur-[6px] select-none pointer-events-none" aria-hidden>
-                        {content}
-                      </div>
-                      {/* 先頭4行のみ表示（5行目からモザイク） */}
-                      <div
-                        className="absolute left-0 right-0 top-0 line-clamp-4 bg-white pr-1"
-                        style={{ height: '6.5em' }}
-                      >
-                        {content}
-                      </div>
-                      {/* 5行目以降のエリアに鍵＋一部公開のオーバーレイ */}
-                      <div
-                        className="absolute left-0 right-0 bottom-0 flex flex-col items-center justify-center gap-1 bg-white/60 rounded min-h-[4rem]"
-                        style={{ top: '6.5em' }}
-                        aria-label="一部公開"
-                      >
-                        <Lock className="w-6 h-6 text-gray-500 flex-shrink-0" strokeWidth={1.5} />
-                        <span className="text-xs font-medium text-gray-600">一部公開</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
             </div>
 
-            {/* 5. 重要アクション: お問い合わせ誘導カード（下端に余白） */}
-            <div className="flex-shrink-0 space-y-3 mb-8">
-            {customer?.is_callable && customer?.message && (
-              <div className="p-3 md:p-4 rounded-lg bg-slate-100 border border-slate-200">
-                <p className="text-sm text-gray-800">{customer.message}</p>
+            {/* 5. 重要アクション（全画面共通・カード内） */}
+            <div className="flex-shrink-0 space-y-3 mb-4">
+              {customer?.is_callable && customer?.message && (
+                <div className="p-3 md:p-4 rounded-lg bg-slate-100 border border-slate-200">
+                  <p className="text-sm text-gray-800">{customer.message}</p>
+                </div>
+              )}
+              <div className="flex flex-col items-center gap-3 text-center py-4 md:bg-white md:border md:border-gray-200 md:rounded-lg md:shadow-sm md:p-5">
+                <p className="text-sm font-semibold text-gray-900">
+                  具体的な改善案やInstagramに関するご質問を無料でご相談いたします
+                </p>
+                <a
+                  href={process.env.NEXT_PUBLIC_CONTACT_FORM_URL || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`block w-full text-center text-sm font-medium py-2.5 px-4 rounded-full ${IG_CTA_GRADIENT_CLASS}`}
+                >
+                  お問い合わせフォームへ
+                </a>
               </div>
-            )}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 md:p-5 flex flex-col items-center gap-3 text-center">
-              <Lock className="w-8 h-8 text-accent flex-shrink-0" strokeWidth={1.5} />
-              <p className="text-sm font-semibold text-gray-900">
-                具体的な改善案やInstagramに関するご質問を無料でご相談いたします
-              </p>
-              <a
-                href={process.env.NEXT_PUBLIC_CONTACT_FORM_URL || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-gray-900 text-white font-medium py-2.5 px-6 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                お問い合わせフォームへ
-              </a>
-            </div>
               <a
                 href="https://www.cocomarke.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block md:hidden w-full text-center py-2.5 px-6 border border-gray-200 text-gray-700 rounded-lg font-medium hover:border-accent hover:text-accent transition-colors"
+                className="block w-full text-center py-2 px-6 text-sm text-gray-600 hover:text-accent transition-colors"
               >
                 サービスページトップへ
               </a>
@@ -899,9 +1136,10 @@ export default function InstagramDiagnostic({
         )}
         <svg aria-hidden="true" className="absolute w-0 h-0">
           <defs>
-            <linearGradient id="diagnosis-progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#404040" />
-              <stop offset="100%" stopColor="#a3a3a3" />
+            <linearGradient id="diagnosis-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#833AB4" />
+              <stop offset="50%" stopColor="#FD1D1D" />
+              <stop offset="100%" stopColor="#FCB045" />
             </linearGradient>
           </defs>
         </svg>
@@ -918,7 +1156,7 @@ export default function InstagramDiagnostic({
           ].map((style, i) => (
             <motion.div
               key={i}
-              className="absolute w-24 h-28 rounded-lg border border-gray-300 bg-gray-200/80"
+              className="absolute w-24 h-28 rounded-lg border border-[#FD1D1D]/20 bg-gradient-to-br from-[#833AB4]/12 via-[#FD1D1D]/10 to-[#FCB045]/12"
               style={{
                 top: style.top,
                 left: style.left,
@@ -938,9 +1176,9 @@ export default function InstagramDiagnostic({
               }}
             >
               <div className="p-2 space-y-2">
-                <div className="w-full h-16 rounded bg-gray-300/80" />
-                <div className="h-2 rounded bg-gray-300/80 w-3/4" />
-                <div className="h-2 rounded bg-gray-300/80 w-1/2" />
+                <div className="w-full h-16 rounded bg-gradient-to-br from-[#833AB4]/25 via-[#FD1D1D]/20 to-[#FCB045]/25" />
+                <div className="h-2 rounded bg-gradient-to-r from-[#833AB4]/40 to-[#FD1D1D]/35 w-3/4" />
+                <div className="h-2 rounded bg-gradient-to-r from-[#F77737]/40 to-[#FCB045]/35 w-1/2" />
               </div>
             </motion.div>
           ))}
@@ -956,7 +1194,7 @@ export default function InstagramDiagnostic({
                 cy="60"
                 r="54"
                 fill="none"
-                stroke="rgba(0,0,0,0.06)"
+                stroke="rgba(131, 58, 180, 0.18)"
                 strokeWidth="8"
               />
               <motion.circle
@@ -973,9 +1211,10 @@ export default function InstagramDiagnostic({
                 transition={{ type: 'tween', duration: 0.3 }}
               />
             </svg>
-            <span className="absolute text-xl font-semibold text-gray-800 tabular-nums">
+            <span className="absolute text-xl font-semibold tabular-nums">
               <motion.span
                 key={Math.floor(diagnosisProgress)}
+                className={IG_TITLE_GRADIENT_CLASS}
                 initial={{ opacity: 0.6, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.15 }}
@@ -996,13 +1235,15 @@ export default function InstagramDiagnostic({
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                     >
-                      <Check className="w-5 h-5 text-neutral-800" strokeWidth={2.5} />
+                      <Check className="w-5 h-5 text-[#E1306C]" strokeWidth={2.5} />
                     </motion.span>
                   ) : (
-                    <span className="w-2 h-2 rounded-full bg-gray-300" />
+                    <span className="w-2 h-2 rounded-full bg-gradient-to-br from-[#833AB4] to-[#FCB045]" />
                   )}
                 </span>
-                <span className={`text-sm ${stepDone(index) ? 'text-gray-600' : 'text-gray-700'}`}>
+                <span
+                  className={`text-sm ${stepDone(index) ? 'text-[#C13584]' : 'text-[#833AB4]'}`}
+                >
                   {label}
                 </span>
               </li>
@@ -1018,26 +1259,38 @@ export default function InstagramDiagnostic({
   // 3. デフォルト: 入力フォーム画面
   return (
     <div
-      className={`flex flex-col items-center justify-center p-4 ${variant === 'overlay' ? 'fixed inset-0 bg-black/50 backdrop-blur-sm' : 'min-h-screen py-6 md:py-10 bg-page'}`}
+      className={`flex flex-col items-center justify-center ${
+        variant === 'overlay'
+          ? 'fixed inset-0 p-5 sm:p-6 bg-black/50 backdrop-blur-sm'
+          : 'min-h-screen px-5 sm:px-6 py-8 md:py-12 bg-page'
+      }`}
       data-debug-state="input"
       onClick={variant === 'overlay' ? (e) => { if (e.target === e.currentTarget) onRequestClose?.(); } : undefined}
     >
-      <div className={`max-w-md w-full flex flex-col items-center ${variant === 'overlay' ? 'relative bg-design-accent-lavender-soft rounded-2xl px-6 pt-12 pb-8' : 'px-4'}`}>
+      <div
+        className={`max-w-md w-full flex flex-col items-center space-y-5 sm:space-y-6 ${
+          variant === 'overlay' ? 'relative bg-design-accent-lavender-soft rounded-2xl px-5 sm:px-6 pt-10 pb-7 sm:pb-8' : 'px-4'
+        }`}
+      >
         {variant === 'overlay' && (
           <button
             type="button"
             onClick={() => onRequestClose?.()}
-            className="absolute top-4 right-4 z-10 rounded-lg p-2 text-violet-400 transition-colors hover:bg-violet-100 hover:text-violet-600 focus:outline-none"
+            className="absolute top-3 right-3 z-10 rounded-lg p-2 text-violet-400 transition-colors hover:bg-violet-100 hover:text-violet-600 focus:outline-none"
             aria-label="診断を閉じる"
           >
             <X className="h-5 w-5" strokeWidth={2} aria-hidden />
           </button>
         )}
-        <TotalAnalysisCounter className="mb-6" />
-        <h1 className="font-bold text-center mb-2">
-          Instagramアカウント簡単診断
+        <TotalAnalysisCounter />
+        <h1
+          className={`text-2xl sm:text-3xl font-extrabold text-center leading-snug ${IG_TITLE_GRADIENT_CLASS}`}
+        >
+          Instagramアカウント
+          <br />
+          簡単診断
         </h1>
-        <p className="text-sm sm:text-base text-gray-600 text-center mb-6">
+        <p className="text-sm text-gray-600 text-center leading-relaxed max-w-[22rem] sm:max-w-none">
           ログイン不要・完全無料で、
           <br />
           あなたのアカウントの現状を分析します。
@@ -1046,10 +1299,10 @@ export default function InstagramDiagnostic({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full bg-white rounded-xl border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-6 sm:p-8 md:p-10"
+          className="w-full bg-white rounded-xl border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-5 sm:p-6 md:p-7 space-y-5"
           aria-busy={isAnalyzing}
         >
-          <h2 className="font-bold mb-6 text-center">
+          <h2 className="text-center text-xl sm:text-2xl font-bold text-gray-900 leading-snug">
             あなたのInstagram IDを
             <br />
             教えてください
@@ -1067,30 +1320,27 @@ export default function InstagramDiagnostic({
             placeholder="@your_account"
             disabled={isAnalyzing}
             autoComplete="username"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-base focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full px-3 py-2 min-h-0 border border-gray-200 rounded-lg text-sm leading-normal placeholder:text-gray-400 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           />
 
-          <p className="text-xs text-gray-500 mt-2 mb-4">
-            ※パスワードの入力は不要です。プライバシーは完全に保護されます。
-          </p>
-          <p className="text-xs text-gray-500 mt-1 mb-4">
-            ※非公開アカウントやいいね数が非公開の設定の場合、正確な分析ができないことがあります。
-          </p>
-          <p className="text-xs text-gray-500 mt-1 mb-4">
-            ※診断のご利用は10分に1回までとなっております。
-          </p>
+          <div className="space-y-2 text-xs text-gray-500 leading-relaxed">
+            <p>※パスワードの入力は不要です。プライバシーは完全に保護されます。</p>
+            <p>※非公開アカウントやいいね数が非公開の設定の場合、正確な分析ができないことがあります。</p>
+            <p>※診断のご利用は10分に1回までとなっております。</p>
+          </div>
 
           {errorMessage && (
-            <p role="alert" className="text-red-600 text-sm mb-4 font-medium">{toDisplayError(errorMessage)}</p>
+            <p role="alert" className="text-red-600 text-sm font-medium">
+              {toDisplayError(errorMessage)}
+            </p>
           )}
 
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className={`w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-              canSubmit
-                ? 'bg-accent text-white hover:opacity-90'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            className={`w-full py-2.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 ${
+              canSubmit ? IG_CTA_GRADIENT_CLASS : 'bg-[#FCE4EC] text-[#C13584]/45 cursor-not-allowed shadow-none'
             }`}
           >
             診断する

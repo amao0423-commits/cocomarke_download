@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { Noto_Sans_JP } from "next/font/google";
+import HeaderShell from "@/components/HeaderShell";
 import { Footer } from "@/components/navigation/Footer";
 import { DiagnosisOverlay } from "@/components/DiagnosisOverlay";
 import "./globals.css";
 
-/** ヘッダーを別チャンクに分け、開発時の layout チャンク取得タイムアウトを減らす */
-const Header = dynamic(() => import("@/components/Header"), {
-  ssr: true,
-  loading: () => (
+function HeaderFallback() {
+  return (
     <div
       className="sticky top-0 z-50 min-h-[4rem] !bg-white shadow-none transition-all duration-300"
       aria-hidden
     />
-  ),
-});
+  );
+}
 
 const notoSansJp = Noto_Sans_JP({
   subsets: ["latin"],
@@ -34,9 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" className="scroll-smooth">
       <body className={`${notoSansJp.variable} min-h-screen font-sans`}>
-        <Header />
+        <Suspense fallback={<HeaderFallback />}>
+          <HeaderShell />
+        </Suspense>
         <main>{children}</main>
         <Footer />
         <DiagnosisOverlay />

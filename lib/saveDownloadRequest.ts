@@ -80,6 +80,10 @@ export async function readDownloadRequests(): Promise<DownloadRequestEntry[]> {
               typeof parsed.privacyConsent === 'boolean'
                 ? parsed.privacyConsent
                 : undefined,
+            documentTitle:
+              typeof parsed.documentTitle === 'string' && parsed.documentTitle.trim()
+                ? parsed.documentTitle.trim()
+                : undefined,
             timestamp: parsed.timestamp,
             status,
           });

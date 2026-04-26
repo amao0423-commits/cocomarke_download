@@ -2,12 +2,14 @@ import Image from "next/image";
 import { loadHomeDocumentSections } from "@/lib/homeDocuments";
 import { pickFeaturedDocuments } from "@/lib/pickFeaturedDocuments";
 import { Breadcrumbs } from "@/components/home/Breadcrumbs";
+import { CTAButton } from "@/components/home/CTAButton";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
 import { CategoryNav } from "@/components/home/CategoryNav";
 import { HomeGenreSection } from "@/components/home/HomeGenreSection";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
+import { TopDocuments } from "@/components/TopDocuments";
 
 export default async function Home() {
   const { sections } = await loadHomeDocumentSections();
@@ -36,7 +38,29 @@ export default async function Home() {
             />
           </div>
           <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center translate-y-3 sm:translate-y-4">
-            <HeroSection title="お役立ち資料" heroVariant="photo" />
+            <HeroSection
+              eyebrow="お役立ち資料"
+              title={
+                <>
+                  Instagramで成果を上げるための
+                  <br />
+                  無料資料を一括配布中
+                </>
+              }
+              description="全資料無料・今すぐダウンロードできます"
+              heroVariant="photo"
+              actions={
+                <div className="flex w-full justify-center">
+                  <CTAButton
+                    href="/#document-categories"
+                    variant="primary"
+                    className="justify-center ring-offset-0 focus-visible:ring-offset-0"
+                  >
+                    まとめてダウンロード
+                  </CTAButton>
+                </div>
+              }
+            />
           </div>
           <div className="relative z-[11] mx-auto flex w-full max-w-[1200px] shrink-0 flex-col gap-1.5 bg-transparent px-4 pb-8 pt-4 sm:gap-2 sm:px-6 sm:pb-10 sm:pt-5 lg:px-8 lg:pb-12">
             <nav className="flex w-full justify-end gap-3 sm:gap-4" aria-label="SNS">
@@ -69,6 +93,8 @@ export default async function Home() {
             />
           </div>
         </section>
+
+        <TopDocuments />
 
         <section
           id="document-categories"

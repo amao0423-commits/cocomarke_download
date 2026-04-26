@@ -6,7 +6,7 @@ import {
   normalizeDownloadRequestTemplateId,
   resolveDownloadRequestTemplateId,
 } from '@/lib/downloadRequestTemplate';
-import { normalizeDownloadRequestDocumentIds } from '@/lib/downloadRequestDocument';
+import { normalizeDownloadRequestDocumentId } from '@/lib/downloadRequestDocument';
 import { randomUUID } from 'crypto';
 import {
   DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS,
@@ -15,6 +15,24 @@ import {
 
 const REQUEST_PURPOSE_SET = new Set<string>(DOWNLOAD_REQUEST_PURPOSE_OPTIONS);
 const JOB_TITLE_SET = new Set<string>(DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS);
+
+const MAX_REQUESTED_DOCUMENT_TITLE = 500;
+
+function normalizeRequestedDocumentTitle(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null;
+  const b = body as Record<string, unknown>;
+  const raw =
+    typeof b.documentTitle === 'string'
+      ? b.documentTitle
+      : typeof b.documentLabel === 'string'
+        ? b.documentLabel
+        : '';
+  const s = raw.trim();
+  if (!s) return null;
+  return s.length > MAX_REQUESTED_DOCUMENT_TITLE
+    ? s.slice(0, MAX_REQUESTED_DOCUMENT_TITLE)
+    : s;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,13 +75,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!phone) {
-      return NextResponse.json(
-        { error: '電話番号は必須です' },
-        { status: 400 }
-      );
-    }
-
     if (!JOB_TITLE_SET.has(department)) {
       return NextResponse.json(
         { error: '役職を選択してください' },
@@ -93,14 +104,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const documentIds = await normalizeDownloadRequestDocumentIds(
-      body?.documentIds,
-      body?.documentId
-    );
+    const documentId = await normalizeDownloadRequestDocumentId(body?.documentId);
+    const requestedDocumentTitle = normalizeRequestedDocumentTitle(body);
     const requestedTemplateId = await normalizeDownloadRequestTemplateId(body?.templateId);
     const templateId = await resolveDownloadRequestTemplateId({
       requestedTemplateId,
-      documentIds,
+      documentIds: documentId ? [documentId] : [],
     });
 
     const id = randomUUID();
@@ -119,6 +128,7 @@ export async function POST(request: NextRequest) {
       questions,
       privacyConsent,
       timestamp,
+      documentTitle: requestedDocumentTitle ?? undefined,
     });
 
     await insertDownloadRequestRow({
@@ -135,8 +145,8 @@ export async function POST(request: NextRequest) {
       privacyConsent,
       requestedAt: timestamp,
       templateId,
-      documentId: documentIds[0] ?? null,
-      documentIds: documentIds.length > 0 ? documentIds : null,
+      documentId: documentId,
+      requestedDocumentTitle: requestedDocumentTitle,
     });
 
     await sendOutboundEmailForRequest(id);

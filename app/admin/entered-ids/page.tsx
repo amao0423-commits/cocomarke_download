@@ -32,6 +32,9 @@ const DownloadFormConfigsTab = dynamic(() =>
 const ImagesTab = dynamic(() =>
   import('@/components/admin/ImagesTab').then((m) => ({ default: m.ImagesTab }))
 );
+const RestaurantDiagnosisTab = dynamic(() =>
+  import('@/components/admin/RestaurantDiagnosisTab').then((m) => ({ default: m.RestaurantDiagnosisTab }))
+);
 import {
   ADMIN_PAGE_BG,
   ADMIN_CARD,
@@ -48,6 +51,7 @@ import {
 type ActiveTab =
   | 'diagnostics'
   | 'download'
+  | 'restaurantDiagnosis'
   | 'formSettings'
   | 'templates'
   | 'mailDefaults'
@@ -216,14 +220,23 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <p className="text-xs font-medium text-slate-500 px-0.5">まずはここから（おすすめの順）</p>
-          <div className={ADMIN_TAB_WRAP}>
-            {tabBtn('diagnostics', '📈 診断統計')}
-            {tabBtn('download', '📥 届いた申請')}
-            {tabBtn('formSettings', '🔗 フォーム紐付け')}
-            {tabBtn('templates', '✉️ メール作成')}
-            {tabBtn('mailDefaults', '📝 メールの下書き')}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-slate-600 px-0.5">診断・申請の確認</p>
+            <div className={ADMIN_TAB_WRAP}>
+              {tabBtn('diagnostics', '📈 診断統計')}
+              {tabBtn('download', '📥 届いた申請')}
+              {tabBtn('restaurantDiagnosis', '🍽️ SNS診断申請')}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-slate-600 px-0.5">フォーム・メールの設定</p>
+            <div className={ADMIN_TAB_WRAP}>
+              {tabBtn('formSettings', '🔗 フォーム紐付け')}
+              {tabBtn('templates', '✉️ メール作成')}
+              {tabBtn('mailDefaults', '📝 メールの下書き')}
+            </div>
           </div>
           <p className="text-xs font-medium text-slate-500 px-0.5 pt-1">配布物・メディア</p>
           <div className={ADMIN_TAB_WRAP}>
@@ -235,6 +248,7 @@ export default function AdminPage() {
         <div className={`${ADMIN_CARD} p-5 sm:p-6`}>
           {activeTab === 'diagnostics' && <DiagnosticsStatsTab secretKey={secretKey} />}
           {activeTab === 'download' && <DownloadRequestsTab secretKey={secretKey} />}
+          {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
           {activeTab === 'formSettings' && <DownloadFormConfigsTab secretKey={secretKey} />}
           {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
           {activeTab === 'mailDefaults' && <DefaultMailTemplateTab secretKey={secretKey} />}
