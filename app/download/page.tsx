@@ -134,7 +134,7 @@ async function getDownloadPageContext(
 export default async function DownloadPage({
   searchParams,
 }: {
-  searchParams: Promise<{ documentId?: string; formSlug?: string }>;
+  searchParams: Promise<{ documentId?: string; formSlug?: string; thanks?: string }>;
 }) {
   const sp = await searchParams;
   const documentId =
@@ -145,6 +145,8 @@ export default async function DownloadPage({
     typeof sp.formSlug === "string" && sp.formSlug.trim()
       ? sp.formSlug.trim()
       : "default";
+  const thanksInUrl =
+    typeof sp.thanks === "string" && sp.thanks.trim() === "1";
   const { formName, requestedDocumentLabel, documents } =
     await getDownloadPageContext(documentId, formSlug);
 
@@ -155,6 +157,7 @@ export default async function DownloadPage({
       documentId={documentId}
       documentLabel={requestedDocumentLabel}
       initialDocuments={documents}
+      thanksInUrl={thanksInUrl}
     />
   );
 }

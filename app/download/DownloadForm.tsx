@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Download } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { documentDownloadCtaClassName } from '@/components/home/DocumentDownloadCta';
 import {
   DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS,
@@ -26,6 +26,8 @@ export type DownloadFormProps = {
   documentId?: string;
   /** 表示用タイトル（サーバで解決済み） */
   documentLabel?: string | null;
+  /** 現在の URL に ?thanks=1 がある（別資料・メニュー遷移時に success 状態を解除する） */
+  thanksInUrl?: boolean;
   /** 左側の案内表示を同期する */
   onSelectedDocumentChange?: (document: FormDoc | null) => void;
   /** 送信完了（Thanks）表示に切り替わったとき、親でレイアウト（左カラム非表示・中央寄せなど）を変える */
@@ -58,11 +60,14 @@ export default function DownloadForm({
   formSlug = 'default',
   documentId: documentIdProp,
   documentLabel,
+  thanksInUrl = false,
   onSelectedDocumentChange,
   onThanksModeChange,
 }: DownloadFormProps) {
   const router = useRouter();
   const pathname = usePathname();
+  /** クライアント遷移後も success が残るのを防ぐ（URL の thanks / 資料 ID の変化を追跡） */
+  const navSyncRef = useRef<{ doc?: string; slug: string; thanks: boolean } | null>(null);
 
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -151,6 +156,33 @@ export default function DownloadForm({
   useEffect(() => {
     onThanksModeChange?.(state === 'success');
   }, [state, onThanksModeChange]);
+
+  useEffect(() => {
+    const doc = documentIdProp?.trim() || undefined;
+    const slug = formSlug;
+    const thanks = thanksInUrl === true;
+
+    if (!navSyncRef.current) {
+      navSyncRef.current = { doc, slug, thanks };
+      return;
+    }
+
+    const prev = navSyncRef.current;
+    const docChanged = prev.doc !== doc;
+    const slugChanged = prev.slug !== slug;
+    const leftThanksUrl = prev.thanks === true && !thanks;
+
+    if (
+      (docChanged || slugChanged || leftThanksUrl) &&
+      (state === 'success' || state === 'error')
+    ) {
+      setState('idle');
+      setErrorMessage('');
+      setThanksRecommended(null);
+    }
+
+    navSyncRef.current = { doc, slug, thanks };
+  }, [documentIdProp, formSlug, thanksInUrl, state]);
 
   /** Thanks 画面とヘッダー演出を同期（?thanks=1） */
   useEffect(() => {

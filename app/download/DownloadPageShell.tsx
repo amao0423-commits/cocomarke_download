@@ -68,6 +68,8 @@ type DownloadPageShellProps = {
   documentId?: string;
   documentLabel?: string | null;
   initialDocuments: PreviewDocument[];
+  /** URL に ?thanks=1 がある（送信完了サンクス表示と同期） */
+  thanksInUrl?: boolean;
 };
 
 /** 資料概要リスト用（Stat「無料」と同系色の sky-400） */
@@ -130,6 +132,7 @@ export default function DownloadPageShell({
   documentId,
   documentLabel,
   initialDocuments,
+  thanksInUrl = false,
 }: DownloadPageShellProps) {
   const docMap = useMemo(
     () => new Map(initialDocuments.map((d) => [d.id, d])),
@@ -287,6 +290,7 @@ export default function DownloadPageShell({
                 formSlug={formSlug}
                 documentId={documentId}
                 documentLabel={documentLabel}
+                thanksInUrl={thanksInUrl}
                 onSelectedDocumentChange={handleDocChange}
                 onThanksModeChange={setThanksMode}
               />
