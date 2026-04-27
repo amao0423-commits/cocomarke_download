@@ -32,15 +32,11 @@ const DOCUMENTS_URL = "/";
 const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
-/** 上部バー「飲食店診断」：Instagram 風グラデをやや落ち着かせた色 */
+/** 上部バー「飲食店SNS診断」：Instagram 風グラデをやや落ち着かせた色 */
 const HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS =
-  "inline-flex max-w-[42vw] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-2.5 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:max-w-none sm:px-3.5 sm:text-xs";
+  "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:px-3.5 sm:text-xs";
 
-/** 上部バー「資料ダウンロード」：グラデ背景・白文字 */
-const HEADER_DOWNLOAD_COMPACT_CLASS =
-  "inline-flex items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#01408D] to-[#001A3D] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
-
-/** ドロワー下部「飲食店向け診断」 */
+/** ドロワー下部「飲食店SNS診断」 */
 const HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS =
   "flex w-full items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
@@ -151,10 +147,7 @@ export function SiteHeaderMobile({
             href={RESTAURANT_DIAGNOSIS_URL}
             className={HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS}
           >
-            飲食店診断
-          </Link>
-          <Link href={serviceDocumentHref} className={HEADER_DOWNLOAD_COMPACT_CLASS}>
-            資料ダウンロード
+            飲食店SNS診断
           </Link>
 
           <button
@@ -231,7 +224,7 @@ export function SiteHeaderMobile({
                   onClick={closeMenu}
                   className={HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS}
                 >
-                  飲食店向け無料診断
+                  飲食店SNS診断
                 </Link>
                 <Link
                   href={serviceDocumentHref}

@@ -13,8 +13,6 @@ type SiteHeaderProps = {
   className?: string;
   /** 資料DL Thanks 完了時：下線・影を抑えて軽く見せる */
   isDownloadThanks?: boolean;
-  /** メニュー「資料をダウンロード」のリンク先 */
-  serviceDocumentHref?: string;
 };
 
 type NavItem = {
@@ -28,16 +26,11 @@ const USEFUL_INFO_URL = "https://www.cocomarke.com/blog";
 const COMPANY_INFO_URL = "https://www.cocomarke.com/company";
 const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
-const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
-/** 飲食店向け診断：Instagram 風グラデをやや落ち着かせた色・白文字・薄枠 */
+/** 飲食店SNS診断：Instagram 風グラデをやや落ち着かせた色・白文字・薄枠 */
 const HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS =
-  "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[8.5rem] sm:min-w-[9.5rem] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 sm:px-4 sm:text-sm hover:opacity-95 hover:shadow-md";
-
-/** 資料をダウンロード：ネイビーグラデ背景・白文字・薄枠・軽い影 */
-const HEADER_DOWNLOAD_CTA_CLASS =
-  "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[10.5rem] sm:min-w-[11.5rem] items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#01408D] to-[#001A3D] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 sm:px-4 sm:text-sm hover:opacity-95 hover:shadow-md";
+  "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[10.5rem] sm:min-w-[11.5rem] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 sm:px-4 sm:text-sm hover:opacity-95 hover:shadow-md";
 
 /** 中央テキストナビ（スクロール前後で色は固定・hover / current のみ変化） */
 const NAV_LINK_FOCUS =
@@ -65,7 +58,6 @@ export function SiteHeader({
   logoHref = SERVICE_URL,
   className = "",
   isDownloadThanks = false,
-  serviceDocumentHref = DEFAULT_SERVICE_DOCUMENT_HREF,
 }: SiteHeaderProps) {
   const navItems = useMemo<NavItem[]>(() => {
     switch (currentState) {
@@ -185,16 +177,13 @@ export function SiteHeader({
           })}
         </nav>
 
-        {/* 右：飲食店診断 + 資料DL CTA（折り返し不可：固定行高と干渉して崩れるのを防ぐ） */}
+        {/* 右：飲食店SNS診断 CTA（折り返し不可） */}
         <div className="flex min-w-0 flex-nowrap items-center justify-end gap-1.5 sm:gap-2 md:gap-2.5">
           <Link
             href={RESTAURANT_DIAGNOSIS_URL}
             className={HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS}
           >
-            飲食店診断
-          </Link>
-          <Link href={serviceDocumentHref} className={HEADER_DOWNLOAD_CTA_CLASS}>
-            資料をダウンロード
+            飲食店SNS診断
           </Link>
         </div>
       </div>

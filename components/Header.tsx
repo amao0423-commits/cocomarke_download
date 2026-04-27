@@ -43,7 +43,6 @@ function HeaderBar({ serviceDocumentHref = "/download" }: HeaderProps) {
         currentState={currentState}
         currentPath={pathname}
         isDownloadThanks={isDownloadThanks}
-        serviceDocumentHref={serviceDocumentHref}
       />
       <SiteHeaderMobile
         currentState={currentState}

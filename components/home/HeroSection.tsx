@@ -135,7 +135,7 @@ export function HeroSection({
                   </p>
                 ) : null}
                 <h1
-                  className={`font-bold tracking-tight ${isPhotoHero ? "text-white drop-shadow-sm leading-snug" : "text-cocomarke-navy"} ${eyebrow ? "mt-4" : "mt-0"}`}
+                  className={`font-bold tracking-tight ${isPhotoHero ? "text-balance text-white drop-shadow-sm leading-snug" : "text-cocomarke-navy"} ${eyebrow ? "mt-4" : "mt-0"}`}
                 >
                   {title}
                 </h1>
