@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
-import { DiagnosisFooterLink } from "@/components/navigation/DiagnosisFooterLink";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
 
 const containerVariants = {
@@ -19,18 +17,6 @@ const containerVariants = {
   },
 } as const;
 
-const columnVariants = {
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-} as const;
-
 const COCO_MARKETING_SITE = "https://www.cocomarke.com/" as const;
 
 const quickLinks = [
@@ -39,37 +25,26 @@ const quickLinks = [
   { label: "プライバシーポリシー", href: "https://www.cocomarke.com/privacy" },
 ] as const;
 
-export function Footer() {
-  const pathname = usePathname();
-  /** トップ・資料DLフォーム：お問い合わせ帯と同系のフッター見た目に揃える */
-  const blendHomeContact = pathname === "/" || pathname === "/download";
+/** 全ルートで同一の見た目（背景・余白・上罫線） */
+const FOOTER_SECTION_CLASS =
+  "mx-auto max-w-[1200px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16";
 
+export function Footer() {
   return (
     <footer
-      className={
-        blendHomeContact
-          ? "border-t-0 bg-slate-100 font-sans text-design-text-primary"
-          : "border-t border-design-outline-border bg-design-bg-page font-sans text-design-text-primary"
-      }
+      className="border-t border-design-outline-border bg-design-bg-page font-sans text-design-text-primary"
       role="contentinfo"
     >
-      <div
-        className={
-          blendHomeContact
-            ? "mx-auto max-w-[1200px] px-5 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8 lg:pb-16 lg:pt-12"
-            : "mx-auto max-w-[1200px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16"
-        }
-      >
+      <div className={FOOTER_SECTION_CLASS}>
         <motion.div
-          className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-8 xl:gap-12"
+          className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-10 xl:gap-14"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
         >
           <div className="order-2 lg:order-1">
-          <motion.section
-            variants={columnVariants}
+          <section
             className="flex flex-col"
             aria-labelledby="footer-company-heading"
           >
@@ -109,75 +84,80 @@ export function Footer() {
                 </a>
               ))}
             </nav>
-          </motion.section>
+          </section>
           </div>
 
-          <div className="order-1 lg:order-2">
-          <motion.section
-            variants={columnVariants}
-            className="flex flex-col"
-            aria-labelledby="footer-links-heading"
-          >
-            <h2
-              id="footer-links-heading"
-              className="text-sm font-normal leading-normal text-design-text-primary"
-            >
-              <Link
-                href={COCO_MARKETING_SITE}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-normal transition-colors hover:text-design-primary"
-              >
-                COCOマーケ
-                <ExternalLink className="h-3.5 w-3.5 opacity-70" aria-hidden />
-              </Link>
-            </h2>
-            <nav className="mt-4" aria-label="関連リンク">
-              <ul className="flex flex-col gap-3 text-sm">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-design-text-secondary transition-colors hover:text-design-primary"
-                  >
-                    資料一覧
-                  </Link>
-                </li>
-                {quickLinks.map((item) => (
-                  <li key={item.href}>
+          <div className="order-1 lg:order-2 flex flex-col gap-10 sm:gap-12">
+            <section className="flex flex-col">
+              <nav aria-label="主要リンク">
+                <ul className="flex flex-col gap-3 text-sm leading-normal text-design-text-secondary">
+                  <li>
                     <Link
-                      href={item.href}
-                      className="inline-flex items-center gap-1.5 text-design-text-secondary transition-colors hover:text-design-primary"
+                      href="/"
+                      className="transition-colors hover:text-design-primary"
                     >
-                      {item.label}
-                      <ExternalLink className="h-3.5 w-3.5 opacity-70" aria-hidden />
+                      お役立ち資料
                     </Link>
                   </li>
-                ))}
-                <li>
-                  <DiagnosisFooterLink />
-                </li>
-                <li>
-                  <Link
-                    href="/restaurant-diagnosis"
-                    className="text-design-text-secondary transition-colors hover:text-design-primary"
-                  >
-                    飲食店診断
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </motion.section>
+                  <li>
+                    <Link
+                      href="/analysis"
+                      className="transition-colors hover:text-design-primary"
+                    >
+                      アカウント無料診断
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/restaurant-diagnosis"
+                      className="transition-colors hover:text-design-primary"
+                    >
+                      飲食店SNS動線診断
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </section>
+
+            <section
+              className="flex flex-col border-t border-slate-200/80 pt-10 sm:pt-12"
+              aria-labelledby="footer-links-heading"
+            >
+              <h2
+                id="footer-links-heading"
+                className="text-sm font-normal leading-normal text-design-text-primary"
+              >
+                <Link
+                  href={COCO_MARKETING_SITE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-normal transition-colors hover:text-design-primary"
+                >
+                  COCOマーケ
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                </Link>
+              </h2>
+              <nav className="mt-4" aria-label="COCOマーケ関連">
+                <ul className="flex flex-col gap-3 text-sm leading-normal text-design-text-secondary">
+                  {quickLinks.map((item) => (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        className="inline-flex w-fit items-center gap-1.5 transition-colors hover:text-design-primary"
+                      >
+                        {item.label}
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </section>
           </div>
         </motion.div>
       </div>
 
-      <div
-        className={
-          blendHomeContact
-            ? "border-t border-slate-200/80 py-6"
-            : "border-t border-design-outline-border py-6"
-        }
-      >
+      <div className="border-t border-design-outline-border py-6">
         <p className="text-center text-xs text-design-text-secondary">
           2026 © Hotseller Inc. / COCOマーケ All Rights Reserved
         </p>

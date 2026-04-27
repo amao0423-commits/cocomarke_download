@@ -54,7 +54,7 @@ export function getHomeCategoryCopy(categoryName: string): {
 
       headline: categoryName,
 
-      description: 'このジャンルの資料一覧です。',
+      description: 'このジャンルのお役立ち資料です。',
 
     }
 

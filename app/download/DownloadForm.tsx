@@ -332,7 +332,7 @@ export default function DownloadForm({
           </div>
         </div>
 
-        {/* ② おすすめ資料 → 直下に「資料一覧に戻る」 */}
+        {/* ② おすすめ資料 → 直下に「お役立ち資料に戻る」 */}
         {hasRecommended && (
           <div className="relative z-0 bg-white px-4 pb-20 pt-4 sm:px-8 sm:pb-24 sm:pt-6">
             <div className="mx-auto max-w-6xl bg-white">
@@ -381,7 +381,7 @@ export default function DownloadForm({
                   href="/"
                   className="rounded-md bg-white px-6 py-4 text-center text-sm text-slate-500 transition-colors hover:text-black"
                 >
-                  資料一覧に戻る
+                  お役立ち資料に戻る
                 </Link>
               </div>
             </div>

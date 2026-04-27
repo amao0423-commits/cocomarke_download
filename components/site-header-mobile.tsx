@@ -66,7 +66,7 @@ export function SiteHeaderMobile({
           { label: "サービス", href: SERVICE_URL, external: true },
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "資料一覧", href: DOCUMENTS_URL },
+          { label: "お役立ち資料", href: DOCUMENTS_URL },
           { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
       case "afterContact":
@@ -74,7 +74,7 @@ export function SiteHeaderMobile({
           { label: "サービス", href: SERVICE_URL, external: true },
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "資料一覧", href: DOCUMENTS_URL },
+          { label: "お役立ち資料", href: DOCUMENTS_URL },
         ];
       case "default":
       default:
@@ -82,7 +82,7 @@ export function SiteHeaderMobile({
           { label: "サービス", href: SERVICE_URL, external: true },
           { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
           { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "資料一覧", href: DOCUMENTS_URL },
+          { label: "お役立ち資料", href: DOCUMENTS_URL },
           { label: "お問い合わせ", href: CONTACT_URL, external: true },
         ];
     }

@@ -21,7 +21,7 @@ export default async function Home() {
       <div className="bg-white text-design-text-primary">
         <section
           className="coco-section-hero relative flex min-h-[min(52vw,22rem)] flex-col overflow-hidden sm:min-h-[min(48vw,24rem)]"
-          aria-label="資料一覧"
+          aria-label="お役立ち資料"
         >
           <div className="pointer-events-none absolute inset-0 z-0">
             <Image
@@ -56,7 +56,7 @@ export default async function Home() {
                     variant="primary"
                     className="justify-center ring-offset-0 focus-visible:ring-offset-0"
                   >
-                    まとめてダウンロード
+                    資料一覧を見る
                   </CTAButton>
                 </div>
               }
@@ -88,7 +88,7 @@ export default async function Home() {
               className="bg-transparent shadow-none text-white/90 [&_a]:text-white/95 [&_a:hover]:text-white [&_span.font-medium]:text-white [&_span[aria-hidden]]:text-white/45"
               items={[
                 { label: "トップ", href: "https://www.cocomarke.com/" },
-                { label: "資料一覧" },
+                { label: "お役立ち資料" },
               ]}
             />
           </div>
