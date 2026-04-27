@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Download } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { documentDownloadCtaClassName } from '@/components/home/DocumentDownloadCta';
 import {
   DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS,
@@ -157,6 +157,12 @@ export default function DownloadForm({
     onThanksModeChange?.(state === 'success');
   }, [state, onThanksModeChange]);
 
+  /** 送信完了後は同一ページ内のためスクロールがフォーム付近のまま。描画前に先頭へ戻す */
+  useLayoutEffect(() => {
+    if (state !== 'success') return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [state]);
+
   useEffect(() => {
     const doc = documentIdProp?.trim() || undefined;
     const slug = formSlug;
@@ -277,12 +283,12 @@ export default function DownloadForm({
       thanksRecommended !== null && thanksRecommended.length > 0;
 
     return (
-      <div className="relative bg-white">
+      <div className="relative min-w-0 bg-white">
         {/* ① 申請完了の感謝（H1） */}
-        <div className="relative z-0 bg-white px-4 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12">
-          <div className="mx-auto max-w-3xl">
-            <div className="relative overflow-hidden rounded-2xl border border-slate-100/90 bg-white px-6 py-10 text-center shadow-sm sm:px-10 sm:py-12">
-              <div className="relative z-10 bg-white">
+        <div className="relative z-0 min-w-0 bg-white px-4 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12">
+          <div className="mx-auto w-full min-w-0 max-w-3xl">
+            <div className="relative w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-slate-100/90 bg-white px-6 py-10 text-center shadow-sm sm:px-10 sm:py-12">
+              <div className="relative z-10 min-w-0 bg-white">
                 <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[#01408D]/10">
                   <svg
                     className="h-7 w-7 text-[#01408D]"
@@ -295,20 +301,14 @@ export default function DownloadForm({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h1 className="text-xl font-extrabold leading-snug text-[#01408D] sm:text-2xl">
+                <h1 className="min-w-0 text-balance text-xl font-extrabold leading-snug text-[#01408D] sm:text-2xl">
                   資料のご請求ありがとうございました。
                 </h1>
-                <div className="mx-auto mt-6 w-full max-w-lg text-left text-sm leading-relaxed text-slate-600 sm:mt-8">
+                <div className="mx-auto mt-6 w-full min-w-0 max-w-lg break-words text-left text-sm leading-relaxed text-slate-600 sm:mt-8">
                   <p>資料はご登録いただいたメールアドレスにお送りいたしました。</p>
                   <p className="mt-3">記載のURLからダウンロードください。</p>
                   <p className="mt-4">
-                    また、ぜひ一度、チャットやオンラインにて15分ほど
-                    <br />
-                    現在のInstagram運用の課題や疑問
-                    <br />
-                    弊社の運用代行サービスの説明
-                    <br />
-                    についてお話する機会をいただけますと幸いです。
+                    また、ぜひ一度、チャットやオンラインにて15分ほど、現在のInstagram運用の課題や疑問、弊社の運用代行サービスの説明についてお話する機会をいただけますと幸いです。
                   </p>
                   <p className="mt-4">
                     日程・ご相談につきましては以下のメールアドレスよりお問い合わせをよろしくお願いいたします。
@@ -316,14 +316,15 @@ export default function DownloadForm({
                   <p className="mt-2">
                     <a
                       href="mailto:info@ccoomarke.com"
-                      className="font-medium text-[#01408D] underline-offset-2 hover:underline"
+                      className="break-all font-medium text-[#01408D] underline-offset-2 hover:underline"
                     >
                       info@ccoomarke.com
                     </a>
                   </p>
                   <p className="mt-5 text-[13px] leading-relaxed">
                     万一、メールが届かない場合は【送信エラー】【ご入力内容に誤りがある】等の可能性がございます。
-                    <br />
+                  </p>
+                  <p className="mt-2 text-[13px] leading-relaxed">
                     お手数をおかけしてしまい大変申し訳ございませんが、もう一度送信いただくか、お電話にてご連絡くださいませ。
                   </p>
                 </div>

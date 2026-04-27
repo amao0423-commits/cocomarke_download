@@ -1,9 +1,6 @@
 import { loadTopDocuments } from '@/lib/homeDocuments';
 import { DocumentCard } from '@/components/home/DocumentCard';
 
-/** ダウンロード数は後で差し替え（モック） */
-const MOCK_DL_LABELS = ['1,200 DL', '980 DL', '756 DL'] as const;
-
 export async function TopDocuments() {
   const documents = await loadTopDocuments();
 
@@ -25,18 +22,11 @@ export async function TopDocuments() {
           人気資料 TOP 3
         </h2>
         <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {documents.map((doc, index) => {
+          {documents.map((doc) => {
             const href = `/download?documentId=${encodeURIComponent(doc.id)}`;
-            const dlLabel =
-              MOCK_DL_LABELS[index] ?? MOCK_DL_LABELS[MOCK_DL_LABELS.length - 1];
             return (
               <li key={doc.id} className="min-w-0">
-                <DocumentCard
-                  document={doc}
-                  href={href}
-                  description={dlLabel}
-                  badge={null}
-                />
+                <DocumentCard document={doc} href={href} badge={null} />
               </li>
             );
           })}

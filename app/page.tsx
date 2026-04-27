@@ -39,12 +39,11 @@ export default async function Home() {
           </div>
           <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center translate-y-3 sm:translate-y-4">
             <HeroSection
-              eyebrow="お役立ち資料"
               title={
                 <span className="block text-balance text-[clamp(0.95rem,3.4vw+0.25rem,1.45rem)] leading-snug tracking-tight sm:text-[clamp(1rem,2.5vw+0.2rem,1.55rem)]">
                   Instagramで成果を上げるための
                   <br />
-                  無料資料を一括配布中です
+                  無料資料を一括配布中
                 </span>
               }
               description="全資料無料・今すぐダウンロードできます"
