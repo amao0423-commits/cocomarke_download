@@ -41,13 +41,10 @@ export default async function Home() {
             <HeroSection
               eyebrow="お役立ち資料"
               title={
-                <span className="block text-balance">
-                  <span className="block text-[clamp(1.35rem,4vw+0.35rem,2rem)] leading-snug tracking-tight">
-                    無料資料を一括配布中
-                  </span>
-                  <span className="mt-2 block text-[clamp(0.95rem,2.5vw+0.2rem,1.25rem)] font-semibold leading-snug tracking-tight text-white/95">
-                    Instagramで成果を上げるための
-                  </span>
+                <span className="block text-balance text-[clamp(0.95rem,3.4vw+0.25rem,1.45rem)] leading-snug tracking-tight sm:text-[clamp(1rem,2.5vw+0.2rem,1.55rem)]">
+                  Instagramで成果を上げるための
+                  <br />
+                  無料資料を一括配布中です
                 </span>
               }
               description="全資料無料・今すぐダウンロードできます"
