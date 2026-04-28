@@ -315,10 +315,10 @@ export default function DownloadForm({
                   </p>
                   <p className="mt-2">
                     <a
-                      href="mailto:info@cocomarke.com"
+                      href="mailto:info@cocomake-guide.com"
                       className="break-all font-medium text-[#01408D] underline-offset-2 hover:underline"
                     >
-                      info@cocomarke.com
+                      info@cocomake-guide.com
                     </a>
                   </p>
                   <p className="mt-5 text-[13px] leading-relaxed">

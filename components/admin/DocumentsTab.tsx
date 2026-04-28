@@ -907,7 +907,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                   <th className="text-left py-2 px-3">タイトル</th>
                   <th className="text-left py-2 px-3">カテゴリ</th>
                   <th className="text-left py-2 px-3 min-w-[200px]">サムネイルURL</th>
-                  <th className="text-left py-2 px-3">ファイル名</th>
+                  <th className="text-left py-2 px-3 min-w-[220px] whitespace-nowrap">ファイル名</th>
                   <th className="text-left py-2 px-3">登録日時</th>
                   <th className="text-left py-2 px-3" />
                 </tr>
@@ -978,8 +978,17 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                           title="フォーカスを外すと保存されます。空にすると解除"
                         />
                       </td>
-                      <td className="py-2 px-3 text-gray-600 break-all max-w-xs">
-                        {d.file_name ?? '—'}
+                      <td className="py-2 px-3 text-gray-600 min-w-[220px]">
+                        {d.file_name ? (
+                          <span
+                            className="block max-w-[260px] truncate whitespace-nowrap"
+                            title={d.file_name}
+                          >
+                            {d.file_name}
+                          </span>
+                        ) : (
+                          '—'
+                        )}
                       </td>
                       <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
                         {new Date(d.created_at).toLocaleString('ja-JP')}
