@@ -3,6 +3,7 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { updateEmailStatusInDb } from '@/lib/downloadRequestsDb';
 import type { EmailStatus } from '@/types/database.types';
 import { applyEmailHtmlAssetUrls } from '@/lib/emailLogoUrl';
+import { sendgridConfigured } from '@/lib/sendgridConfigured';
 
 function escapeHtml(s: string): string {
   return s
@@ -161,12 +162,6 @@ async function buildDocumentButtonsHtml(
   }
 
   return buttons.join('');
-}
-
-function sendgridConfigured(): boolean {
-  return !!(
-    process.env.SENDGRID_API_KEY?.trim() && process.env.SENDGRID_FROM_EMAIL?.trim()
-  );
 }
 
 export async function sendOutboundEmailForRequest(

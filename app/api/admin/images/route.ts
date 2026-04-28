@@ -99,3 +99,46 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ public_url: urlData.publicUrl, name: objectPath });
 }
+
+function isSafeStorageObjectName(name: string): boolean {
+  const t = name.trim();
+  if (!t || t.length > 240) return false;
+  if (t.includes('/') || t.includes('\\') || t.includes('..')) return false;
+  if (t === '.emptyFolderPlaceholder') return false;
+  return /^[\w.\-]+$/.test(t);
+}
+
+/** DELETE: アップロード済み画像を1件削除（バケット直下のオブジェクト名のみ） */
+export async function DELETE(request: NextRequest) {
+  if (!verifyAdmin(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
+
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Supabase が未設定です' }, { status: 503 });
+  }
+
+  let body: { name?: unknown };
+  try {
+    body = (await request.json()) as { name?: unknown };
+  } catch {
+    return NextResponse.json({ error: 'JSON が不正です' }, { status: 400 });
+  }
+
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  if (!name || !isSafeStorageObjectName(name)) {
+    return NextResponse.json({ error: '削除対象のファイル名が不正です' }, { status: 400 });
+  }
+
+  const { error } = await supabase.storage.from(BUCKET).remove([name]);
+  if (error) {
+    console.error('images DELETE:', error);
+    return NextResponse.json(
+      { error: '削除に失敗しました', details: error.message },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ ok: true });
+}

@@ -6,6 +6,32 @@ export const EMAIL_LOGO_PUBLIC_PATH = '/images/cocomarke-logo-email-horizontal.p
 
 const EMAIL_LOGO_FILENAME = 'cocomarke-logo-email-horizontal.png';
 
+function shouldPreferEmbeddedLogoOverOrigin(origin: string): boolean {
+  try {
+    const h = new URL(origin).hostname.toLowerCase();
+    return h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+  } catch {
+    return false;
+  }
+}
+
+function readEmailLogoDataUriFromDisk(): string {
+  const candidates = [
+    join(process.cwd(), 'public', 'images', EMAIL_LOGO_FILENAME),
+    join(process.cwd(), 'images', EMAIL_LOGO_FILENAME),
+  ];
+  for (const fullPath of candidates) {
+    try {
+      if (!existsSync(fullPath)) continue;
+      const buf = readFileSync(fullPath);
+      return `data:image/png;base64,${buf.toString('base64')}`;
+    } catch {
+      // try next
+    }
+  }
+  return '';
+}
+
 /**
  * 公開サイトのオリジン（メール内の /images/... を絶対URLにする際に使用）。
  * 本番では NEXT_PUBLIC_SITE_URL または Vercel の VERCEL_URL を利用。
@@ -20,36 +46,43 @@ export function getOutboundEmailSiteOrigin(): string {
 
 /**
  * 資料ダウンロードメールのロゴ用 src 値。
- * サイトURLが取れるときは絶対URL。取れないときは public の PNG を data URI で埋め込む。
+ * 公開オリジンが取れるときは絶対URL（localhost 等はメール受信側から参照できないため data URI を優先）。
+ * それ以外は public の PNG を data URI で埋め込む。
  */
 export function resolveEmailLogoUrlForOutbound(): string {
   const origin = getOutboundEmailSiteOrigin();
+  const embedded = readEmailLogoDataUriFromDisk();
+
+  if (origin && !shouldPreferEmbeddedLogoOverOrigin(origin)) {
+    return `${origin}${EMAIL_LOGO_PUBLIC_PATH}`;
+  }
+
+  if (embedded) {
+    return embedded;
+  }
+
   if (origin) {
     return `${origin}${EMAIL_LOGO_PUBLIC_PATH}`;
   }
-  try {
-    const fullPath = join(process.cwd(), 'public', 'images', EMAIL_LOGO_FILENAME);
-    if (existsSync(fullPath)) {
-      const buf = readFileSync(fullPath);
-      return `data:image/png;base64,${buf.toString('base64')}`;
-    }
-  } catch {
-    // ignore
-  }
+
   return '';
 }
 
 /**
  * メール HTML 内のロゴ・相対画像パスを送信時に解決する。
  * - {{emailLogoUrl}} を差し替え
- * - 旧テンプレの /images/cocomarke-logo.png をメール用ロゴに差し替え
- * - オリジンが分かるときは src="/images/..." を絶対URLに変換
+ * - /images/cocomarke-logo-email-horizontal.png および旧 cocomarke-logo.png を解決済み URL に差し替え
+ * - オリジンが分かるときは残りの src="/images/..." を絶対URLに変換
  */
 export function applyEmailHtmlAssetUrls(html: string): string {
   const logoUrl = resolveEmailLogoUrlForOutbound();
   let out = html.replace(/\{\{emailLogoUrl\}\}/g, logoUrl);
 
   if (logoUrl) {
+    out = out.replace(
+      /src=(["'])\/images\/cocomarke-logo-email-horizontal\.png\1/gi,
+      (_m, q: string) => `src=${q}${logoUrl}${q}`
+    );
     out = out.replace(
       /src=(["'])\/images\/cocomarke-logo\.png\1/gi,
       (_m, q: string) => `src=${q}${logoUrl}${q}`

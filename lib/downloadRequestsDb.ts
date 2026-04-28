@@ -5,7 +5,10 @@ import {
   type DownloadRequestStatus,
   type DownloadRequestEntry,
 } from '@/lib/downloadRequestShared';
-import { readDownloadRequests } from '@/lib/saveDownloadRequest';
+import {
+  readDownloadRequests,
+  removeDownloadRequestsFromRedisByIds,
+} from '@/lib/saveDownloadRequest';
 
 export async function insertDownloadRequestRow(params: {
   id: string;
@@ -224,6 +227,47 @@ export async function listDownloadRequestsFromDb(
       document_title: stored ?? fromMaster,
     };
   });
+}
+
+const DELETE_BATCH = 200;
+
+/** 申請を DB（設定時）と Redis リストの両方から削除。junction は ON DELETE CASCADE */
+export async function deleteDownloadRequestsByIds(ids: string[]): Promise<{
+  deletedFromDb: number;
+  removedFromRedis: number;
+  error?: string;
+}> {
+  const unique = [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+  if (unique.length === 0) {
+    return { deletedFromDb: 0, removedFromRedis: 0 };
+  }
+
+  let deletedFromDb = 0;
+  if (isSupabaseConfigured()) {
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      for (let i = 0; i < unique.length; i += DELETE_BATCH) {
+        const slice = unique.slice(i, i + DELETE_BATCH);
+        const { data, error } = await supabase
+          .from('download_requests')
+          .delete()
+          .in('id', slice)
+          .select('id');
+        if (error) {
+          console.error('deleteDownloadRequestsByIds:', error);
+          return {
+            deletedFromDb,
+            removedFromRedis: 0,
+            error: 'データベースからの削除に失敗しました',
+          };
+        }
+        deletedFromDb += data?.length ?? 0;
+      }
+    }
+  }
+
+  const removedFromRedis = await removeDownloadRequestsFromRedisByIds(unique);
+  return { deletedFromDb, removedFromRedis };
 }
 
 export async function getDownloadRequestById(

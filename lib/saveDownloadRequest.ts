@@ -100,6 +100,50 @@ export async function readDownloadRequests(): Promise<DownloadRequestEntry[]> {
   }
 }
 
+/** 一覧から指定 ID を除き直す（DB 削除後の Redis 残骸や Redis のみの行用） */
+export async function removeDownloadRequestsFromRedisByIds(
+  ids: string[]
+): Promise<number> {
+  if (ids.length === 0) return 0;
+  const idSet = new Set(ids);
+  try {
+    const kv = getKv();
+    const raw = await kv.lrange<string>(LIST_KEY, 0, LIST_MAX - 1);
+    const list = Array.isArray(raw) ? raw : [];
+    const kept: string[] = [];
+    const removedStatusIds: string[] = [];
+
+    for (const item of list) {
+      try {
+        const parsed = typeof item === 'string' ? JSON.parse(item) : item;
+        if (parsed && typeof parsed.id === 'string' && idSet.has(parsed.id)) {
+          removedStatusIds.push(parsed.id);
+          continue;
+        }
+        kept.push(typeof item === 'string' ? item : JSON.stringify(parsed));
+      } catch {
+        if (typeof item === 'string') kept.push(item);
+      }
+    }
+
+    if (removedStatusIds.length === 0) return 0;
+
+    const pipe = kv.pipeline();
+    pipe.del(LIST_KEY);
+    for (let i = kept.length - 1; i >= 0; i--) {
+      pipe.lpush(LIST_KEY, kept[i]);
+    }
+    for (const rid of removedStatusIds) {
+      pipe.del(statusKey(rid));
+    }
+    await pipe.exec();
+    return removedStatusIds.length;
+  } catch (error) {
+    console.error('removeDownloadRequestsFromRedisByIds:', error);
+    return 0;
+  }
+}
+
 export async function setDownloadRequestStatus(
   id: string,
   status: DownloadRequestStatus

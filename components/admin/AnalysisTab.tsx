@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, Trash2, X } from 'lucide-react';
 import {
   ENTERED_ID_STATUSES,
   type EnteredIdStatus,
   type EnteredIdEntry,
 } from '@/lib/enteredIdShared';
 import {
+  ADMIN_BTN_OUTLINE,
+  ADMIN_BTN_PINK,
   ADMIN_CARD_TABLE_WRAP,
   ADMIN_FOCUS_RING,
 } from '@/components/admin/adminPastel';
@@ -88,6 +90,22 @@ function getInstagramProfileUrl(id: string): string {
   return `https://www.instagram.com/${encodeURIComponent(username)}/`;
 }
 
+function packEntryKey(entry: EnteredIdEntry): string {
+  return JSON.stringify({ id: entry.id, timestamp: entry.timestamp });
+}
+
+function unpackEntryKey(key: string): { id: string; timestamp: string } | null {
+  try {
+    const o = JSON.parse(key) as { id?: unknown; timestamp?: unknown };
+    if (typeof o.id === 'string' && typeof o.timestamp === 'string') {
+      return { id: o.id, timestamp: o.timestamp };
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
 export function AnalysisTab({ secretKey }: { secretKey: string }) {
   const [entries, setEntries] = useState<EnteredIdEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,6 +116,10 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
   const [snapshot, setSnapshot] = useState<DiagnosisSnapshot | null>(null);
   const [selectedEntry, setSelectedEntry] = useState<EnteredIdEntry | null>(null);
   const [statusFilter, setStatusFilter] = useState<EnteredIdStatus | 'all'>('all');
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => new Set());
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
   const loadEntries = useCallback(async () => {
     setIsLoading(true);
@@ -191,6 +213,132 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
   const filteredEntries =
     statusFilter === 'all' ? entries : entries.filter((e) => (e.status ?? '未対応') === statusFilter);
 
+  useEffect(() => {
+    const filtered =
+      statusFilter === 'all'
+        ? entries
+        : entries.filter((e) => (e.status ?? '未対応') === statusFilter);
+    const allowed = new Set(filtered.map(packEntryKey));
+    setSelectedKeys((prev) => {
+      const next = new Set<string>();
+      prev.forEach((k) => {
+        if (allowed.has(k)) next.add(k);
+      });
+      return next;
+    });
+  }, [entries, statusFilter]);
+
+  const selectedInView = filteredEntries.filter((e) => selectedKeys.has(packEntryKey(e))).length;
+  const allFilteredSelected =
+    filteredEntries.length > 0 && selectedInView === filteredEntries.length;
+  const someFilteredSelected =
+    selectedInView > 0 && selectedInView < filteredEntries.length;
+
+  useEffect(() => {
+    const el = selectAllRef.current;
+    if (el) el.indeterminate = someFilteredSelected;
+  }, [someFilteredSelected]);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedKeys((prev) => {
+      const filtered =
+        statusFilter === 'all'
+          ? entries
+          : entries.filter((e) => (e.status ?? '未対応') === statusFilter);
+      const allOn =
+        filtered.length > 0 && filtered.every((e) => prev.has(packEntryKey(e)));
+      const next = new Set(prev);
+      if (allOn) filtered.forEach((e) => next.delete(packEntryKey(e)));
+      else filtered.forEach((e) => next.add(packEntryKey(e)));
+      return next;
+    });
+  }, [entries, statusFilter]);
+
+  const toggleRowSelect = useCallback((entry: EnteredIdEntry) => {
+    const k = packEntryKey(entry);
+    setSelectedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+  }, []);
+
+  const runBulkDelete = useCallback(
+    async (keys: { id: string; timestamp: string }[]) => {
+      if (keys.length === 0) return;
+      setDeleteBusy(true);
+      setDeleteError('');
+      try {
+        const res = await fetch('/api/admin/entered-ids/bulk-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${secretKey}`,
+          },
+          body: JSON.stringify({ keys }),
+        });
+        const data = (await res.json()) as {
+          ok?: boolean;
+          error?: string;
+          removed?: number;
+        };
+        if (!res.ok || !data.ok) {
+          setDeleteError(data?.error ?? '削除に失敗しました');
+          return;
+        }
+        const keySet = new Set(
+          keys.map((x) => JSON.stringify({ id: x.id, timestamp: x.timestamp }))
+        );
+        setEntries((prev) => prev.filter((e) => !keySet.has(packEntryKey(e))));
+        setSelectedKeys((prev) => {
+          const next = new Set(prev);
+          keys.forEach((x) =>
+            next.delete(JSON.stringify({ id: x.id, timestamp: x.timestamp }))
+          );
+          return next;
+        });
+      } catch {
+        setDeleteError('削除中にエラーが発生しました');
+      } finally {
+        setDeleteBusy(false);
+      }
+    },
+    [secretKey]
+  );
+
+  const deleteSelected = useCallback(() => {
+    const keys = [...selectedKeys]
+      .map(unpackEntryKey)
+      .filter((k): k is { id: string; timestamp: string } => k != null);
+    if (keys.length === 0) return;
+    if (
+      !window.confirm(
+        `選択中の ${keys.length} 件の診断記録を削除します（診断結果データも消えます）。取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(keys);
+  }, [selectedKeys, runBulkDelete]);
+
+  const deleteAllFiltered = useCallback(() => {
+    const keys = filteredEntries.map((e) => ({ id: e.id, timestamp: e.timestamp }));
+    if (keys.length === 0) return;
+    const label =
+      statusFilter === 'all'
+        ? `一覧の全 ${keys.length} 件`
+        : `表示中の ${keys.length} 件（フィルタ: ${statusFilter}）`;
+    if (
+      !window.confirm(
+        `${label}の診断記録を削除します（診断結果データも消えます）。取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(keys);
+  }, [filteredEntries, statusFilter, runBulkDelete]);
+
   const downloadCsv = useCallback(() => {
     const header = ['No.', '入力ID', 'Instagram ID', '入力日時', 'ステータス'];
     const fmt = (v: string) => (/[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
@@ -282,7 +430,31 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
             >
               CSVでダウンロード
             </button>
+            <button
+              type="button"
+              onClick={() => void deleteSelected()}
+              disabled={deleteBusy || selectedKeys.size === 0}
+              className={`${ADMIN_BTN_PINK} disabled:pointer-events-none disabled:opacity-40`}
+            >
+              <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              選択を削除
+              {selectedKeys.size > 0 ? ` (${selectedKeys.size})` : ''}
+            </button>
+            <button
+              type="button"
+              onClick={() => void deleteAllFiltered()}
+              disabled={deleteBusy || filteredEntries.length === 0}
+              className={`${ADMIN_BTN_OUTLINE} border-rose-200/90 text-rose-700 hover:bg-rose-50/50 disabled:pointer-events-none disabled:opacity-40`}
+            >
+              表示中をすべて削除
+              {filteredEntries.length > 0 ? ` (${filteredEntries.length})` : ''}
+            </button>
           </div>
+          {deleteError && (
+            <p className="text-sm text-rose-600 mb-2" role="alert">
+              {deleteError}
+            </p>
+          )}
           <p className="text-sm text-slate-500 mb-4">
             行をクリックすると、その時の診断結果を確認できます。
           </p>
@@ -290,6 +462,17 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-blue-50/90 bg-sky-50/40">
+                  <th className="w-10 py-3 px-2 text-center text-slate-500 font-semibold">
+                    <input
+                      ref={selectAllRef}
+                      type="checkbox"
+                      checked={allFilteredSelected}
+                      onChange={() => toggleSelectAll()}
+                      disabled={deleteBusy || filteredEntries.length === 0}
+                      className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                      aria-label="表示中の行をすべて選択"
+                    />
+                  </th>
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">#</th>
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">入力ID</th>
                   <th className="text-left py-3 px-4 text-slate-600 font-semibold">Instagram ID</th>
@@ -311,6 +494,20 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                       index % 2 === 1 ? 'bg-blue-50/30' : 'bg-white'
                     } hover:bg-sky-50/40`}
                   >
+                    <td
+                      className="py-3 px-2 text-center align-middle w-10"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedKeys.has(packEntryKey(entry))}
+                        onChange={() => toggleRowSelect(entry)}
+                        disabled={deleteBusy}
+                        className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                        aria-label={`@${getInstagramUsername(entry.id)} の行を選択`}
+                      />
+                    </td>
                     <td className="py-3 px-4 text-slate-500">{index + 1}</td>
                     <td className="py-3 px-4 text-slate-600 text-sm break-all max-w-[200px]" title={entry.id}>
                       {entry.id}

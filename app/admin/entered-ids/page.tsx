@@ -35,6 +35,9 @@ const ImagesTab = dynamic(() =>
 const RestaurantDiagnosisTab = dynamic(() =>
   import('@/components/admin/RestaurantDiagnosisTab').then((m) => ({ default: m.RestaurantDiagnosisTab }))
 );
+const BroadcastEmailTab = dynamic(() =>
+  import('@/components/admin/BroadcastEmailTab').then((m) => ({ default: m.BroadcastEmailTab }))
+);
 import {
   ADMIN_PAGE_BG,
   ADMIN_CARD,
@@ -55,6 +58,7 @@ type ActiveTab =
   | 'formSettings'
   | 'templates'
   | 'mailDefaults'
+  | 'broadcast'
   | 'documents'
   | 'images';
 
@@ -236,6 +240,7 @@ export default function AdminPage() {
               {tabBtn('formSettings', '🔗 フォーム紐付け')}
               {tabBtn('templates', '✉️ メール作成')}
               {tabBtn('mailDefaults', '📝 メールの下書き')}
+              {tabBtn('broadcast', '📣 一斉メール')}
             </div>
           </div>
           <p className="text-xs font-medium text-slate-500 px-0.5 pt-1">配布物・メディア</p>
@@ -252,6 +257,7 @@ export default function AdminPage() {
           {activeTab === 'formSettings' && <DownloadFormConfigsTab secretKey={secretKey} />}
           {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
           {activeTab === 'mailDefaults' && <DefaultMailTemplateTab secretKey={secretKey} />}
+          {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
           {activeTab === 'templates' && <TemplatesTab secretKey={secretKey} />}
           {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
         </div>

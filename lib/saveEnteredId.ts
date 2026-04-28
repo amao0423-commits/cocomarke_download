@@ -87,6 +87,60 @@ export async function readEnteredIds(): Promise<Omit<EnteredIdEntry, 'result'>[]
 /**
  * 指定した id + timestamp のステータスを更新する
  */
+/** 一覧から指定 id+timestamp を除き、診断結果・ステータスキーも削除 */
+export async function removeEnteredIdsByKeys(
+  keys: { id: string; timestamp: string }[]
+): Promise<number> {
+  if (keys.length === 0) return 0;
+  const keySet = new Set(
+    keys.map((k) => `${k.id.trim()}::${k.timestamp.trim()}`)
+  );
+  try {
+    const kv = getKv();
+    const raw = await kv.lrange<string>(ENTERED_IDS_KEY, 0, LIST_MAX - 1);
+    const list = Array.isArray(raw) ? raw : [];
+    const kept: string[] = [];
+    const removed: { id: string; timestamp: string }[] = [];
+
+    for (const item of list) {
+      try {
+        const parsed = typeof item === 'string' ? JSON.parse(item) : item;
+        if (
+          parsed &&
+          typeof parsed.id === 'string' &&
+          typeof parsed.timestamp === 'string'
+        ) {
+          const k = `${parsed.id.trim()}::${parsed.timestamp.trim()}`;
+          if (keySet.has(k)) {
+            removed.push({ id: parsed.id, timestamp: parsed.timestamp });
+            continue;
+          }
+        }
+        kept.push(typeof item === 'string' ? item : JSON.stringify(parsed));
+      } catch {
+        if (typeof item === 'string') kept.push(item);
+      }
+    }
+
+    if (removed.length === 0) return 0;
+
+    const pipe = kv.pipeline();
+    pipe.del(ENTERED_IDS_KEY);
+    for (let i = kept.length - 1; i >= 0; i--) {
+      pipe.lpush(ENTERED_IDS_KEY, kept[i]);
+    }
+    for (const { id, timestamp } of removed) {
+      pipe.del(resultKey(id, timestamp));
+      pipe.del(statusKey(id, timestamp));
+    }
+    await pipe.exec();
+    return removed.length;
+  } catch (error) {
+    console.error('removeEnteredIdsByKeys:', error);
+    return 0;
+  }
+}
+
 export async function setEnteredIdStatus(
   id: string,
   timestamp: string,

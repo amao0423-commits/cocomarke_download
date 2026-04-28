@@ -306,7 +306,7 @@ export default function DownloadForm({
                 </h1>
                 <div className="mx-auto mt-6 w-full min-w-0 max-w-lg break-words text-left text-sm leading-relaxed text-slate-600 sm:mt-8">
                   <p>資料はご登録いただいたメールアドレスにお送りいたしました。</p>
-                  <p className="mt-3">記載のURLからダウンロードください。</p>
+                  <p className="mt-3">メール本文にあるダウンロードボタンよりご覧ください。</p>
                   <p className="mt-4">
                     また、ぜひ一度、チャットやオンラインにて15分ほど、現在のInstagram運用の課題や疑問、弊社の運用代行サービスの説明についてお話する機会をいただけますと幸いです。
                   </p>

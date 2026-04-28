@@ -1,8 +1,12 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Eye, Mail, X } from 'lucide-react';
-import { ADMIN_FOCUS_RING } from '@/components/admin/adminPastel';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { Eye, Mail, Trash2, X } from 'lucide-react';
+import {
+  ADMIN_BTN_OUTLINE,
+  ADMIN_BTN_PINK,
+  ADMIN_FOCUS_RING,
+} from '@/components/admin/adminPastel';
 
 type DiagnosisEntry = {
   id: string;
@@ -116,6 +120,10 @@ export function RestaurantDiagnosisTab({ secretKey }: { secretKey: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [detailEntry, setDetailEntry] = useState<DiagnosisEntry | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
   const loadEntries = useCallback(async () => {
     setIsLoading(true);
@@ -140,6 +148,108 @@ export function RestaurantDiagnosisTab({ secretKey }: { secretKey: string }) {
   useEffect(() => {
     void loadEntries();
   }, [loadEntries]);
+
+  useEffect(() => {
+    const allowed = new Set(entries.map((e) => e.id));
+    setSelectedIds((prev) => {
+      const next = new Set<string>();
+      prev.forEach((id) => {
+        if (allowed.has(id)) next.add(id);
+      });
+      return next;
+    });
+  }, [entries]);
+
+  const allSelected =
+    entries.length > 0 && entries.every((e) => selectedIds.has(e.id));
+  const someSelected =
+    entries.filter((e) => selectedIds.has(e.id)).length > 0 &&
+    entries.filter((e) => selectedIds.has(e.id)).length < entries.length;
+
+  useEffect(() => {
+    const el = selectAllRef.current;
+    if (el) el.indeterminate = someSelected;
+  }, [someSelected]);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const allOn = entries.length > 0 && entries.every((e) => next.has(e.id));
+      if (allOn) entries.forEach((e) => next.delete(e.id));
+      else entries.forEach((e) => next.add(e.id));
+      return next;
+    });
+  }, [entries]);
+
+  const toggleRow = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const runBulkDelete = useCallback(
+    async (ids: string[]) => {
+      if (ids.length === 0) return;
+      setDeleteBusy(true);
+      setDeleteError('');
+      try {
+        const res = await fetch('/api/admin/restaurant-diagnosis-requests/bulk-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${secretKey}`,
+          },
+          body: JSON.stringify({ ids }),
+        });
+        const data = (await res.json()) as { ok?: boolean; error?: string };
+        if (!res.ok || !data.ok) {
+          setDeleteError(data?.error ?? '削除に失敗しました');
+          return;
+        }
+        const idSet = new Set(ids);
+        setEntries((prev) => prev.filter((e) => !idSet.has(e.id)));
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          ids.forEach((id) => next.delete(id));
+          return next;
+        });
+      } catch {
+        setDeleteError('削除中にエラーが発生しました');
+      } finally {
+        setDeleteBusy(false);
+      }
+    },
+    [secretKey]
+  );
+
+  const deleteSelected = useCallback(() => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    if (
+      !window.confirm(
+        `選択中の ${ids.length} 件の診断申請を削除します。この操作は取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(ids);
+  }, [selectedIds, runBulkDelete]);
+
+  const deleteAllVisible = useCallback(() => {
+    const ids = entries.map((e) => e.id);
+    if (ids.length === 0) return;
+    if (
+      !window.confirm(
+        `一覧の全 ${ids.length} 件の診断申請を削除します。この操作は取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(ids);
+  }, [entries, runBulkDelete]);
 
   const downloadCsv = useCallback(() => {
     const header = [
@@ -229,10 +339,35 @@ export function RestaurantDiagnosisTab({ secretKey }: { secretKey: string }) {
         >
           CSVでダウンロード
         </button>
+        <button
+          type="button"
+          onClick={() => void deleteSelected()}
+          disabled={deleteBusy || selectedIds.size === 0}
+          className={`${ADMIN_BTN_PINK} disabled:pointer-events-none disabled:opacity-40`}
+        >
+          <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          選択を削除
+          {selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}
+        </button>
+        <button
+          type="button"
+          onClick={() => void deleteAllVisible()}
+          disabled={deleteBusy || entries.length === 0}
+          className={`${ADMIN_BTN_OUTLINE} border-rose-200/90 text-rose-700 hover:bg-rose-50/50 disabled:pointer-events-none disabled:opacity-40`}
+        >
+          表示中をすべて削除
+          {entries.length > 0 ? ` (${entries.length})` : ''}
+        </button>
       </div>
+      {deleteError && (
+        <p className="text-sm text-rose-600 mb-3" role="alert">
+          {deleteError}
+        </p>
+      )}
       <div className="w-full max-w-full rounded-2xl border border-blue-50/80 bg-white shadow-xl shadow-blue-500/5">
         <table className="w-full table-fixed border-collapse text-xs">
           <colgroup>
+            <col style={{ width: '2.5rem' }} />
             <col style={{ width: '3%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '14%' }} />
@@ -246,6 +381,17 @@ export function RestaurantDiagnosisTab({ secretKey }: { secretKey: string }) {
           </colgroup>
           <thead>
             <tr className="border-b border-blue-50/90 bg-sky-50/40">
+              <th className="px-1 py-2 text-center font-semibold text-slate-500 w-10">
+                <input
+                  ref={selectAllRef}
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={() => toggleSelectAll()}
+                  disabled={deleteBusy || entries.length === 0}
+                  className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                  aria-label="すべて選択"
+                />
+              </th>
               <th className="px-1 py-2 text-left font-semibold uppercase tracking-wide text-slate-500">#</th>
               <th className="min-w-0 px-1 py-2 text-left font-semibold text-slate-600">店舗名</th>
               <th className="min-w-0 px-1 py-2 text-left font-semibold text-slate-600">メール</th>
@@ -266,6 +412,16 @@ export function RestaurantDiagnosisTab({ secretKey }: { secretKey: string }) {
                   key={entry.id}
                   className={`border-b border-blue-50/50 transition-colors ${stripe} hover:bg-sky-50/40`}
                 >
+                  <td className="px-1 py-2 align-middle text-center w-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(entry.id)}
+                      onChange={() => toggleRow(entry.id)}
+                      disabled={deleteBusy}
+                      className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                      aria-label={`${entry.store_name} を選択`}
+                    />
+                  </td>
                   <td className={`${cellWrap} text-slate-500 tabular-nums align-middle`}>{index + 1}</td>
                   <td className={cellWrap}>
                     <div className="font-medium text-slate-600 leading-snug">{entry.store_name}</div>

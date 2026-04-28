@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { ChevronDown, Eye, Mail, RefreshCw, X } from 'lucide-react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { ChevronDown, Eye, Mail, RefreshCw, Trash2, X } from 'lucide-react';
 import {
   DOWNLOAD_REQUEST_STATUSES,
   normalizeDownloadRequestStatusForUi,
@@ -9,7 +9,11 @@ import {
   type DownloadRequestEntry,
 } from '@/lib/downloadRequestShared';
 import type { EmailStatus } from '@/types/database.types';
-import { ADMIN_FOCUS_RING } from '@/components/admin/adminPastel';
+import {
+  ADMIN_BTN_OUTLINE,
+  ADMIN_BTN_PINK,
+  ADMIN_FOCUS_RING,
+} from '@/components/admin/adminPastel';
 
 function emailStatusLabel(s: EmailStatus | undefined): string {
   if (!s) return '—';
@@ -156,6 +160,10 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
   const [statusFilter, setStatusFilter] = useState<DownloadRequestStatus | 'all'>('all');
   const [resendingId, setResendingId] = useState<string | null>(null);
   const [detailEntry, setDetailEntry] = useState<DownloadRequestEntry | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const selectAllRef = useRef<HTMLInputElement>(null);
 
   const loadEntries = useCallback(async () => {
     setIsLoading(true);
@@ -237,6 +245,126 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
     statusFilter === 'all'
       ? entries
       : entries.filter((e) => normalizeDownloadRequestStatusForUi(e.status) === statusFilter);
+
+  useEffect(() => {
+    const filtered =
+      statusFilter === 'all'
+        ? entries
+        : entries.filter((e) => normalizeDownloadRequestStatusForUi(e.status) === statusFilter);
+    const allowed = new Set(filtered.map((e) => e.id));
+    setSelectedIds((prev) => {
+      const next = new Set<string>();
+      prev.forEach((id) => {
+        if (allowed.has(id)) next.add(id);
+      });
+      return next;
+    });
+  }, [entries, statusFilter]);
+
+  const selectedInView = filteredEntries.filter((e) => selectedIds.has(e.id)).length;
+  const allFilteredSelected =
+    filteredEntries.length > 0 && selectedInView === filteredEntries.length;
+  const someFilteredSelected =
+    selectedInView > 0 && selectedInView < filteredEntries.length;
+
+  useEffect(() => {
+    const el = selectAllRef.current;
+    if (el) el.indeterminate = someFilteredSelected;
+  }, [someFilteredSelected]);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const filtered =
+        statusFilter === 'all'
+          ? entries
+          : entries.filter((e) => normalizeDownloadRequestStatusForUi(e.status) === statusFilter);
+      const allOn =
+        filtered.length > 0 && filtered.every((e) => prev.has(e.id));
+      const next = new Set(prev);
+      if (allOn) filtered.forEach((e) => next.delete(e.id));
+      else filtered.forEach((e) => next.add(e.id));
+      return next;
+    });
+  }, [entries, statusFilter]);
+
+  const toggleRow = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const runBulkDelete = useCallback(
+    async (ids: string[]) => {
+      if (ids.length === 0) return;
+      setDeleteBusy(true);
+      setDeleteError('');
+      try {
+        const res = await fetch('/api/admin/download-requests/bulk-delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${secretKey}`,
+          },
+          body: JSON.stringify({ ids }),
+        });
+        const data = (await res.json()) as {
+          ok?: boolean;
+          error?: string;
+          deletedFromDb?: number;
+          removedFromRedis?: number;
+        };
+        if (!res.ok || !data.ok) {
+          setDeleteError(data?.error ?? '削除に失敗しました');
+          return;
+        }
+        const idSet = new Set(ids);
+        setEntries((prev) => prev.filter((e) => !idSet.has(e.id)));
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          ids.forEach((id) => next.delete(id));
+          return next;
+        });
+      } catch {
+        setDeleteError('削除中にエラーが発生しました');
+      } finally {
+        setDeleteBusy(false);
+      }
+    },
+    [secretKey]
+  );
+
+  const deleteSelected = useCallback(() => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    if (
+      !window.confirm(
+        `選択中の ${ids.length} 件の申請を削除します。この操作は取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(ids);
+  }, [selectedIds, runBulkDelete]);
+
+  const deleteAllFiltered = useCallback(() => {
+    const ids = filteredEntries.map((e) => e.id);
+    if (ids.length === 0) return;
+    const label =
+      statusFilter === 'all'
+        ? `一覧の全 ${ids.length} 件`
+        : `表示中の ${ids.length} 件（フィルタ: ${statusFilter}）`;
+    if (
+      !window.confirm(
+        `${label}を削除します。この操作は取り消せません。よろしいですか？`
+      )
+    ) {
+      return;
+    }
+    void runBulkDelete(ids);
+  }, [filteredEntries, statusFilter, runBulkDelete]);
 
   const downloadCsv = useCallback(() => {
     const header = [
@@ -354,10 +482,35 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
             >
               CSVでダウンロード
             </button>
+            <button
+              type="button"
+              onClick={() => void deleteSelected()}
+              disabled={deleteBusy || selectedIds.size === 0}
+              className={`${ADMIN_BTN_PINK} disabled:pointer-events-none disabled:opacity-40`}
+            >
+              <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              選択を削除
+              {selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}
+            </button>
+            <button
+              type="button"
+              onClick={() => void deleteAllFiltered()}
+              disabled={deleteBusy || filteredEntries.length === 0}
+              className={`${ADMIN_BTN_OUTLINE} border-rose-200/90 text-rose-700 hover:bg-rose-50/50 disabled:pointer-events-none disabled:opacity-40`}
+            >
+              表示中をすべて削除
+              {filteredEntries.length > 0 ? ` (${filteredEntries.length})` : ''}
+            </button>
           </div>
+          {deleteError && (
+            <p className="text-sm text-rose-600" role="alert">
+              {deleteError}
+            </p>
+          )}
           <div className="w-full max-w-full rounded-2xl border border-blue-50/80 bg-white shadow-xl shadow-blue-500/5">
             <table className="w-full table-fixed border-collapse text-xs">
               <colgroup>
+                <col style={{ width: '2.5rem' }} />
                 <col style={{ width: '3%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '12%' }} />
@@ -373,6 +526,17 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
               </colgroup>
               <thead>
                 <tr className="border-b border-blue-50/90 bg-sky-50/40">
+                  <th className="px-1 py-2 text-center font-semibold text-slate-500 w-10">
+                    <input
+                      ref={selectAllRef}
+                      type="checkbox"
+                      checked={allFilteredSelected}
+                      onChange={() => toggleSelectAll()}
+                      disabled={deleteBusy || filteredEntries.length === 0}
+                      className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                      aria-label="表示中の行をすべて選択"
+                    />
+                  </th>
                   <th className="px-1 py-2 text-left font-semibold uppercase tracking-wide text-slate-500">
                     #
                   </th>
@@ -422,6 +586,16 @@ export function DownloadRequestsTab({ secretKey }: { secretKey: string }) {
                       key={entry.id}
                       className={`border-b border-blue-50/50 transition-colors ${stripe} hover:bg-sky-50/40`}
                     >
+                      <td className="px-1 py-2 align-middle text-center w-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(entry.id)}
+                          onChange={() => toggleRow(entry.id)}
+                          disabled={deleteBusy}
+                          className={`h-3.5 w-3.5 rounded border-blue-200 text-sky-500 ${ADMIN_FOCUS_RING}`}
+                          aria-label={`${displayFullName(entry)} を選択`}
+                        />
+                      </td>
                       <td className={`${cellWrap} text-slate-500 tabular-nums align-middle`}>
                         {index + 1}
                       </td>

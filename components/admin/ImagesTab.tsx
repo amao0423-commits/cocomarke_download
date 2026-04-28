@@ -2,6 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
+import { Trash2 } from 'lucide-react';
+import { ADMIN_FOCUS_RING } from '@/components/admin/adminPastel';
 
 type ImageFile = {
   name: string;
@@ -62,6 +64,7 @@ export function ImagesTab({ secretKey }: { secretKey: string }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [deletingName, setDeletingName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const headers = { Authorization: `Bearer ${secretKey}` };
@@ -136,6 +139,43 @@ export function ImagesTab({ secretKey }: { secretKey: string }) {
     const file = e.dataTransfer.files?.[0];
     if (file) uploadFile(file);
   };
+
+  const deleteFile = useCallback(
+    async (name: string) => {
+      if (
+        !window.confirm(
+          `「${name}」をストレージから削除します。メールやページでこのURLを使っている場合は表示が壊れます。よろしいですか？`
+        )
+      ) {
+        return;
+      }
+      setDeletingName(name);
+      setErrorMsg('');
+      setSuccessMsg('');
+      try {
+        const res = await fetch('/api/admin/images', {
+          method: 'DELETE',
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name }),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          setErrorMsg(json.error ?? '削除に失敗しました');
+          return;
+        }
+        setSuccessMsg('画像を削除しました。');
+        await fetchFiles();
+      } catch {
+        setErrorMsg('通信エラーが発生しました');
+      } finally {
+        setDeletingName(null);
+      }
+    },
+    [headers, fetchFiles]
+  );
 
   return (
     <div className="space-y-6">
@@ -249,6 +289,20 @@ export function ImagesTab({ secretKey }: { secretKey: string }) {
                     <CopyButton url={f.public_url} />
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => void deleteFile(f.name)}
+                  disabled={deletingName !== null}
+                  className={`shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rose-100 bg-white text-rose-400 hover:bg-rose-50/70 hover:text-rose-600 disabled:opacity-40 ${ADMIN_FOCUS_RING}`}
+                  title="この画像を削除"
+                  aria-label={`${f.name} を削除`}
+                >
+                  {deletingName === f.name ? (
+                    <span className="h-4 w-4 border-2 border-rose-100 border-t-rose-400 rounded-full animate-spin inline-block" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" aria-hidden />
+                  )}
+                </button>
               </div>
             ))}
           </div>
