@@ -13,7 +13,7 @@ const BROADCAST_HTML_PREFIX = `<html lang="ja">
 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;padding:40px;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
 <tr>
 <td style="padding-bottom:20px;">
-<img src="{{emailLogoUrl}}" alt="COCOマーケ" width="200" style="display:block;max-width:220px;height:auto;border:0;outline:none;text-decoration:none;" />
+<img src="{{broadcastEmailLogoUrl}}" alt="COCOマーケ" width="260" style="display:block;max-width:320px;height:auto;border:0;outline:none;text-decoration:none;" />
 </td>
 </tr>
 <tr>

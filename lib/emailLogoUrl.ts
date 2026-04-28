@@ -3,8 +3,10 @@ import { join } from 'path';
 
 /** メール用ロゴ（public/images に配置） */
 export const EMAIL_LOGO_PUBLIC_PATH = '/images/cocomarke-logo-email-horizontal.png';
+export const BROADCAST_EMAIL_LOGO_PUBLIC_PATH = '/images/cocomarke-logo-broadcast.png';
 
 const EMAIL_LOGO_FILENAME = 'cocomarke-logo-email-horizontal.png';
+const BROADCAST_EMAIL_LOGO_FILENAME = 'cocomarke-logo-broadcast.png';
 
 function shouldPreferEmbeddedLogoOverOrigin(origin: string): boolean {
   try {
@@ -15,10 +17,10 @@ function shouldPreferEmbeddedLogoOverOrigin(origin: string): boolean {
   }
 }
 
-function readEmailLogoDataUriFromDisk(): string {
+function readImageDataUriFromDisk(filename: string): string {
   const candidates = [
-    join(process.cwd(), 'public', 'images', EMAIL_LOGO_FILENAME),
-    join(process.cwd(), 'images', EMAIL_LOGO_FILENAME),
+    join(process.cwd(), 'public', 'images', filename),
+    join(process.cwd(), 'images', filename),
   ];
   for (const fullPath of candidates) {
     try {
@@ -51,7 +53,7 @@ export function getOutboundEmailSiteOrigin(): string {
  */
 export function resolveEmailLogoUrlForOutbound(): string {
   const origin = getOutboundEmailSiteOrigin();
-  const embedded = readEmailLogoDataUriFromDisk();
+  const embedded = readImageDataUriFromDisk(EMAIL_LOGO_FILENAME);
 
   if (origin && !shouldPreferEmbeddedLogoOverOrigin(origin)) {
     return `${origin}${EMAIL_LOGO_PUBLIC_PATH}`;
@@ -68,15 +70,39 @@ export function resolveEmailLogoUrlForOutbound(): string {
   return '';
 }
 
+/** 一斉送信メールのロゴ用 src 値。指定ロゴがなければ通常ロゴへフォールバック。 */
+export function resolveBroadcastEmailLogoUrl(): string {
+  const origin = getOutboundEmailSiteOrigin();
+  const embedded = readImageDataUriFromDisk(BROADCAST_EMAIL_LOGO_FILENAME);
+
+  if (origin && !shouldPreferEmbeddedLogoOverOrigin(origin)) {
+    return `${origin}${BROADCAST_EMAIL_LOGO_PUBLIC_PATH}`;
+  }
+
+  if (embedded) {
+    return embedded;
+  }
+
+  if (origin) {
+    return `${origin}${BROADCAST_EMAIL_LOGO_PUBLIC_PATH}`;
+  }
+
+  return resolveEmailLogoUrlForOutbound();
+}
+
 /**
  * メール HTML 内のロゴ・相対画像パスを送信時に解決する。
  * - {{emailLogoUrl}} を差し替え
+ * - {{broadcastEmailLogoUrl}} を差し替え
  * - /images/cocomarke-logo-email-horizontal.png および旧 cocomarke-logo.png を解決済み URL に差し替え
  * - オリジンが分かるときは残りの src="/images/..." を絶対URLに変換
  */
 export function applyEmailHtmlAssetUrls(html: string): string {
   const logoUrl = resolveEmailLogoUrlForOutbound();
-  let out = html.replace(/\{\{emailLogoUrl\}\}/g, logoUrl);
+  const broadcastLogoUrl = resolveBroadcastEmailLogoUrl();
+  let out = html
+    .replace(/\{\{emailLogoUrl\}\}/g, logoUrl)
+    .replace(/\{\{broadcastEmailLogoUrl\}\}/g, broadcastLogoUrl);
 
   if (logoUrl) {
     out = out.replace(
@@ -86,6 +112,12 @@ export function applyEmailHtmlAssetUrls(html: string): string {
     out = out.replace(
       /src=(["'])\/images\/cocomarke-logo\.png\1/gi,
       (_m, q: string) => `src=${q}${logoUrl}${q}`
+    );
+  }
+  if (broadcastLogoUrl) {
+    out = out.replace(
+      /src=(["'])\/images\/cocomarke-logo-broadcast\.png\1/gi,
+      (_m, q: string) => `src=${q}${broadcastLogoUrl}${q}`
     );
   }
 
