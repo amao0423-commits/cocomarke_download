@@ -11,6 +11,7 @@ import {
   Camera,
   CircleHelp,
   ClipboardList,
+  Clock,
   Hash,
   MapPin,
   MessageCircle,
@@ -385,7 +386,7 @@ export function RestaurantDiagnosisClient() {
             外食・飲食で<strong className="text-design-text-primary">100店舗以上</strong>
             の支援実績をもとに、貴店のSNSを無料でチェックします。
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-end sm:gap-4">
             <a
               href="#diagnosis-form"
               className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full bg-[#01408D] px-8 py-3.5 text-sm font-bold text-white shadow-md sm:w-auto sm:max-w-none ${floatInteractive}`}
@@ -393,12 +394,21 @@ export function RestaurantDiagnosisClient() {
               無料診断フォームへ
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
             </a>
-            <Link
-              href="/?diagnosis=1"
-              className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full border-2 border-[#01408D]/25 bg-white px-8 py-3.5 text-sm font-bold text-[#01408D] shadow-sm sm:w-auto sm:max-w-none ${floatInteractive}`}
-            >
-              Instagram集客診断（ID分析）
-            </Link>
+            <div className="flex w-full max-w-xs flex-col items-center sm:w-auto sm:max-w-none">
+              <p className="mb-2 flex items-center justify-center gap-1.5 text-center text-xs leading-snug text-design-text-secondary sm:text-sm">
+                <Clock
+                  className="h-3.5 w-3.5 shrink-0 text-design-text-secondary"
+                  aria-hidden
+                />
+                簡単30秒で結果がわかる
+              </p>
+              <Link
+                href="/?diagnosis=1"
+                className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full border-2 border-[#01408D]/25 bg-white px-8 py-3.5 text-sm font-bold text-[#01408D] shadow-sm sm:w-auto sm:max-w-none ${floatInteractive}`}
+              >
+                アカウント無料分析（ID入力）
+              </Link>
+            </div>
           </div>
         </div>
       </section>

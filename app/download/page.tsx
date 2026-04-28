@@ -3,7 +3,7 @@ import DownloadPageShell from "./DownloadPageShell";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const metadata: Metadata = {
-  title: "サービス資料ダウンロード | cocomarke ポータル",
+  title: "サービス資料ダウンロード | COCOマーケ",
   description: "COCOマーケサービス資料のダウンロード",
 };
 

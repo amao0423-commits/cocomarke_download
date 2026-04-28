@@ -23,7 +23,7 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "cocomarke ポータル",
+  title: "COCOマーケ お役立ち資料",
   description: "アカウント分析・サービス資料のポータル",
 };
 

@@ -32,11 +32,11 @@ const DOCUMENTS_URL = "/";
 const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
-/** 上部バー「飲食店SNS診断」：Instagram 風グラデをやや落ち着かせた色 */
+/** 上部バー「飲食店Instagram集客診断」：Instagram 風グラデをやや落ち着かせた色 */
 const HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS =
   "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:px-3.5 sm:text-xs";
 
-/** ドロワー下部「飲食店SNS診断」 */
+/** ドロワー下部「飲食店Instagram集客診断」 */
 const HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS =
   "flex w-full items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
@@ -147,7 +147,7 @@ export function SiteHeaderMobile({
             href={RESTAURANT_DIAGNOSIS_URL}
             className={HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS}
           >
-            飲食店SNS診断
+            飲食店Instagram集客診断
           </Link>
 
           <button
@@ -224,7 +224,7 @@ export function SiteHeaderMobile({
                   onClick={closeMenu}
                   className={HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS}
                 >
-                  飲食店SNS診断
+                  飲食店Instagram集客診断
                 </Link>
                 <Link
                   href={serviceDocumentHref}
