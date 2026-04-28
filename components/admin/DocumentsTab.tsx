@@ -404,25 +404,54 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     setBusy(true);
     setErrorMessage('');
     try {
-      const fd = new FormData();
-      fd.append('title', title.trim());
-      fd.append('category', uploadCategory);
-      if (uploadThumbnailUrl.trim()) {
-        fd.append('thumbnail_url', uploadThumbnailUrl.trim());
-      }
-      fd.append('file', file);
-
-      const res = await fetch('/api/admin/documents/upload', {
+      // Step 1: 署名付きアップロードURLを取得（ファイルデータはサーバーを経由しない）
+      const urlRes = await fetch('/api/admin/documents/upload-url', {
         method: 'POST',
-        headers: auth,
-        body: fd,
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          fileSize: file.size,
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        const hint = data?.details ? ` (${String(data.details)})` : '';
-        setErrorMessage((data?.error ?? 'アップロードに失敗しました') + hint);
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) {
+        setErrorMessage(urlData?.error ?? 'アップロード準備に失敗しました');
         return;
       }
+
+      // Step 2: ブラウザからSupabaseへ直接アップロード
+      const uploadRes = await fetch(urlData.uploadUrl as string, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+      });
+      if (!uploadRes.ok) {
+        setErrorMessage('ファイルのアップロードに失敗しました');
+        return;
+      }
+
+      // Step 3: ドキュメント情報をデータベースに登録
+      const regRes = await fetch('/api/admin/documents/register', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          category: uploadCategory,
+          thumbnail_url: uploadThumbnailUrl.trim() || null,
+          storage_path: urlData.path as string,
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type || 'application/octet-stream',
+        }),
+      });
+      const regData = await regRes.json();
+      if (!regRes.ok) {
+        const hint = regData?.details ? ` (${String(regData.details)})` : '';
+        setErrorMessage((regData?.error ?? '登録に失敗しました') + hint);
+        return;
+      }
+
       setTitle('');
       setFile(null);
       setUploadThumbnailUrl('');

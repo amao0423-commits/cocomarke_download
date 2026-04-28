@@ -107,16 +107,30 @@ export function ImagesTab({ secretKey }: { secretKey: string }) {
     setErrorMsg('');
     setSuccessMsg('');
 
-    const fd = new FormData();
-    fd.append('file', file);
-
     try {
-      const res = await fetch('/api/admin/images', { method: 'POST', headers, body: fd });
-      const json = await res.json();
-      if (!res.ok) {
-        setErrorMsg(json.error ?? 'アップロードに失敗しました');
+      // Step 1: 署名付きアップロードURLを取得
+      const urlRes = await fetch('/api/admin/images/upload-url', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${secretKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mimeType: file.type, fileSize: file.size }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) {
+        setErrorMsg(urlData.error ?? 'アップロード準備に失敗しました');
         return;
       }
+
+      // Step 2: ブラウザからSupabaseへ直接アップロード
+      const uploadRes = await fetch(urlData.signedUrl as string, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      if (!uploadRes.ok) {
+        setErrorMsg('画像のアップロードに失敗しました');
+        return;
+      }
+
       setSuccessMsg('アップロード完了！URLをコピーして使用してください。');
       await fetchFiles();
     } catch {
