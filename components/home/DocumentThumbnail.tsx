@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type Props = {
   src: string | null;
@@ -36,6 +36,9 @@ function Placeholder() {
 export function DocumentThumbnail({ src, alt, className = '' }: Props) {
   const [broken, setBroken] = useState(false);
   const onError = useCallback(() => setBroken(true), []);
+  useEffect(() => {
+    setBroken(false);
+  }, [src]);
 
   if (!src || broken) {
     return (

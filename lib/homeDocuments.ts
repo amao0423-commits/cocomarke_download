@@ -30,17 +30,28 @@ type DocumentRow = {
   title: string;
   category: string;
   thumbnail_url?: string | null;
+  updated_at?: string | null;
   sort_order?: number;
 };
 
+function withCacheBuster(url: string, version?: string | null): string {
+  const v = typeof version === 'string' ? version.trim() : '';
+  if (!v) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}v=${encodeURIComponent(v)}`;
+}
+
 function mapDocumentRow(row: DocumentRow): HomeDocument {
   const thumb = row.thumbnail_url;
+  const updatedAt = typeof row.updated_at === 'string' ? row.updated_at : null;
   return {
     id: row.id,
     title: row.title,
     category: row.category,
     thumbnailUrl:
-      typeof thumb === 'string' && thumb.trim().length > 0 ? thumb.trim() : null,
+      typeof thumb === 'string' && thumb.trim().length > 0
+        ? withCacheBuster(thumb.trim(), updatedAt)
+        : null,
   };
 }
 
@@ -63,7 +74,7 @@ export async function loadHomeDocumentSections(): Promise<{
       .order('sort_order', { ascending: true }),
     supabase
       .from('documents')
-      .select('id, title, category, thumbnail_url, sort_order')
+      .select('id, title, category, thumbnail_url, updated_at, sort_order')
       .order('sort_order', { ascending: true })
       .order('title', { ascending: true }),
   ]);
@@ -133,7 +144,7 @@ export async function loadTopDocuments(): Promise<HomeDocument[]> {
     return res;
   };
 
-  let docsRes = await trySelect('id, title, category, thumbnail_url, sort_order');
+  let docsRes = await trySelect('id, title, category, thumbnail_url, updated_at, sort_order');
   if (docsRes.error) {
     docsRes = await trySelect('id, title, category, sort_order');
   }

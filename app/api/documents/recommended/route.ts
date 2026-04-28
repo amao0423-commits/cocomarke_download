@@ -7,6 +7,13 @@ const LIMIT = 3;
 /** 除外が多い場合に備え、余分に取得してから絞り込む */
 const FETCH_BUFFER = 48;
 
+function withCacheBuster(url: string, version?: string | null): string {
+  const v = typeof version === 'string' ? version.trim() : '';
+  if (!v) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}v=${encodeURIComponent(v)}`;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const excludeParam = request.nextUrl.searchParams.get('exclude') ?? '';
@@ -24,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabase
       .from('documents')
-      .select('id, title, category, thumbnail_url, created_at')
+      .select('id, title, category, thumbnail_url, updated_at')
       .order('created_at', { ascending: false })
       .limit(FETCH_BUFFER);
 
@@ -42,7 +49,7 @@ export async function GET(request: NextRequest) {
         label: typeof d.title === 'string' && d.title.trim() ? d.title.trim() : '資料',
         thumbnail_url:
           typeof d.thumbnail_url === 'string' && d.thumbnail_url.trim().length > 0
-            ? d.thumbnail_url.trim()
+            ? withCacheBuster(d.thumbnail_url.trim(), d.updated_at)
             : null,
       }));
 
