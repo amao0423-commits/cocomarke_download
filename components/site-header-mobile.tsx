@@ -29,7 +29,7 @@ const USEFUL_INFO_URL = "https://www.cocomarke.com/blog";
 const COMPANY_INFO_URL = "https://www.cocomarke.com/company";
 const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
-const DEFAULT_SERVICE_DOCUMENT_HREF = "/download";
+const DEFAULT_SERVICE_DOCUMENT_HREF = "/servicedocument";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
 /** 上部バー「飲食店Instagram集客診断」：Instagram 風グラデをやや落ち着かせた色 */

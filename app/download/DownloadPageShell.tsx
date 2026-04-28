@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import DownloadForm from './DownloadForm';
-import type { PageDocument } from './page';
+import type { PageDocument } from './getDownloadPageContext';
 
 export const DEFAULT_HERO_DESCRIPTION =
   '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';

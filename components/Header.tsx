@@ -24,7 +24,7 @@ type HeaderProps = {
   serviceDocumentHref?: string;
 };
 
-function HeaderBar({ serviceDocumentHref = "/download" }: HeaderProps) {
+function HeaderBar({ serviceDocumentHref = "/servicedocument" }: HeaderProps) {
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
 

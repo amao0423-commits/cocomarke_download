@@ -348,6 +348,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addingCategory, setAddingCategory] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [replacingDocumentId, setReplacingDocumentId] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [uploadThumbnailUrl, setUploadThumbnailUrl] = useState('');
   const [editingDoc, setEditingDoc] = useState<DocumentRow | null>(null);
@@ -531,6 +532,64 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       headers: auth,
     });
     if (res.ok) await load();
+  };
+
+  const replaceDocumentFile = async (doc: DocumentRow, nextFile: File | null) => {
+    if (!nextFile) return;
+    setReplacingDocumentId(doc.id);
+    setErrorMessage('');
+    try {
+      const urlRes = await fetch('/api/admin/documents/upload-url', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: nextFile.name,
+          mimeType: nextFile.type || 'application/octet-stream',
+          fileSize: nextFile.size,
+        }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) {
+        setErrorMessage(urlData?.error ?? '差し替えファイルの準備に失敗しました');
+        return;
+      }
+
+      const uploadRes = await fetch(urlData.uploadUrl as string, {
+        method: 'PUT',
+        headers: { 'Content-Type': nextFile.type || 'application/octet-stream' },
+        body: nextFile,
+      });
+      if (!uploadRes.ok) {
+        setErrorMessage('差し替えファイルのアップロードに失敗しました');
+        return;
+      }
+
+      const patchRes = await fetch(`/api/admin/documents/${doc.id}`, {
+        method: 'PATCH',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storage_path: urlData.path as string,
+          file_name: nextFile.name,
+          file_size: nextFile.size,
+          file_type: nextFile.type || 'application/octet-stream',
+        }),
+      });
+      const patchData = await patchRes.json().catch(() => ({}));
+      if (!patchRes.ok) {
+        setErrorMessage(patchData?.error ?? '資料の差し替えに失敗しました');
+        return;
+      }
+
+      setDocuments((prev) =>
+        prev.map((row) =>
+          row.id === doc.id ? { ...row, ...(patchData.document as DocumentRow) } : row,
+        ),
+      );
+    } catch {
+      setErrorMessage('資料の差し替え中にエラーが発生しました');
+    } finally {
+      setReplacingDocumentId(null);
+    }
   };
 
   const openCategoryEdit = (cat: CategoryRow) => {
@@ -934,6 +993,19 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                           >
                             左カラム編集
                           </button>
+                          <label className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50 whitespace-nowrap cursor-pointer">
+                            {replacingDocumentId === d.id ? '差し替え中…' : 'ファイル差し替え'}
+                            <input
+                              type="file"
+                              className="hidden"
+                              disabled={replacingDocumentId !== null}
+                              onChange={(e) => {
+                                const selectedFile = e.target.files?.[0] ?? null;
+                                void replaceDocumentFile(d, selectedFile);
+                                e.target.value = '';
+                              }}
+                            />
+                          </label>
                           <button
                             type="button"
                             onClick={() => void remove(d.id)}

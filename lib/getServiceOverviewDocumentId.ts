@@ -21,6 +21,6 @@ export async function getServiceOverviewDocumentId(): Promise<string | null> {
 }
 
 export function serviceOverviewDownloadHref(documentId: string | null): string {
-  if (!documentId?.trim()) return '/download';
-  return `/download?documentId=${encodeURIComponent(documentId.trim())}`;
+  if (!documentId?.trim()) return '/servicedocument';
+  return `/servicedocument?documentId=${encodeURIComponent(documentId.trim())}`;
 }

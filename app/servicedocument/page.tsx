@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
-import DownloadPageShell from "./DownloadPageShell";
-import { getDownloadPageContext } from "./getDownloadPageContext";
+import DownloadPageShell from "@/app/download/DownloadPageShell";
+import { getDownloadPageContext } from "@/app/download/getDownloadPageContext";
+import { getServiceOverviewDocumentId } from "@/lib/getServiceOverviewDocumentId";
 
 export const metadata: Metadata = {
   title: "サービス資料ダウンロード | COCOマーケ",
   description: "COCOマーケサービス資料のダウンロード",
 };
 
-export default async function DownloadPage({
+export default async function ServiceDocumentPage({
   searchParams,
 }: {
   searchParams: Promise<{ documentId?: string; formSlug?: string; thanks?: string }>;
 }) {
   const sp = await searchParams;
-  const documentId =
+  const queryDocumentId =
     typeof sp.documentId === "string" && sp.documentId.trim()
       ? sp.documentId.trim()
       : undefined;
+  const fallbackDocumentId = await getServiceOverviewDocumentId();
+  const documentId = queryDocumentId ?? fallbackDocumentId ?? undefined;
   const formSlug =
     typeof sp.formSlug === "string" && sp.formSlug.trim()
       ? sp.formSlug.trim()

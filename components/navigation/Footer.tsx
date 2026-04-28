@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
+import { DocumentDownloadLink } from "@/components/home/DocumentDownloadCta";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +90,13 @@ export function Footer() {
 
           <div className="order-1 lg:order-2 flex flex-col gap-10 sm:gap-12">
             <section className="flex flex-col">
+              <div className="mb-5">
+                <DocumentDownloadLink
+                  href="/servicedocument"
+                  label="サービス資料ダウンロード"
+                  className="w-full sm:w-auto"
+                />
+              </div>
               <nav aria-label="主要リンク">
                 <ul className="flex flex-col gap-3 text-sm leading-normal text-design-text-secondary">
                   <li>
