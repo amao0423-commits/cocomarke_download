@@ -1,9 +1,10 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const HERO_SELECT =
-  "id, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url";
+  "id, title, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url";
 
 type HeroFields = {
+  title: string | null;
   hero_description: string | null;
   hero_highlight_1: string | null;
   hero_highlight_2: string | null;
@@ -15,6 +16,7 @@ type HeroFields = {
 export type PageDocument = {
   id: string;
   label: string;
+  title?: string | null;
 } & Partial<HeroFields>;
 
 export async function getDownloadPageContext(
@@ -59,6 +61,7 @@ export async function getDownloadPageContext(
         (heroRows ?? []).map((r) => [
           r.id,
           {
+            title: r.title ?? null,
             hero_description: r.hero_description ?? null,
             hero_highlight_1: r.hero_highlight_1 ?? null,
             hero_highlight_2: r.hero_highlight_2 ?? null,
@@ -89,7 +92,7 @@ export async function getDownloadPageContext(
   if (matched) {
     return {
       formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
-      requestedDocumentLabel: matched.label,
+      requestedDocumentLabel: matched.title?.trim() || matched.label,
       documents,
     };
   }

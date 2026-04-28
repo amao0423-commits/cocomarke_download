@@ -158,7 +158,10 @@ export default function DownloadPageShell({
     [docMap],
   );
 
-  const heroTitle = activeDocument?.label ?? 'COCOマーケサービス資料';
+  const heroTitle =
+    activeDocument?.title?.trim() ||
+    activeDocument?.label ||
+    'COCOマーケサービス資料';
   const heroDescription =
     activeDocument?.hero_description?.trim() || DEFAULT_HERO_DESCRIPTION;
 
