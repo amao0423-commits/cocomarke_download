@@ -1,9 +1,9 @@
-import sgMail from '@sendgrid/mail';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { updateEmailStatusInDb } from '@/lib/downloadRequestsDb';
 import type { EmailStatus } from '@/types/database.types';
 import { applyEmailHtmlAssetUrls } from '@/lib/emailLogoUrl';
-import { sendgridConfigured } from '@/lib/sendgridConfigured';
+import { brevoMailConfigured } from '@/lib/brevoConfigured';
+import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
 
 function escapeHtml(s: string): string {
   return s
@@ -173,8 +173,8 @@ export async function sendOutboundEmailForRequest(
     return { ok: false, emailStatus: 'pending', reason: 'Supabase未設定' };
   }
 
-  if (!sendgridConfigured()) {
-    return { ok: false, emailStatus: 'pending', reason: 'SendGrid未設定' };
+  if (!brevoMailConfigured()) {
+    return { ok: false, emailStatus: 'pending', reason: 'メール送信の設定が不足しています' };
   }
 
   const { data: row, error: rowErr } = await supabase
@@ -231,18 +231,9 @@ export async function sendOutboundEmailForRequest(
 
   html = applyEmailHtmlAssetUrls(html);
 
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const from = process.env.SENDGRID_FROM_EMAIL;
-  if (!apiKey || !from) {
-    return { ok: false, emailStatus: 'pending', reason: 'SendGrid未設定' };
-  }
-
-  sgMail.setApiKey(apiKey);
-
   try {
-    await sgMail.send({
+    await sendBrevoTransactionalEmail({
       to: row.email,
-      from,
       subject: template.subject,
       html,
     });
@@ -251,7 +242,7 @@ export async function sendOutboundEmailForRequest(
   } catch (e) {
     console.error('sendOutboundEmailForRequest:', e);
     await updateEmailStatusInDb(requestId, 'failed', template.id);
-    return { ok: false, emailStatus: 'failed', reason: 'SendGrid送信エラー' };
+    return { ok: false, emailStatus: 'failed', reason: 'メールの送信に失敗しました' };
   }
 }
 
@@ -267,8 +258,8 @@ export async function sendTemplateTestEmail(params: {
   if (!supabase) {
     return { ok: false, reason: 'Supabase未設定' };
   }
-  if (!sendgridConfigured()) {
-    return { ok: false, reason: 'SendGrid未設定' };
+  if (!brevoMailConfigured()) {
+    return { ok: false, reason: 'メール送信の設定が不足しています' };
   }
   const { data: template, error } = await supabase
     .from('email_templates')
@@ -284,22 +275,15 @@ export async function sendTemplateTestEmail(params: {
     .replace(/\{\{phone\}\}/g, '')
     .replace(/\{\{documentButtons\}\}/g, documentButtons);
   html = applyEmailHtmlAssetUrls(html);
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const from = process.env.SENDGRID_FROM_EMAIL;
-  if (!apiKey || !from) {
-    return { ok: false, reason: 'SendGrid未設定' };
-  }
-  sgMail.setApiKey(apiKey);
   try {
-    await sgMail.send({
+    await sendBrevoTransactionalEmail({
       to: params.to.trim(),
-      from,
       subject: `[テスト] ${template.subject}`,
       html,
     });
     return { ok: true };
   } catch (e) {
     console.error('sendTemplateTestEmail:', e);
-    return { ok: false, reason: 'SendGrid送信エラー' };
+    return { ok: false, reason: 'メールの送信に失敗しました' };
   }
 }

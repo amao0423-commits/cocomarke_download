@@ -1,8 +1,8 @@
-import sgMail from '@sendgrid/mail';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
 import { buildBroadcastEmailHtml } from '@/lib/broadcastEmailLayout';
-import { sendgridConfigured } from '@/lib/sendgridConfigured';
+import { brevoMailConfigured } from '@/lib/brevoConfigured';
+import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 function looksLikeEmail(s: string): boolean {
@@ -60,8 +60,8 @@ export async function sendBroadcastEmails(params: {
   if (!supabase) {
     return { ok: false, reason: 'Supabase未設定' };
   }
-  if (!sendgridConfigured()) {
-    return { ok: false, reason: 'SendGrid未設定' };
+  if (!brevoMailConfigured()) {
+    return { ok: false, reason: 'メール送信の設定が不足しています' };
   }
 
   const { emails, error } = await collectBroadcastRecipientEmails(supabase);
@@ -73,19 +73,20 @@ export async function sendBroadcastEmails(params: {
   }
 
   const html = buildBroadcastEmailHtml(params.mainBodyHtml);
-  const apiKey = process.env.SENDGRID_API_KEY!.trim();
-  const from = process.env.SENDGRID_FROM_EMAIL!.trim();
-  sgMail.setApiKey(apiKey);
 
   const errors: { email: string; reason: string }[] = [];
   let sent = 0;
   let n = 0;
   for (const to of emails) {
     try {
-      await sgMail.send({ to, from, subject: params.subject, html });
+      await sendBrevoTransactionalEmail({
+        to,
+        subject: params.subject,
+        html,
+      });
       sent++;
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'SendGrid送信エラー';
+      const msg = e instanceof Error ? e.message : 'メールの送信に失敗しました';
       errors.push({ email: to, reason: msg });
     }
     n++;

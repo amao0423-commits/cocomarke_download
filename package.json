@@ -11,7 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.6",
+    "@getbrevo/brevo": "^5.0.4",
     "@supabase/supabase-js": "^2.100.1",
     "@upstash/redis": "^1.37.0",
     "framer-motion": "^11.18.2",
