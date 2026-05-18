@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import {
   PRIVATE_CATEGORY_NAME,
   UNCATEGORIZED_CATEGORY_NAME,
@@ -58,7 +59,7 @@ function mapDocumentRow(row: DocumentRow): HomeDocument {
 /**
  * トップ用: カテゴリマスタ順にセクションを組み、マスタにないカテゴリ名の資料は非公開バケットに寄せる。「非公開」「未分類」セクションはトップに出さない。
  */
-export async function loadHomeDocumentSections(): Promise<{
+async function fetchHomeDocumentSections(): Promise<{
   sections: HomeSection[];
 }> {
   const supabase = getSupabaseAdmin();
@@ -123,10 +124,17 @@ export async function loadHomeDocumentSections(): Promise<{
   return { sections };
 }
 
+/** ISR の外（layout 等）でも Supabase を叩かないよう1時間キャッシュ */
+export const loadHomeDocumentSections = unstable_cache(
+  fetchHomeDocumentSections,
+  ['home-document-sections'],
+  { revalidate: 3600 }
+);
+
 /**
  * トップ「人気資料 TOP 3」用: 「非公開」「未分類」以外を sort_order → title 昇順で最大3件。
  */
-export async function loadTopDocuments(): Promise<HomeDocument[]> {
+async function fetchTopDocuments(): Promise<HomeDocument[]> {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
     return [];
@@ -153,3 +161,10 @@ export async function loadTopDocuments(): Promise<HomeDocument[]> {
   const rows = (Array.isArray(raw) ? raw : []) as unknown as DocumentRow[];
   return rows.map(mapDocumentRow);
 }
+
+/** ISR の外でも Supabase を叩かないよう1時間キャッシュ */
+export const loadTopDocuments = unstable_cache(
+  fetchTopDocuments,
+  ['home-top-documents'],
+  { revalidate: 3600 }
+);

@@ -1,6 +1,3 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import type { HomeDocument } from '@/lib/homeDocuments';
 import { DocumentThumbnail } from '@/components/home/DocumentThumbnail';
 import { DocumentDownloadLink } from '@/components/home/DocumentDownloadCta';
@@ -14,24 +11,14 @@ type Props = {
   badge?: BadgeKind | null;
 };
 
-const cardTransition = { type: 'spring' as const, stiffness: 380, damping: 28 };
-
 export function DocumentCard({ document: doc, href, description, badge }: Props) {
   return (
-    <motion.article
-      className="group relative flex h-full min-w-0 w-full flex-col overflow-hidden rounded-[1.25rem] border border-slate-100 bg-white shadow-sm"
-      initial={false}
-      whileHover={{
-        y: -3,
-        boxShadow:
-          '0 10px 24px rgba(15, 23, 42, 0.06), 0 4px 10px rgba(15, 23, 42, 0.04)',
-      }}
-      transition={cardTransition}
+    <article
+      className="group relative flex h-full min-w-0 w-full flex-col overflow-hidden rounded-[1.25rem] border border-slate-100 bg-white shadow-sm transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-[3px] hover:shadow-[0_10px_24px_rgba(15,23,42,0.06),0_4px_10px_rgba(15,23,42,0.04)]"
     >
       <div className="relative z-[2] flex min-h-0 flex-1 flex-col">
         <div className="relative shrink-0 overflow-hidden rounded-t-[inherit]">
           <DocumentThumbnail src={doc.thumbnailUrl} alt={doc.title} />
-          {/* ホバー時：サムネ上に光が反射するようなハイライト（親の group-hover と同期） */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 z-[1] opacity-0 mix-blend-soft-light transition-opacity duration-200 ease-out group-hover:opacity-100"
@@ -69,6 +56,6 @@ export function DocumentCard({ document: doc, href, description, badge }: Props)
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import { loadHomeDocumentSections } from "@/lib/homeDocuments";
 import { pickFeaturedDocuments } from "@/lib/pickFeaturedDocuments";
@@ -10,6 +11,9 @@ import { HomeGenreSection } from "@/components/home/HomeGenreSection";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import { TopDocuments } from "@/components/TopDocuments";
+
+/** ページ全体を1時間 ISR キャッシュ。Supabaseへのクエリが毎リクエスト実行されなくなる */
+export const revalidate = 3600;
 
 export default async function Home() {
   const { sections } = await loadHomeDocumentSections();
@@ -93,7 +97,20 @@ export default async function Home() {
           </div>
         </section>
 
-        <TopDocuments />
+        <Suspense fallback={
+          <div className="coco-section-top3 border-b border-design-border/60 bg-white pb-8 pt-8 sm:pb-10 sm:pt-10 lg:pb-12 lg:pt-12">
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+              <div className="h-6 w-36 rounded bg-gray-100 animate-pulse" />
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-40 rounded-lg bg-gray-100 animate-pulse" />
+                ))}
+              </div>
+            </div>
+          </div>
+        }>
+          <TopDocuments />
+        </Suspense>
 
         <section
           id="document-categories"

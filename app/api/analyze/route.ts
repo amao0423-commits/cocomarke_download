@@ -5,7 +5,10 @@ import { buildImprovementFromMetrics } from '@/lib/improvementFromMetrics';
 import { getClientIp, checkRateLimit, recordRateLimitUsage } from '@/lib/rateLimiter';
 import { toJapaneseError } from '@/lib/errorMessages';
 
-const GROWTHCORE_URL = 'https://api.growthcore.co.kr/api/thirdparty/id-analytics';
+/** Vercel Edge Runtime — コールドスタートをゼロにする（@upstash/redis は fetch ベースで Edge 対応済み） */
+export const runtime = 'edge';
+
+const ANALYTICS_ENDPOINT = 'https://api.growthcore.co.kr/api/thirdparty/id-analytics';
 
 /** クライアントに返す表示用フィールドのみ。生スコア等はネットワークレスポンスに含めない */
 const DISPLAY_ONLY_KEYS = [
@@ -34,11 +37,17 @@ const DISPLAY_ONLY_KEYS = [
   'most_popular_post_time',
 ] as const;
 
+/** クライアント向けフィールド名マッピング（内部プロバイダ名を外部に露出しない） */
+const CLIENT_KEY_MAP: Partial<Record<typeof DISPLAY_ONLY_KEYS[number], string>> = {
+  growthcore_customer: 'service_info',
+};
+
 function toDisplayResult(result: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of DISPLAY_ONLY_KEYS) {
     if (key in result) {
-      out[key] = result[key];
+      const outKey = CLIENT_KEY_MAP[key] ?? key;
+      out[outKey] = result[key];
     }
   }
   return out;
@@ -88,12 +97,12 @@ export async function GET(request: NextRequest) {
     const apiKey = process.env.ACCOUNT_OPTIMIZATION_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'APIキーが設定されていません' },
+        { error: '分析サービスが一時的にご利用いただけません。しばらく経ってから再度お試しください。' },
         { status: 500 }
       );
     }
 
-    const url = `${GROWTHCORE_URL}?id=${encodeURIComponent(id)}`;
+    const url = `${ANALYTICS_ENDPOINT}?id=${encodeURIComponent(id)}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -113,8 +122,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (data.status !== 'success') {
-      // 原因切り分け用: GrowthCore の実際の返答をログに残す（APIキー・ID・個人データは含めない）
-      console.warn('[GrowthCore] 非success応答', {
+      // 原因切り分け用: 外部APIの実際の返答をログに残す（APIキー・ID・個人データは含めない）
+      console.warn('[Analyze] 非success応答', {
         httpStatus: response.status,
         responseOk: response.ok,
         dataStatus: data.status,
@@ -151,15 +160,9 @@ export async function GET(request: NextRequest) {
     // 表示用フィールドのみ返却（グロスコア等の生データはネットワークレスポンスに含めない）
     return NextResponse.json(toDisplayResult(result));
   } catch (error: unknown) {
-    console.error('GrowthCore API Error:', error);
-
-    let errorMessage = '分析中にエラーが発生しました';
-    if (error instanceof Error) {
-      errorMessage = toJapaneseError(error.message);
-    }
-
+    console.error('[Analyze] 内部エラー:', error);
     return NextResponse.json(
-      { error: errorMessage },
+      { error: '分析中にエラーが発生しました。しばらく経ってから再度お試しください。' },
       { status: 500 }
     );
   }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { toJapaneseError } from '@/lib/errorMessages';
 
-const GROWTHCORE_URL = 'https://api.growthcore.co.kr/api/thirdparty/id-analytics';
+const ANALYTICS_ENDPOINT = 'https://api.growthcore.co.kr/api/thirdparty/id-analytics';
 
 /** 値の型と軽量な構造のみを返す（個人データは含めない） */
 function describeValue(value: unknown): unknown {
@@ -33,12 +33,12 @@ export async function GET(request: NextRequest) {
     const apiKey = process.env.ACCOUNT_OPTIMIZATION_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        { error: 'APIキーが設定されていません' },
+        { error: '分析サービスが設定されていません' },
         { status: 500 }
       );
     }
 
-    const url = `${GROWTHCORE_URL}?id=${encodeURIComponent(id)}`;
+    const url = `${ANALYTICS_ENDPOINT}?id=${encodeURIComponent(id)}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       structure,
     });
   } catch (error: unknown) {
-    console.error('Debug structure error:', error);
+    console.error('[Debug] 構造確認エラー:', error);
     const rawError = error instanceof Error ? error.message : '不明なエラー';
     return NextResponse.json(
       {

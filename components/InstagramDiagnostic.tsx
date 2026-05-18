@@ -35,7 +35,7 @@ import TotalAnalysisCounter from '@/components/TotalAnalysisCounter';
 
 type HashtagItem = { hashtag: string; count: number };
 
-type GrowthCoreCustomer = {
+type ServicePromoInfo = {
   is_callable?: boolean;
   message?: string;
 };
@@ -63,7 +63,7 @@ type AnalyzeResult = {
   recommend_service_message?: string[];
   feedback_message?: string[];
   improvement_message?: string[];
-  growthcore_customer?: GrowthCoreCustomer;
+  service_info?: ServicePromoInfo;
   posts_per_day?: Record<string, number> | Array<{ date: string; count: number }>;
   most_popular_post_time?: Record<string, number> | Array<{ day_of_week?: string; day?: string; count: number }>;
 };
@@ -493,7 +493,7 @@ export default function InstagramDiagnostic({
   // レンダリング条件: 優先順位順に評価
   // 1. 結果が存在する場合 → 結果画面
   if (result && !isAnalyzing) {
-    const customer = result.growthcore_customer;
+    const customer = result.service_info;
     const postsPerDaySeries = normalizePostsPerDay(result.posts_per_day);
     const weekdaySeries = normalizeMostPopularPostTime(result.most_popular_post_time);
     const hasStatsData = postsPerDaySeries.length > 0 || weekdaySeries.some((x) => x.count > 0);
