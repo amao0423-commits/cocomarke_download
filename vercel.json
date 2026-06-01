@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/subscription/:path*",
+      "destination": "https://instagram-service-jemia.vercel.app/:path*"
+    }
+  ]
+}
