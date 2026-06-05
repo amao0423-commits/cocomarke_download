@@ -4,6 +4,7 @@ import { Noto_Sans_JP } from "next/font/google";
 import HeaderShell from "@/components/HeaderShell";
 import { Footer } from "@/components/navigation/Footer";
 import { DiagnosisOverlay } from "@/components/DiagnosisOverlay";
+import ChromeSwitch from "@/components/ChromeSwitch";
 import "./globals.css";
 
 function HeaderFallback() {
@@ -36,12 +37,17 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <body className={`${notoSansJp.variable} min-h-screen font-sans`}>
-        <Suspense fallback={<HeaderFallback />}>
-          <HeaderShell />
-        </Suspense>
-        <main>{children}</main>
-        <Footer />
-        <DiagnosisOverlay />
+        <ChromeSwitch
+          header={
+            <Suspense fallback={<HeaderFallback />}>
+              <HeaderShell />
+            </Suspense>
+          }
+          footer={<Footer />}
+          overlay={<DiagnosisOverlay />}
+        >
+          {children}
+        </ChromeSwitch>
       </body>
     </html>
   );

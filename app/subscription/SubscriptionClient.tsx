@@ -140,8 +140,21 @@ export default function SubscriptionClient() {
 
   return (
     <>
+      {/* ── JEMIA Header ── */}
+      <header className={styles.siteHeader}>
+        <div className={styles.headerInner}>
+          <a href="#top" className={styles.headerLogo}>JEM<span style={{ color:C }}>I</span>A</a>
+          <nav className={styles.headerNav}>
+            {([["特徴","#features"],["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
+              <a key={href} href={href}>{label}</a>
+            ))}
+          </nav>
+          <button className={styles.headerCta} onClick={openModal}>無料で相談する</button>
+        </div>
+      </header>
+
       {/* ── Hero ── */}
-      <section style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 0", position:"relative", overflow:"hidden" }}>
+      <section id="top" style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 0", position:"relative", overflow:"hidden", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:64, alignItems:"center", paddingBottom:80 }}>
           {/* left */}
           <div className={styles.fadeUp}>
@@ -235,7 +248,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Features ── */}
-      <section style={{ padding:"80px 24px", background:"#fff" }}>
+      <section id="features" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Features</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>選ばれる3つの理由</h2>
@@ -316,7 +329,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Plans ── */}
-      <section id="plans" style={{ padding:"80px 24px", background:"#fff" }}>
+      <section id="plans" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Plans & Pricing</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サービスと料金</h2>
@@ -385,7 +398,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Voices ── */}
-      <section style={{ padding:"80px 24px", background:"#fff" }}>
+      <section id="voices" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Reviews</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>利用者の声</h2>
@@ -418,7 +431,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── FAQ ── */}
-      <section style={{ padding:"80px 24px", background:OW }}>
+      <section id="faq" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:720, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>FAQ</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:40, letterSpacing:"-.02em", color:TXT }}>よくある質問</h2>
@@ -492,6 +505,26 @@ export default function SubscriptionClient() {
           </div>
         </div>
       )}
+
+      {/* ── JEMIA Footer ── */}
+      <footer className={styles.siteFooter}>
+        <div style={{ marginBottom:12 }}>
+          <span style={{ fontFamily:"Montserrat,sans-serif", fontWeight:900, fontSize:20, color:"#fff" }}>JEM<span style={{ color:C }}>I</span>A</span>
+        </div>
+        <div style={{ fontSize:13, color:"rgba(255,255,255,0.7)", marginBottom:16 }}>
+          Instagram運用を、もっと自由に。もっとスマートに。
+        </div>
+        <div style={{ marginBottom:16 }}>
+          {([["特徴","#features"],["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
+            <a key={href} href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>{label}</a>
+          ))}
+        </div>
+        <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>
+          受付時間：平日 09:00 - 18:00（土日祝日は除く）<br />
+          時間外のお問い合わせは次の相談時間に順次返答しております。
+        </div>
+        <div style={{ marginTop:20, fontSize:12, color:"rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</div>
+      </footer>
     </>
   );
 }
