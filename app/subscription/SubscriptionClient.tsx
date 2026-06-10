@@ -122,7 +122,12 @@ export default function SubscriptionClient() {
         body: JSON.stringify({ name, email, inquiry_type: fd.get("inquiry_type"), instagram_id: fd.get("instagram_id"), message }),
       });
       const data = await res.json();
-      if (data.ok) setThanks(true);
+      if (data.ok) {
+        // 送信成功時はサンクスページへ完全遷移し、その URL で Meta の PageView を発火させる
+        document.body.style.overflow = "";
+        window.location.href = "/subscription/thanks";
+        return;
+      }
       else alert(data.error || "送信に失敗しました。");
     } catch { alert("送信に失敗しました。"); }
     finally { setSending(false); }
