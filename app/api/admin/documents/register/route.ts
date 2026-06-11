@@ -13,6 +13,7 @@ const registerSchema = z.object({
   file_type: z.string().optional().nullable(),
   thumbnail_url: z.union([z.string().url(), z.literal(''), z.null()]).optional(),
   category: z.string().min(1).max(200).optional().nullable(),
+  is_published: z.boolean().optional(),
 });
 
 /** ブラウザからSupabaseへの直接アップロード後にドキュメントレコードを登録する */
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '入力が不正です' }, { status: 400 });
     }
 
-    const { title, storage_path, file_name, file_size, file_type, thumbnail_url, category } =
+    const { title, storage_path, file_name, file_size, file_type, thumbnail_url, category, is_published } =
       parsed.data;
 
     if (!title.trim()) {
@@ -77,6 +78,7 @@ export async function POST(request: NextRequest) {
         download_url: null,
         thumbnail_url: thumbnailUrl,
         category: categoryValue,
+        is_published: is_published === true,
       })
       .select()
       .single();

@@ -76,6 +76,7 @@ async function fetchHomeDocumentSections(): Promise<{
     supabase
       .from('documents')
       .select('id, title, category, thumbnail_url, updated_at, sort_order')
+      .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('title', { ascending: true }),
   ]);
@@ -144,6 +145,7 @@ async function fetchTopDocuments(): Promise<HomeDocument[]> {
     const res = await supabase
       .from('documents')
       .select(cols)
+      .eq('is_published', true)
       .neq('category', PRIVATE_CATEGORY_NAME)
       .neq('category', UNCATEGORIZED_CATEGORY_NAME)
       .order('sort_order', { ascending: true })
@@ -154,7 +156,7 @@ async function fetchTopDocuments(): Promise<HomeDocument[]> {
 
   let docsRes = await trySelect('id, title, category, thumbnail_url, updated_at, sort_order');
   if (docsRes.error) {
-    docsRes = await trySelect('id, title, category, sort_order');
+    docsRes = await trySelect('id, title, category, sort_order, is_published');
   }
 
   const raw = !docsRes.error ? docsRes.data : null;

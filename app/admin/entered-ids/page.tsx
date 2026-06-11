@@ -3,13 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import {
-  FileUp,
-  Mail,
-  Link2,
-  ChevronRight,
-  Sparkles,
-} from 'lucide-react';
+import { FileUp, ToggleRight, Sparkles } from 'lucide-react';
 
 const DiagnosticsStatsTab = dynamic(() =>
   import('@/components/admin/DiagnosticsStatsTab').then((m) => ({ default: m.DiagnosticsStatsTab }))
@@ -17,27 +11,22 @@ const DiagnosticsStatsTab = dynamic(() =>
 const DownloadRequestsTab = dynamic(() =>
   import('@/components/admin/DownloadRequestsTab').then((m) => ({ default: m.DownloadRequestsTab }))
 );
-const DocumentsTab = dynamic(() =>
-  import('@/components/admin/DocumentsTab').then((m) => ({ default: m.DocumentsTab }))
-);
-const TemplatesTab = dynamic(() =>
-  import('@/components/admin/TemplatesTab').then((m) => ({ default: m.TemplatesTab }))
-);
-const DefaultMailTemplateTab = dynamic(() =>
-  import('@/components/admin/DefaultMailTemplateTab').then((m) => ({ default: m.DefaultMailTemplateTab }))
-);
-const DownloadFormConfigsTab = dynamic(() =>
-  import('@/components/admin/DownloadFormConfigsTab').then((m) => ({ default: m.DownloadFormConfigsTab }))
-);
-const ImagesTab = dynamic(() =>
-  import('@/components/admin/ImagesTab').then((m) => ({ default: m.ImagesTab }))
-);
 const RestaurantDiagnosisTab = dynamic(() =>
   import('@/components/admin/RestaurantDiagnosisTab').then((m) => ({ default: m.RestaurantDiagnosisTab }))
+);
+const AnalysisTab = dynamic(() =>
+  import('@/components/admin/AnalysisTab').then((m) => ({ default: m.AnalysisTab }))
+);
+const DocumentsTab = dynamic(() =>
+  import('@/components/admin/DocumentsTab').then((m) => ({ default: m.DocumentsTab }))
 );
 const BroadcastEmailTab = dynamic(() =>
   import('@/components/admin/BroadcastEmailTab').then((m) => ({ default: m.BroadcastEmailTab }))
 );
+const ImagesTab = dynamic(() =>
+  import('@/components/admin/ImagesTab').then((m) => ({ default: m.ImagesTab }))
+);
+
 import {
   ADMIN_PAGE_BG,
   ADMIN_CARD,
@@ -48,18 +37,15 @@ import {
   ADMIN_TAB_WRAP,
   ADMIN_ICON_SKY,
   ADMIN_ICON_VIOLET,
-  ADMIN_ICON_ROSE,
 } from '@/components/admin/adminPastel';
 
 type ActiveTab =
   | 'diagnostics'
   | 'download'
   | 'restaurantDiagnosis'
-  | 'formSettings'
-  | 'templates'
-  | 'mailDefaults'
-  | 'broadcast'
+  | 'analysis'
   | 'documents'
+  | 'broadcast'
   | 'images';
 
 export default function AdminPage() {
@@ -74,21 +60,17 @@ export default function AdminPage() {
       setErrorMessage('秘密キーを入力してください');
       return;
     }
-
     setIsLoading(true);
     setErrorMessage('');
-
     try {
       const response = await fetch('/api/admin/entered-ids', {
         headers: { Authorization: `Bearer ${secretKey}` },
       });
-
       if (!response.ok) {
         setErrorMessage('認証に失敗しました。秘密キーを確認してください。');
         setIsAuthenticated(false);
         return;
       }
-
       setIsAuthenticated(true);
       setErrorMessage('');
     } catch {
@@ -146,7 +128,6 @@ export default function AdminPage() {
             <p className="text-slate-500 text-sm mb-6 text-center">
               管理画面を表示するには秘密キーが必要です。
             </p>
-
             <input
               type="password"
               value={secretKey}
@@ -155,16 +136,10 @@ export default function AdminPage() {
               placeholder="秘密キーを入力"
               className="w-full px-4 py-3 border border-blue-100 rounded-2xl text-base text-slate-600 bg-white/90 focus:outline-none focus:ring-2 focus:ring-sky-200/80 transition-colors mb-4"
             />
-
             {errorMessage && (
               <p className="text-rose-500 text-sm mb-4 text-center">{errorMessage}</p>
             )}
-
-            <button
-              onClick={handleAuthenticate}
-              type="button"
-              className={ADMIN_BTN_AUTH}
-            >
+            <button onClick={handleAuthenticate} type="button" className={ADMIN_BTN_AUTH}>
               認証する
             </button>
           </motion.div>
@@ -192,61 +167,49 @@ export default function AdminPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+        {/* 運用ガイド（即DL版） */}
         <div className="rounded-3xl border border-violet-100/60 bg-gradient-to-r from-white via-sky-50/40 to-rose-50/30 px-4 py-3 shadow-xl shadow-violet-500/[0.06]">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-1.5">
             <Sparkles className={`h-3.5 w-3.5 ${ADMIN_ICON_VIOLET}`} aria-hidden />
             運用ガイド
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-sm text-slate-600">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-slate-600">
             <span className="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1.5 border border-blue-50/80 shadow-sm">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">
-                1
-              </span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">1</span>
               <FileUp className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
               <span className="font-medium">資料をアップ</span>
             </span>
-            <ChevronRight className="h-4 w-4 text-slate-300 hidden sm:block shrink-0" aria-hidden />
+            <span className="text-slate-300 hidden sm:block">→</span>
             <span className="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1.5 border border-blue-50/80 shadow-sm">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">
-                2
-              </span>
-              <Mail className={`h-4 w-4 ${ADMIN_ICON_ROSE} shrink-0`} aria-hidden />
-              <span className="font-medium">メールを作る</span>
-            </span>
-            <ChevronRight className="h-4 w-4 text-slate-300 hidden sm:block shrink-0" aria-hidden />
-            <span className="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1.5 border border-blue-50/80 shadow-sm">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">
-                3
-              </span>
-              <Link2 className={`h-4 w-4 ${ADMIN_ICON_VIOLET} shrink-0`} aria-hidden />
-              <span className="font-medium">フォームと紐付ける</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">2</span>
+              <ToggleRight className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
+              <span className="font-medium">公開する</span>
             </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-4">
-          <p className="text-xs font-medium text-slate-500 px-0.5">まずはここから（おすすめの順）</p>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-600 px-0.5">診断・申請の確認</p>
+            <p className="text-xs font-semibold text-slate-600 px-0.5">申請・分析の確認</p>
             <div className={ADMIN_TAB_WRAP}>
               {tabBtn('diagnostics', '📈 診断統計')}
               {tabBtn('download', '📥 届いた申請')}
               {tabBtn('restaurantDiagnosis', '🍽️ SNS診断申請')}
+              {tabBtn('analysis', '🔍 アカウント分析')}
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-600 px-0.5">フォーム・メールの設定</p>
+            <p className="text-xs font-semibold text-slate-600 px-0.5">配布物・メディア</p>
             <div className={ADMIN_TAB_WRAP}>
-              {tabBtn('formSettings', '🔗 フォーム紐付け')}
-              {tabBtn('templates', '✉️ メール作成')}
-              {tabBtn('mailDefaults', '📝 メールの下書き')}
-              {tabBtn('broadcast', '📣 一斉メール')}
+              {tabBtn('documents', '📚 資料管理')}
+              {tabBtn('images', '🖼️ 画像')}
             </div>
           </div>
-          <p className="text-xs font-medium text-slate-500 px-0.5 pt-1">配布物・メディア</p>
-          <div className={ADMIN_TAB_WRAP}>
-            {tabBtn('documents', '📚 資料管理')}
-            {tabBtn('images', '🖼️ 画像')}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-slate-600 px-0.5">その他</p>
+            <div className={ADMIN_TAB_WRAP}>
+              {tabBtn('broadcast', '📣 一斉メール')}
+            </div>
           </div>
         </div>
 
@@ -254,11 +217,9 @@ export default function AdminPage() {
           {activeTab === 'diagnostics' && <DiagnosticsStatsTab secretKey={secretKey} />}
           {activeTab === 'download' && <DownloadRequestsTab secretKey={secretKey} />}
           {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
-          {activeTab === 'formSettings' && <DownloadFormConfigsTab secretKey={secretKey} />}
+          {activeTab === 'analysis' && <AnalysisTab secretKey={secretKey} />}
           {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
-          {activeTab === 'mailDefaults' && <DefaultMailTemplateTab secretKey={secretKey} />}
           {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
-          {activeTab === 'templates' && <TemplatesTab secretKey={secretKey} />}
           {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
         </div>
       </div>

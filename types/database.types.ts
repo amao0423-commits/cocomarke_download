@@ -68,6 +68,7 @@ export interface Database {
           hero_image_2_url: string | null;
           hero_image_3_url: string | null;
           hero_image_4_url: string | null;
+          is_published: boolean;
         };
         Insert: {
           id?: string;
@@ -92,6 +93,7 @@ export interface Database {
           hero_image_2_url?: string | null;
           hero_image_3_url?: string | null;
           hero_image_4_url?: string | null;
+          is_published?: boolean;
         };
         Update: {
           id?: string;
@@ -116,6 +118,7 @@ export interface Database {
           hero_image_2_url?: string | null;
           hero_image_3_url?: string | null;
           hero_image_4_url?: string | null;
+          is_published?: boolean;
         };
         Relationships: [];
       };

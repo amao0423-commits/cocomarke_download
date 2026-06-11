@@ -59,6 +59,11 @@ export async function PATCH(request: NextRequest, context: Ctx) {
           typeof v === 'string' && v.trim().length > 0 ? v.trim() : null;
       }
     }
+    // is_published は boolean なので null 変換せずそのまま渡す
+    if ('is_published' in partial.data && typeof partial.data.is_published === 'boolean') {
+      (patch as Record<string, unknown>).is_published = partial.data.is_published;
+    }
+
     Object.keys(patch).forEach((k) => {
       if (patch[k as keyof DocUpdate] === undefined) {
         delete patch[k as keyof DocUpdate];

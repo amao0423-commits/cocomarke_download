@@ -32,6 +32,7 @@ type DocumentRow = {
   hero_highlights_extra?: string | null;
   hero_image_1_url?: string | null;
   hero_image_2_url?: string | null;
+  is_published?: boolean;
 };
 
 type CategoryRow = {
@@ -351,6 +352,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
   const [replacingDocumentId, setReplacingDocumentId] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [uploadThumbnailUrl, setUploadThumbnailUrl] = useState('');
+  const [uploadIsPublished, setUploadIsPublished] = useState(false);
   const [editingDoc, setEditingDoc] = useState<DocumentRow | null>(null);
   const [reorderBusy, setReorderBusy] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -440,6 +442,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
           title: title.trim(),
           category: uploadCategory,
           thumbnail_url: uploadThumbnailUrl.trim() || null,
+          is_published: uploadIsPublished,
           storage_path: urlData.path as string,
           file_name: file.name,
           file_size: file.size,
@@ -456,6 +459,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       setTitle('');
       setFile(null);
       setUploadThumbnailUrl('');
+      setUploadIsPublished(false);
       setUploadCategory(PRIVATE_CATEGORY_NAME);
       await load();
     } catch {
@@ -500,6 +504,20 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       });
       if (!res.ok) return;
       await load();
+    } catch {
+      // ignore
+    }
+  };
+
+  const updateDocumentPublished = async (id: string, published: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/documents/${id}`, {
+        method: 'PATCH',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_published: published }),
+      });
+      if (!res.ok) return;
+      setDocuments((prev) => prev.map((d) => (d.id === id ? { ...d, is_published: published } : d)));
     } catch {
       // ignore
     }
@@ -751,6 +769,15 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                 placeholder="https://…（Storageの公開URLなど）"
               />
             </label>
+            <label className="flex items-center gap-2 cursor-pointer shrink-0 self-end pb-2">
+              <input
+                type="checkbox"
+                checked={uploadIsPublished}
+                onChange={(e) => setUploadIsPublished(e.target.checked)}
+                className="h-4 w-4 rounded accent-sky-500"
+              />
+              <span className="text-sm font-medium text-slate-600">公開する</span>
+            </label>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
             <label className="flex-1 block">
@@ -906,6 +933,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                   {filterCategory !== 'all' && <th className="py-2 px-2 w-16" />}
                   <th className="text-left py-2 px-3">タイトル</th>
                   <th className="text-left py-2 px-3">カテゴリ</th>
+                  <th className="text-left py-2 px-3 whitespace-nowrap">公開</th>
                   <th className="text-left py-2 px-3 min-w-[200px]">サムネイルURL</th>
                   <th className="text-left py-2 px-3 min-w-[220px] whitespace-nowrap">ファイル名</th>
                   <th className="text-left py-2 px-3">登録日時</th>
@@ -945,6 +973,20 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                         </td>
                       )}
                       <td className="py-2 px-3 font-medium text-slate-600">{d.title}</td>
+                      <td className="py-2 px-3 text-center">
+                        <button
+                          type="button"
+                          onClick={() => void updateDocumentPublished(d.id, !d.is_published)}
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition ${
+                            d.is_published
+                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                          }`}
+                          aria-label={d.is_published ? '公開中（クリックで非公開）' : '非公開（クリックで公開）'}
+                        >
+                          {d.is_published ? '公開中' : '非公開'}
+                        </button>
+                      </td>
                       <td className="py-2 px-3 text-gray-700">
                         <select
                           value={d.category}

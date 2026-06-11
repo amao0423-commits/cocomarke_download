@@ -38,6 +38,7 @@ export const documentCreateSchema = z.object({
   hero_highlights_extra: z.string().max(4000).optional().nullable(),
   hero_image_1_url: z.union([z.string().url(), z.literal('')]).optional().nullable(),
   hero_image_2_url: z.union([z.string().url(), z.literal('')]).optional().nullable(),
+  is_published: z.boolean().optional(),
 });
 
 export const documentCategoryCreateSchema = z.object({
