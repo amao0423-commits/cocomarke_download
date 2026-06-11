@@ -14,8 +14,8 @@ export function DocumentCard({ document: doc, href, description, badge }: Props)
   return (
     <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-[#E8EBF0] bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(15,23,42,.2)]">
       <a href={href} style={{ display: 'contents' }}>
-        {/* サムネイル 16:9 */}
-        <div className="relative aspect-video w-full overflow-hidden border-b border-[#E8EBF0] bg-[#F4F6F9]">
+        {/* サムネイル 4:3 */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-[#E8EBF0] bg-[#F4F6F9]">
           <DocumentThumbnail src={doc.thumbnailUrl} alt={doc.title} />
         </div>
 
