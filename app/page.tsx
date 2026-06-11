@@ -10,7 +10,7 @@ import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import { TopDocuments } from "@/components/TopDocuments";
 import Image from "next/image";
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const { sections } = await loadHomeDocumentSections();
