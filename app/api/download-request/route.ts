@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveDownloadRequest } from '@/lib/saveDownloadRequest';
 import { insertDownloadRequestRow } from '@/lib/downloadRequestsDb';
-import { sendOutboundEmailForRequest } from '@/lib/downloadEmail';
 import {
   normalizeDownloadRequestTemplateId,
   resolveDownloadRequestTemplateId,
 } from '@/lib/downloadRequestTemplate';
 import { normalizeDownloadRequestDocumentId } from '@/lib/downloadRequestDocument';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { randomUUID } from 'crypto';
 import {
   DOWNLOAD_REQUEST_JOB_TITLE_OPTIONS,
@@ -34,6 +34,30 @@ function normalizeRequestedDocumentTitle(body: unknown): string | null {
     : s;
 }
 
+/** 資料の署名付きDL URL を取得（有効期限 1 時間）。取得できない場合は null */
+async function resolveDownloadUrl(documentId: string | null): Promise<string | null> {
+  if (!documentId) return null;
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return null;
+
+  const { data: doc } = await supabase
+    .from('documents')
+    .select('storage_path, download_url')
+    .eq('id', documentId)
+    .maybeSingle();
+
+  if (!doc) return null;
+
+  if (doc.storage_path?.trim()) {
+    const { data: signed } = await supabase.storage
+      .from('documents')
+      .createSignedUrl(doc.storage_path.trim(), 3600);
+    if (signed?.signedUrl) return signed.signedUrl;
+  }
+
+  return doc.download_url?.trim() || null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -55,40 +79,20 @@ export async function POST(request: NextRequest) {
     const name = [lastName, firstName].filter(Boolean).join(' ').trim();
 
     if (!lastName || !firstName) {
-      return NextResponse.json(
-        { error: '姓と名は必須です' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '姓と名は必須です' }, { status: 400 });
     }
-
     if (!email) {
-      return NextResponse.json(
-        { error: 'メールアドレスは必須です' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'メールアドレスは必須です' }, { status: 400 });
     }
-
     if (!company) {
-      return NextResponse.json(
-        { error: '会社名は必須です' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '会社名は必須です' }, { status: 400 });
     }
-
     if (!JOB_TITLE_SET.has(department)) {
-      return NextResponse.json(
-        { error: '役職を選択してください' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '役職を選択してください' }, { status: 400 });
     }
-
     if (!REQUEST_PURPOSE_SET.has(requestPurpose)) {
-      return NextResponse.json(
-        { error: '資料請求の目的を選択してください' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '資料請求の目的を選択してください' }, { status: 400 });
     }
-
     if (!privacyConsent) {
       return NextResponse.json(
         { error: '個人情報の取扱いとプライバシーポリシーに同意してください' },
@@ -98,10 +102,7 @@ export async function POST(request: NextRequest) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: '正しいメールアドレスを入力してください' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '正しいメールアドレスを入力してください' }, { status: 400 });
     }
 
     const documentId = await normalizeDownloadRequestDocumentId(body?.documentId);
@@ -145,18 +146,16 @@ export async function POST(request: NextRequest) {
       privacyConsent,
       requestedAt: timestamp,
       templateId,
-      documentId: documentId,
-      requestedDocumentTitle: requestedDocumentTitle,
+      documentId,
+      requestedDocumentTitle,
     });
 
-    await sendOutboundEmailForRequest(id);
+    // メール送信なし — サンクス画面で即ダウンロードする仕様
+    const downloadUrl = await resolveDownloadUrl(documentId);
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, downloadUrl });
   } catch (error) {
-    console.error('Download request API error:', error);
-    return NextResponse.json(
-      { error: '送信中にエラーが発生しました' },
-      { status: 500 }
-    );
+    console.error('[download-request] error:', error);
+    return NextResponse.json({ error: '送信中にエラーが発生しました' }, { status: 500 });
   }
 }
