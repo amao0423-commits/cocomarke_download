@@ -22,71 +22,55 @@ type NavItem = {
 };
 
 const SERVICE_URL = "https://www.cocomarke.com/";
-const USEFUL_INFO_URL = "https://www.cocomarke.com/blog";
-const COMPANY_INFO_URL = "https://www.cocomarke.com/company";
-const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
+
+/** 本体サイト（cocomarke.com）への導線：右端に1本だけ集約 */
+const MAIN_SITE_URL = SERVICE_URL;
 
 /** 飲食店Instagram集客診断：Instagram 風グラデをやや落ち着かせた色・白文字・薄枠 */
 const HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS =
   "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[10.5rem] sm:min-w-[11.5rem] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 sm:px-4 sm:text-sm hover:opacity-95 hover:shadow-md";
 
+/** 本体サイトへ外部リンク（枠線あり・右端） */
+const MAIN_SITE_LINK_CLASS =
+  "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-md border border-gray-200 px-3 py-2 text-xs font-medium text-gray-500 transition-colors duration-200 hover:border-gray-300 hover:text-gray-700 xl:text-sm";
+
 /** 中央テキストナビ（スクロール前後で色は固定・hover / current のみ変化） */
 const NAV_LINK_FOCUS =
-  "rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
+  "rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
 function centerNavLinkClass(isActive: boolean): string {
   const shared = [
-    "relative inline-flex items-center pb-1 text-xs leading-none transition-all duration-300 xl:text-sm",
+    "relative inline-flex items-center pb-1 text-sm leading-none transition-all duration-300",
     NAV_LINK_FOCUS,
-    "hover:text-gray-900",
+    "hover:text-[#01408D]",
   ].join(" ");
   if (!isActive) {
     return `${shared} font-medium text-gray-500`;
   }
   return [
     shared,
-    "font-semibold text-gray-900",
-    "after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-gray-900 after:content-['']",
+    "font-semibold text-[#01408D]",
+    "after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#10B981] after:content-['']",
   ].join(" ");
 }
 
 export function SiteHeader({
-  currentState = "default",
+  currentState: _currentState = "default",
   currentPath = "/",
   logoHref = SERVICE_URL,
   className = "",
   isDownloadThanks = false,
 }: SiteHeaderProps) {
-  const navItems = useMemo<NavItem[]>(() => {
-    switch (currentState) {
-      case "afterDiagnosis":
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-          { label: "お問い合わせ", href: CONTACT_URL, external: true },
-        ];
-      case "afterContact":
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-        ];
-      case "default":
-      default:
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-          { label: "お問い合わせ", href: CONTACT_URL, external: true },
-        ];
-    }
-  }, [currentState]);
+  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断の2本に絞る */
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { label: "お役立ち資料", href: DOCUMENTS_URL },
+      { label: "飲食店無料診断", href: RESTAURANT_DIAGNOSIS_URL },
+    ],
+    [],
+  );
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -117,7 +101,7 @@ export function SiteHeader({
             : "min-h-20 py-3.5 sm:min-h-[5.25rem] sm:py-4",
         ].join(" ")}
       >
-        {/* 左：ロゴ */}
+        {/* 左：ロゴ（COCOマーケロゴのまま） */}
         <div className="flex min-w-0 items-center justify-start">
           <Link
             href={logoHref}
@@ -138,38 +122,21 @@ export function SiteHeader({
           </Link>
         </div>
 
-        {/* 中：テキストナビ（リンク間はやや詰める） */}
+        {/* 中：資料サイト内ナビ（2本に絞る・現在地は緑下線） */}
         <nav
-          className="flex min-w-0 shrink items-center justify-center gap-2.5 lg:gap-3 xl:gap-4 2xl:gap-5"
+          className="flex min-w-0 shrink items-center justify-center gap-5 lg:gap-6 xl:gap-8"
           aria-label="メインナビゲーション"
         >
           {navItems.map((item) => {
             const isActive =
-              !item.external &&
-              (currentPath === item.href ||
-                (item.href !== "/" && currentPath.startsWith(item.href)));
-
-            const linkClass = centerNavLinkClass(isActive);
-
-            if (item.external) {
-              return (
-                <a
-                  key={`${item.label}-${item.href}`}
-                  href={item.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={linkClass}
-                >
-                  {item.label}
-                </a>
-              );
-            }
+              currentPath === item.href ||
+              (item.href !== "/" && currentPath.startsWith(item.href));
 
             return (
               <Link
                 key={`${item.label}-${item.href}`}
                 href={item.href}
-                className={linkClass}
+                className={centerNavLinkClass(isActive)}
               >
                 {item.label}
               </Link>
@@ -177,7 +144,7 @@ export function SiteHeader({
           })}
         </nav>
 
-        {/* 右：飲食店Instagram集客診断 CTA（折り返し不可） */}
+        {/* 右：飲食店CTA ＋ 本体サイト導線（1本に集約） */}
         <div className="flex min-w-0 flex-nowrap items-center justify-end gap-1.5 sm:gap-2 md:gap-2.5">
           <Link
             href={RESTAURANT_DIAGNOSIS_URL}
@@ -185,6 +152,28 @@ export function SiteHeader({
           >
             飲食店Instagram集客診断
           </Link>
+          <a
+            href={MAIN_SITE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={MAIN_SITE_LINK_CLASS}
+            aria-label="COCOマーケ本体サイトへ（別タブで開く）"
+          >
+            <span>COCOマーケ本体サイト</span>
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7" />
+              <path d="M9 7h8v8" />
+            </svg>
+          </a>
         </div>
       </div>
     </header>

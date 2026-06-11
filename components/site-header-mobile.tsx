@@ -32,6 +32,14 @@ const DOCUMENTS_URL = "/";
 const DEFAULT_SERVICE_DOCUMENT_HREF = "/servicedocument";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 
+/** 本体サイト（cocomarke.com）への導線：ドロワー下部にまとめる */
+const MAIN_SITE_LINKS: NavItem[] = [
+  { label: "サービス", href: SERVICE_URL, external: true },
+  { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
+  { label: "企業情報", href: COMPANY_INFO_URL, external: true },
+  { label: "お問い合わせ", href: CONTACT_URL, external: true },
+];
+
 /** 上部バー「飲食店Instagram集客診断」：Instagram 風グラデをやや落ち着かせた色 */
 const HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS =
   "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:px-3.5 sm:text-xs";
@@ -45,7 +53,7 @@ const HEADER_DOWNLOAD_MENU_CLASS =
   "flex w-full items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#01408D] to-[#001A3D] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
 export function SiteHeaderMobile({
-  currentState = "default",
+  currentState: _currentState = "default",
   currentPath = "/",
   logoHref = SERVICE_URL,
   className = "",
@@ -55,38 +63,18 @@ export function SiteHeaderMobile({
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const navItems = useMemo<NavItem[]>(() => {
-    switch (currentState) {
-      case "afterDiagnosis":
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-          { label: "お問い合わせ", href: CONTACT_URL, external: true },
-        ];
-      case "afterContact":
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-        ];
-      case "default":
-      default:
-        return [
-          { label: "サービス", href: SERVICE_URL, external: true },
-          { label: "お役立ち情報", href: USEFUL_INFO_URL, external: true },
-          { label: "企業情報", href: COMPANY_INFO_URL, external: true },
-          { label: "お役立ち資料", href: DOCUMENTS_URL },
-          { label: "お問い合わせ", href: CONTACT_URL, external: true },
-        ];
-    }
-  }, [currentState]);
+  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断の2本に絞る */
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { label: "お役立ち資料", href: DOCUMENTS_URL },
+      { label: "飲食店無料診断", href: RESTAURANT_DIAGNOSIS_URL },
+    ],
+    [],
+  );
 
   useEffect(() => {
     setIsOpen(false);
-  }, [currentPath, currentState]);
+  }, [currentPath, _currentState]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -176,34 +164,19 @@ export function SiteHeaderMobile({
             className="absolute left-0 right-0 top-full z-50 border-b border-design-border bg-[#ffffff] shadow-lg"
           >
             <div className="mx-auto max-w-[1200px] px-4 py-4 sm:px-6">
-              <nav className="flex flex-col gap-1">
+              {/* 資料サイト内ナビ（2本） */}
+              <nav className="flex flex-col gap-1" aria-label="メインナビゲーション">
                 {navItems.map((item) => {
                   const isActive =
-                    !item.external &&
-                    (currentPath === item.href ||
-                      (item.href !== "/" && currentPath.startsWith(item.href)));
+                    currentPath === item.href ||
+                    (item.href !== "/" && currentPath.startsWith(item.href));
 
                   const itemClass = [
                     "flex items-center rounded-lg px-4 py-3.5 text-sm font-medium transition",
                     isActive
-                      ? "bg-slate-100 text-design-primary"
+                      ? "bg-emerald-50 text-design-primary"
                       : "text-design-text-primary hover:bg-design-bg-sub",
                   ].join(" ");
-
-                  if (item.external) {
-                    return (
-                      <a
-                        key={`${item.label}-${item.href}`}
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={closeMenu}
-                        className={itemClass}
-                      >
-                        {item.label}
-                      </a>
-                    );
-                  }
 
                   return (
                     <Link
@@ -218,6 +191,7 @@ export function SiteHeaderMobile({
                 })}
               </nav>
 
+              {/* 主要CTA */}
               <div className="mt-4 flex flex-col gap-3 border-t border-design-border pt-4">
                 <Link
                   href={RESTAURANT_DIAGNOSIS_URL}
@@ -233,6 +207,40 @@ export function SiteHeaderMobile({
                 >
                   サービス資料をダウンロード
                 </Link>
+              </div>
+
+              {/* 本体サイトへの導線（1行にまとめる・枠線あり） */}
+              <div className="mt-4 border-t border-design-border pt-4">
+                <p className="px-1 pb-2 text-xs font-medium text-gray-400">
+                  COCOマーケ本体サイト
+                </p>
+                <div className="grid grid-cols-2 gap-1">
+                  {MAIN_SITE_LINKS.map((item) => (
+                    <a
+                      key={`${item.label}-${item.href}`}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={closeMenu}
+                      className="flex items-center gap-1 rounded-lg px-3 py-2.5 text-xs font-medium text-gray-500 transition hover:bg-design-bg-sub hover:text-gray-700"
+                    >
+                      <span>{item.label}</span>
+                      <svg
+                        className="h-3 w-3"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M7 17 17 7" />
+                        <path d="M9 7h8v8" />
+                      </svg>
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
