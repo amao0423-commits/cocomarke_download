@@ -7,10 +7,32 @@ import type { PageDocument } from './getDownloadPageContext';
 export const DEFAULT_HERO_DESCRIPTION =
   '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';
 
+/** 管理画面の DocumentsTab が参照するため export を維持 */
+export const DEFAULT_HIGHLIGHT_2 = '検索・発見タブを活用した非フォロワー獲得施策';
+
+export function HeroSummaryCheckIcon({ className = '', size = 'md' }: { className?: string; size?: 'sm' | 'md' }) {
+  const box = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const glyph = size === 'sm' ? 'h-2 w-2' : 'h-2.5 w-2.5';
+  return (
+    <span className={`mt-0.5 flex shrink-0 items-center justify-center rounded-full bg-sky-400/15 ring-1 ring-sky-400/35 ${box} ${className}`}>
+      <svg className={`${glyph} text-sky-400`} fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2} aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+      </svg>
+    </span>
+  );
+}
+export const DOCUMENT_SUMMARY_HEADING = '資料概要';
+export function defaultHeroHighlight1(_documentLabel: string) {
+  return 'Instagram運用の「露出」に特化した最新アルゴリズム戦略';
+}
+export function defaultHeroHighlight3(_formName: string) {
+  return 'アカウント設計から運用改善まで一貫した支援内容';
+}
+
 const WIREFRAME_DEFAULT_HIGHLIGHTS = [
-  'Instagram運用の「露出」に特化した最新アルゴリズム戦略',
-  '検索・発見タブを活用した非フォロワー獲得施策',
-  'アカウント設計から運用改善まで一貫した支援内容',
+  defaultHeroHighlight1(''),
+  DEFAULT_HIGHLIGHT_2,
+  defaultHeroHighlight3(''),
   '自社アカウントに足りていない改善ポイントが明確になる',
 ] as const;
 
