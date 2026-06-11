@@ -129,7 +129,7 @@ async function fetchHomeDocumentSections(): Promise<{
 export const loadHomeDocumentSections = unstable_cache(
   fetchHomeDocumentSections,
   ['home-document-sections'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['documents'] }
 );
 
 /**
@@ -168,5 +168,5 @@ async function fetchTopDocuments(): Promise<HomeDocument[]> {
 export const loadTopDocuments = unstable_cache(
   fetchTopDocuments,
   ['home-top-documents'],
-  { revalidate: 3600 }
+  { revalidate: 3600, tags: ['documents'] }
 );

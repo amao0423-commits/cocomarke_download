@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { PRIVATE_CATEGORY_NAME } from '@/lib/documentCategoryConstants';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
@@ -80,6 +81,11 @@ export async function PATCH(request: NextRequest, context: Ctx) {
     if (error) {
       console.error('documents PATCH:', error);
       return NextResponse.json({ error: '更新に失敗しました' }, { status: 500 });
+    }
+
+    // 公開状態の変更時はトップページのキャッシュを即時パージ
+    if ('is_published' in partial.data) {
+      revalidateTag('documents');
     }
 
     return NextResponse.json({ document: data });
