@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   COCOマーケ デザイントークン（唯一の定義の源）
+   色を変えるときはまずここの :root を編集する。
+   tailwind.config.ts の colors はすべてこの変数を参照する。
+   ========================================================= */
+:root {
+  /* --- ブランド主要色 --- */
+  --color-navy: #01408D;
+  --color-navy-hover: #013066;
+  --color-accent: #10B981;
+
+  /* --- 背景・面 --- */
+  --color-bg: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F7F8FA;
+
+  /* --- テキスト --- */
+  --color-text: #1F2937;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+
+  /* --- 罫線 --- */
+  --color-border: #E5E7EB;
+
+  /* --- 用途特化（淡色面） --- */
+  --color-mint-soft: #EAF8F1;
+  --color-lavender-soft: #F2EEFF;
+  --color-neutral-soft: #F3F4F6;
+
+  /* --- 診断系で温度感 --- */
+  --color-grade-positive: #059669;
+  --color-instagram-blue: #0095F6;
+  --color-instagram-pink: #E1306C;
+}
+
 @layer base {
   body {
     @apply bg-design-bg-page text-design-text-primary antialiased;

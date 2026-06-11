@@ -1,0 +1,34 @@
+/* =========================================================
+   COCOマーケ デザイントークン（唯一の定義の源）
+   色を変えるときはここを編集する。
+   tailwind.config.ts の colors はすべてこの変数を参照する。
+   ========================================================= */
+:root {
+  /* --- ブランド主要色 --- */
+  --color-navy: #01408D;        /* メインカラー: cocomarke-navy / design.primary(旧黒) / accent / cocomarke-black を統合 */
+  --color-navy-hover: #013066;  /* navy のホバー（旧 primary-hover の役割） */
+  --color-accent: #10B981;      /* アクセント緑・旧 design.accent */
+
+  /* --- 背景・面 --- */
+  --color-bg: #F9FAFB;          /* ページ背景・旧 page / design.bg-page を統合 */
+  --color-surface: #FFFFFF;     /* カード・主役の面・旧 design.surface */
+  --color-surface-soft: #F7F8FA;/* 淡い面・旧 design.bg-sub / surface-soft を統合 */
+
+  /* --- テキスト --- */
+  --color-text: #1F2937;        /* 本文・旧 design.text-primary */
+  --color-text-secondary: #6B7280; /* 補助文・旧 design.text-secondary */
+  --color-text-muted: #9CA3AF;  /* 微弱文・旧 design.text-muted / grade.negative */
+
+  /* --- 罫線 --- */
+  --color-border: #E5E7EB;      /* 罫線・旧 design.border / outline-border を統合 */
+
+  /* --- 用途特化（淡色面・必要なら残す） --- */
+  --color-mint-soft: #EAF8F1;
+  --color-lavender-soft: #F2EEFF;
+  --color-neutral-soft: #F3F4F6; /* 旧 accent-blue-soft / outline-hover */
+
+  /* --- 診断系で使用の可能性がある温度感 --- */
+  --color-grade-positive: #059669;
+  --color-instagram-blue: #0095F6;
+  --color-instagram-pink: #E1306C;
+}

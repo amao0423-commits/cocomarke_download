@@ -13,52 +13,79 @@ const config: Config = {
         sans: ["var(--font-noto-sans-jp)", ...defaultTheme.fontFamily.sans],
       },
       colors: {
-        "brand-sky": {
-          light: "#60CEFC",
-          DEFAULT: "#027EF7",
+        /* =========================================================
+           整理後トークン（実体は globals.css の :root 変数）
+           色を変えるときは globals.css の :root を編集する。
+           ========================================================= */
+
+        /* --- ブランド主要色 --- */
+        navy: {
+          DEFAULT: "var(--color-navy)",
+          hover: "var(--color-navy-hover)",
         },
-        "cocomarke-yellow": "#fde047",
-        "cocomarke-teal": "#38b2ac",
-        "cocomarke-black": "#1a1a1a",
-        "cocomarke-gray": "#e2e8f0",
-        "cocomarke-navy": "#01408D",
-        page: "#F9FAFB",
-        accent: {
-          DEFAULT: "#1a1a1a",
-          muted: "#475569",
+        accent: "var(--color-accent)",
+
+        /* --- 背景・面 --- */
+        bg: "var(--color-bg)",
+        surface: {
+          DEFAULT: "var(--color-surface)",
+          soft: "var(--color-surface-soft)",
         },
+
+        /* --- テキスト --- */
+        text: {
+          DEFAULT: "var(--color-text)",
+          secondary: "var(--color-text-secondary)",
+          muted: "var(--color-text-muted)",
+        },
+
+        /* --- 罫線 --- */
+        border: "var(--color-border)",
+
+        /* --- 用途特化（淡色面） --- */
+        "mint-soft": "var(--color-mint-soft)",
+        "lavender-soft": "var(--color-lavender-soft)",
+        "neutral-soft": "var(--color-neutral-soft)",
+
+        /* --- 診断系で温度感 --- */
         grade: {
-          positive: "#059669",
-          neutral: "#525252",
-          negative: "#9CA3AF",
+          positive: "var(--color-grade-positive)",
         },
         instagram: {
-          blue: "#0095F6",
-          pink: "#E1306C",
+          blue: "var(--color-instagram-blue)",
+          pink: "var(--color-instagram-pink)",
         },
+
+        /* =========================================================
+           旧エイリアス（後方互換・第三段階では消さない）
+           既存コードの className が壊れないよう、すべて新トークンへ向ける。
+           黒(#1a1a1a)系は移行どおり navy(#01408D) に寄せておく。
+           grep で参照ゼロを確認し次第、順次このブロックを削っていく。
+           ========================================================= */
+        "cocomarke-navy": "var(--color-navy)",
+        "cocomarke-black": "var(--color-navy)",
+        page: "var(--color-bg)",
         design: {
-          primary: "#1a1a1a",
-          "primary-hover": "#27272a",
-          "text-primary": "#1F2937",
-          "text-secondary": "#6B7280",
-          "text-muted": "#9CA3AF",
-          border: "#E5E7EB",
-          "bg-page": "#FCFCFB",
-          "bg-sub": "#F7F8FA",
-          surface: "#FFFFFF",
-          "surface-soft": "#F7F8FA",
-          "surface-hover": "#F9FAFB",
-          "outline-border": "#E5E7EB",
-          "outline-hover": "#F3F4F6",
-          "accent-blue-soft": "#F3F4F6",
-          "accent-mint-soft": "#EAF8F1",
-          "accent-lavender-soft": "#F2EEFF",
-          accent: "#10B981",
+          primary: "var(--color-navy)",
+          "primary-hover": "var(--color-navy-hover)",
+          "text-primary": "var(--color-text)",
+          "text-secondary": "var(--color-text-secondary)",
+          "text-muted": "var(--color-text-muted)",
+          border: "var(--color-border)",
+          "bg-page": "var(--color-bg)",
+          "bg-sub": "var(--color-surface-soft)",
+          surface: "var(--color-surface)",
+          "surface-soft": "var(--color-surface-soft)",
+          "surface-hover": "var(--color-bg)",
+          "outline-border": "var(--color-border)",
+          "outline-hover": "var(--color-neutral-soft)",
+          "accent-blue-soft": "var(--color-neutral-soft)",
+          "accent-mint-soft": "var(--color-mint-soft)",
+          "accent-lavender-soft": "var(--color-lavender-soft)",
+          accent: "var(--color-accent)",
         },
       },
       backgroundImage: {
-        "brand-sky-gradient":
-          "linear-gradient(180deg, #60CEFC 0%, #027EF7 100%)",
         "instagram-gradient":
           "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
         "coco-hero-mesh":
@@ -67,7 +94,6 @@ const config: Config = {
           "linear-gradient(180deg, rgba(252, 252, 251, 0) 0%, rgba(247, 248, 250, 0.85) 50%, rgba(241, 245, 249, 0.35) 100%)",
         "coco-cta-wash":
           "linear-gradient(165deg, rgba(247, 248, 250, 0.95) 0%, rgba(252, 252, 251, 0.98) 50%, rgba(243, 244, 246, 0.4) 100%)",
-        /** Cycle 系：極淡いグレーのメッシュ（白ベース） */
         "coco-mesh-wash":
           "radial-gradient(ellipse 120% 95% at 50% -8%, rgba(241, 245, 249, 0.45) 0%, transparent 58%), radial-gradient(ellipse 90% 75% at 10% 42%, rgba(229, 231, 235, 0.35) 0%, transparent 62%), radial-gradient(ellipse 85% 72% at 92% 28%, rgba(228, 228, 231, 0.28) 0%, transparent 60%), radial-gradient(ellipse 75% 60% at 78% 78%, rgba(245, 245, 246, 0.22) 0%, transparent 64%), radial-gradient(ellipse 70% 58% at 28% 88%, rgba(229, 231, 235, 0.18) 0%, transparent 68%)",
       },
@@ -76,7 +102,6 @@ const config: Config = {
           "0 1px 2px rgba(31, 41, 55, 0.04), 0 6px 20px -4px rgba(31, 41, 55, 0.06)",
         "design-soft-hover":
           "0 2px 4px rgba(31, 41, 55, 0.05), 0 10px 24px -6px rgba(31, 41, 55, 0.07)",
-        /** SaaS カード：ニュートラルな広めの影 */
         "design-saas-card":
           "0 2px 8px rgba(15, 23, 42, 0.04), 0 8px 32px rgba(15, 23, 42, 0.06), 0 24px 48px -12px rgba(15, 23, 42, 0.05)",
         "design-saas-card-hover":
