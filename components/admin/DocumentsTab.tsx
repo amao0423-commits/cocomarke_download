@@ -1,7 +1,34 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { PRIVATE_CATEGORY_NAME } from '@/lib/documentCategoryConstants';
+
+/** PDF 1ページ目 → JPEG Blob（クライアントサイド・pdfjs-dist 使用） */
+async function generatePdfThumbnail(file: File): Promise<Blob | null> {
+  try {
+    const pdfjsLib = await import('pdfjs-dist');
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    // pdfjs-dist 6.x では canvas プロパティも必須
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await page.render({ canvasContext: ctx as any, canvas, viewport } as any).promise;
+    return new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), 'image/jpeg', 0.85);
+    });
+  } catch (e) {
+    console.warn('[DocumentsTab] PDF thumbnail generation failed:', e);
+    return null;
+  }
+}
 import {
   buildHeroHighlights,
   DEFAULT_HERO_DESCRIPTION,
@@ -353,6 +380,19 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [uploadThumbnailUrl, setUploadThumbnailUrl] = useState('');
   const [uploadIsPublished, setUploadIsPublished] = useState(false);
+  const [autoThumbBlob, setAutoThumbBlob] = useState<Blob | null>(null);
+  const [thumbPreviewUrl, setThumbPreviewUrl] = useState('');
+  const [thumbGenerating, setThumbGenerating] = useState(false);
+  const [manualThumbOverride, setManualThumbOverride] = useState('');
+  const prevThumbPreviewRef = useRef('');
+
+  // オブジェクトURL の解放
+  useEffect(() => {
+    prevThumbPreviewRef.current = thumbPreviewUrl;
+    return () => {
+      if (prevThumbPreviewRef.current) URL.revokeObjectURL(prevThumbPreviewRef.current);
+    };
+  }, [thumbPreviewUrl]);
   const [editingDoc, setEditingDoc] = useState<DocumentRow | null>(null);
   const [reorderBusy, setReorderBusy] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -402,6 +442,55 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     load();
   }, [load]);
 
+  /** ファイル選択時: 表示名自動補完 + PDF サムネ自動生成 */
+  const handleFileSelect = useCallback(async (selected: File | null) => {
+    setFile(selected);
+    setAutoThumbBlob(null);
+    setThumbPreviewUrl('');
+    if (!selected) return;
+    // 表示名が空のときだけファイル名から補完
+    setTitle((prev) => {
+      if (prev.trim()) return prev;
+      return selected.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, ' ').trim();
+    });
+    // PDF のみサムネ自動生成
+    const isPdf = selected.type === 'application/pdf' || selected.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) return;
+    setThumbGenerating(true);
+    try {
+      const blob = await generatePdfThumbnail(selected);
+      if (blob) {
+        setAutoThumbBlob(blob);
+        setThumbPreviewUrl(URL.createObjectURL(blob));
+      }
+    } finally {
+      setThumbGenerating(false);
+    }
+  }, []);
+
+  /** 生成した JPEG を images バケットへアップロードして公開URLを返す */
+  const uploadThumbnailToImages = useCallback(async (blob: Blob): Promise<string | null> => {
+    try {
+      const urlRes = await fetch('/api/admin/images/upload-url', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mimeType: 'image/jpeg', fileSize: blob.size }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) return null;
+      const uploadRes = await fetch(urlData.signedUrl as string, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'image/jpeg' },
+        body: blob,
+      });
+      if (!uploadRes.ok) return null;
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+      return `${supabaseUrl}/storage/v1/object/public/images/${urlData.path as string}`;
+    } catch {
+      return null;
+    }
+  }, [secretKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleUpload = async () => {
     if (!file || !title.trim()) return;
     setBusy(true);
@@ -434,14 +523,23 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
         return;
       }
 
-      // Step 3: ドキュメント情報をデータベースに登録
+      // Step 3: サムネイルを決定（手動優先 → 自動生成 → null）
+      let finalThumbnailUrl: string | null = null;
+      const manualTrim = manualThumbOverride.trim();
+      if (manualTrim) {
+        finalThumbnailUrl = manualTrim;
+      } else if (autoThumbBlob) {
+        finalThumbnailUrl = await uploadThumbnailToImages(autoThumbBlob);
+      }
+
+      // Step 4: ドキュメント情報をデータベースに登録
       const regRes = await fetch('/api/admin/documents/register', {
         method: 'POST',
         headers: { ...auth, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: title.trim(),
           category: uploadCategory,
-          thumbnail_url: uploadThumbnailUrl.trim() || null,
+          thumbnail_url: finalThumbnailUrl,
           is_published: uploadIsPublished,
           storage_path: urlData.path as string,
           file_name: file.name,
@@ -461,6 +559,9 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       setUploadThumbnailUrl('');
       setUploadIsPublished(false);
       setUploadCategory(PRIVATE_CATEGORY_NAME);
+      setAutoThumbBlob(null);
+      setThumbPreviewUrl('');
+      setManualThumbOverride('');
       await load();
     } catch {
       setErrorMessage('処理中にエラーが発生しました');
@@ -707,81 +808,112 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     <div className="space-y-8">
       {errorMessage && <p className="text-red-600 text-sm">{errorMessage}</p>}
 
-      <div className="border border-blue-50/90 rounded-3xl p-4 space-y-4 shadow-xl shadow-blue-500/[0.04]">
+      <div className="border border-blue-50/90 rounded-3xl p-5 space-y-4 shadow-xl shadow-blue-500/[0.04]">
         <h2 className="font-semibold">資料を追加</h2>
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
-            <label className="flex-1 block">
-              <span className="text-xs text-gray-500">表示名</span>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                placeholder="例：サービス紹介PDF"
-              />
-            </label>
-            <label className="sm:w-56 block">
-              <span className="text-xs text-gray-500">カテゴリ</span>
-              <select
-                value={uploadCategory}
-                onChange={(e) => setUploadCategory(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
-              >
-                {categoryNames.length === 0 ? (
-                  <option value={PRIVATE_CATEGORY_NAME}>{PRIVATE_CATEGORY_NAME}</option>
+
+        {/* Step 1: ファイル選択（最初に見える唯一の操作） */}
+        <label className="block">
+          <span className="text-xs font-medium text-gray-500">PDFファイルを選択</span>
+          <input
+            type="file"
+            accept=".pdf,application/pdf"
+            onChange={(e) => void handleFileSelect(e.target.files?.[0] ?? null)}
+            className="mt-1 w-full text-sm"
+          />
+        </label>
+
+        {/* ファイル選択後に展開 */}
+        {file && (
+          <div className="space-y-4 border-t border-blue-50/80 pt-4">
+            <div className="flex gap-4 items-start">
+              {/* サムネプレビュー */}
+              <div className="shrink-0 w-24 h-[3.5rem] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
+                {thumbGenerating ? (
+                  <span className="text-[10px] text-gray-400 text-center leading-tight px-1">生成中…</span>
+                ) : thumbPreviewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={thumbPreviewUrl} alt="サムネイルプレビュー" className="w-full h-full object-cover" />
                 ) : (
-                  categoryNames.map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))
+                  <span className="text-[10px] text-gray-400 text-center leading-tight px-1">サムネなし</span>
                 )}
-              </select>
-            </label>
-            <label className="flex-1 block">
-              <span className="text-xs text-gray-500">ファイル</span>
-              <input
-                type="file"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="mt-1 w-full text-sm"
-              />
-            </label>
+              </div>
+
+              {/* 表示名 */}
+              <label className="flex-1 block">
+                <span className="text-xs font-medium text-gray-500">表示名</span>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  placeholder="例：サービス紹介PDF"
+                />
+              </label>
+            </div>
+
+            {/* カテゴリ + 公開トグル */}
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="block flex-1 min-w-[160px]">
+                <span className="text-xs font-medium text-gray-500">カテゴリ</span>
+                <select
+                  value={uploadCategory}
+                  onChange={(e) => setUploadCategory(e.target.value)}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+                >
+                  {categoryNames.length === 0 ? (
+                    <option value={PRIVATE_CATEGORY_NAME}>{PRIVATE_CATEGORY_NAME}</option>
+                  ) : (
+                    categoryNames.map((n) => <option key={n} value={n}>{n}</option>)
+                  )}
+                </select>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer self-end pb-1">
+                <input
+                  type="checkbox"
+                  checked={uploadIsPublished}
+                  onChange={(e) => setUploadIsPublished(e.target.checked)}
+                  className="h-4 w-4 rounded accent-sky-500"
+                />
+                <span className="text-sm font-medium text-slate-600">公開する</span>
+              </label>
+            </div>
+
+            {/* 登録ボタン */}
             <button
               type="button"
               onClick={() => void handleUpload()}
-              disabled={busy || !file || !title.trim()}
-              className="px-4 py-2 rounded-2xl bg-[#A0D8EF] text-[#2C657A] text-sm font-medium disabled:opacity-40 shrink-0"
+              disabled={busy || !title.trim()}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-2xl bg-[#A0D8EF] text-[#2C657A] text-sm font-semibold disabled:opacity-40"
             >
-              {busy ? '処理中…' : 'アップロードして登録'}
+              {busy ? '処理中…' : '登録する'}
             </button>
+
+            {/* 折りたたみ: サムネイル手動差し替え */}
+            <details className="text-sm">
+              <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600 select-none">
+                サムネイルを手動で差し替える
+              </summary>
+              <label className="block mt-2">
+                <span className="text-xs text-gray-500">サムネイルURL（手動入力・空欄で自動生成を使用）</span>
+                <input
+                  type="url"
+                  value={manualThumbOverride}
+                  onChange={(e) => setManualThumbOverride(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  placeholder="https://…"
+                />
+              </label>
+            </details>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <label className="block flex-1">
-              <span className="text-xs text-gray-500">
-                サムネイルURL（任意・トップ一覧用・公開URL）
-              </span>
-              <input
-                type="url"
-                value={uploadThumbnailUrl}
-                onChange={(e) => setUploadThumbnailUrl(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                placeholder="https://…（Storageの公開URLなど）"
-              />
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer shrink-0 self-end pb-2">
-              <input
-                type="checkbox"
-                checked={uploadIsPublished}
-                onChange={(e) => setUploadIsPublished(e.target.checked)}
-                className="h-4 w-4 rounded accent-sky-500"
-              />
-              <span className="text-sm font-medium text-slate-600">公開する</span>
-            </label>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
+        )}
+
+        {/* 折りたたみ: カテゴリ追加 */}
+        <details className="text-sm border-t border-blue-50/80 pt-3">
+          <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600 select-none">
+            カテゴリを新規追加
+          </summary>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-end mt-2">
             <label className="flex-1 block">
-              <span className="text-xs text-gray-500">新規カテゴリ名（一覧に追加）</span>
               <input
                 type="text"
                 value={newCategoryName}
@@ -799,7 +931,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
               {addingCategory ? '追加中…' : 'カテゴリを追加'}
             </button>
           </div>
-        </div>
+        </details>
       </div>
 
       <div className="border border-gray-200 rounded-xl p-4 space-y-3">
