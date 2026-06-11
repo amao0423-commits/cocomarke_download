@@ -12,7 +12,7 @@ type Props = {
 function Placeholder() {
   return (
     <div
-      className="flex h-40 w-full flex-col items-center justify-center gap-1.5 bg-design-bg-sub text-design-text-muted"
+      className="flex h-full min-h-[140px] w-full flex-col items-center justify-center gap-1.5 bg-design-bg-sub text-design-text-muted"
       aria-hidden
     >
       <svg
@@ -42,7 +42,7 @@ export function DocumentThumbnail({ src, alt, className = '' }: Props) {
 
   if (!src || broken) {
     return (
-      <div className={`overflow-hidden rounded-t-[1.25rem] ${className}`}>
+      <div className={`absolute inset-0 h-full w-full overflow-hidden ${className}`}>
         <Placeholder />
       </div>
     );
@@ -50,7 +50,7 @@ export function DocumentThumbnail({ src, alt, className = '' }: Props) {
 
   return (
     <div
-      className={`relative h-40 w-full shrink-0 overflow-hidden rounded-t-[1.25rem] bg-design-bg-sub ${className}`}
+      className={`absolute inset-0 h-full w-full overflow-hidden bg-design-bg-sub ${className}`}
     >
       <Image
         src={src}

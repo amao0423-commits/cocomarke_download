@@ -7,6 +7,12 @@ import type { PageDocument } from './getDownloadPageContext';
 export const DEFAULT_HERO_DESCRIPTION =
   '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';
 
+/** ヒーロー説明文が未指定のとき、資料タイトルから自動生成する */
+export function defaultHeroDescription(title: string) {
+  const t = title?.trim() || 'この資料';
+  return `「${t}」の内容をまとめた資料です。\n下記フォームにご記入いただくと、その場ですぐにダウンロードできます。`;
+}
+
 /** 管理画面の DocumentsTab が参照するため export を維持 */
 export const DEFAULT_HIGHLIGHT_2 = '検索・発見タブを活用した非フォロワー獲得施策';
 
@@ -99,7 +105,7 @@ export default function DownloadPageShell({
   );
 
   const heroTitle = activeDocument?.title?.trim() || activeDocument?.label || 'COCOマーケサービス資料';
-  const heroDesc = activeDocument?.hero_description?.trim() || DEFAULT_HERO_DESCRIPTION;
+  const heroDesc = activeDocument?.hero_description?.trim() || defaultHeroDescription(heroTitle);
   const heroHighlights = useMemo(
     () => buildHeroHighlights(formName, heroTitle, activeDocument ?? undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps

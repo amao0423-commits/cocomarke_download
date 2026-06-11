@@ -186,12 +186,8 @@ export default function DownloadForm({
 
   const triggerDownload = useCallback(() => {
     if (!downloadUrl) return;
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = '';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // 新規タブで開く（PDF はタブ内で表示・保存できる）
+    window.open(downloadUrl, '_blank', 'noopener,noreferrer');
   }, [downloadUrl]);
 
   /* ── サンクス画面 ── */

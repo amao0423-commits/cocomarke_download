@@ -12,6 +12,7 @@ const registerSchema = z.object({
   file_size: z.number().int().nonnegative().optional().nullable(),
   file_type: z.string().optional().nullable(),
   thumbnail_url: z.union([z.string().url(), z.literal(''), z.null()]).optional(),
+  hero_image_1_url: z.union([z.string().url(), z.literal(''), z.null()]).optional(),
   category: z.string().min(1).max(200).optional().nullable(),
   is_published: z.boolean().optional(),
 });
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '入力が不正です' }, { status: 400 });
     }
 
-    const { title, storage_path, file_name, file_size, file_type, thumbnail_url, category, is_published } =
+    const { title, storage_path, file_name, file_size, file_type, thumbnail_url, hero_image_1_url, category, is_published } =
       parsed.data;
 
     if (!title.trim()) {
@@ -51,6 +52,13 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    // 資料サムネイル（PDF1枚目）をフォーム左カラムのヒーロー画像にも初期登録する。
+    // 明示指定があればそれを優先、なければサムネイルを流用。
+    const heroImage1Url =
+      typeof hero_image_1_url === 'string' && hero_image_1_url.trim().length > 0
+        ? hero_image_1_url.trim()
+        : thumbnailUrl;
 
     const categoryValue =
       typeof category === 'string' && category.trim().length > 0
@@ -77,6 +85,7 @@ export async function POST(request: NextRequest) {
         file_type: file_type ?? null,
         download_url: null,
         thumbnail_url: thumbnailUrl,
+        hero_image_1_url: heroImage1Url,
         category: categoryValue,
         is_published: is_published === true,
       })

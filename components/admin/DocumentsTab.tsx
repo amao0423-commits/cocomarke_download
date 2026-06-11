@@ -31,9 +31,9 @@ async function generatePdfThumbnail(file: File): Promise<Blob | null> {
 }
 import {
   buildHeroHighlights,
-  DEFAULT_HERO_DESCRIPTION,
   DEFAULT_HIGHLIGHT_2,
   DOCUMENT_SUMMARY_HEADING,
+  defaultHeroDescription,
   defaultHeroHighlight1,
   defaultHeroHighlight3,
   HeroSummaryCheckIcon,
@@ -93,7 +93,7 @@ function docToHeroForm(doc: DocumentRow): HeroForm {
 }
 
 function HeroPreview({ title, form }: { title: string; form: HeroForm }) {
-  const description = form.hero_description.trim() || DEFAULT_HERO_DESCRIPTION;
+  const description = form.hero_description.trim() || defaultHeroDescription(title);
   const highlights = buildHeroHighlights(HERO_PREVIEW_FORM_NAME, title, {
     hero_highlight_1: form.hero_highlight_1,
     hero_highlight_2: form.hero_highlight_2,
@@ -265,7 +265,7 @@ function HeroEditModal({ doc, secretKey, onSaved, onClose }: HeroEditModalProps)
                 onChange={set('hero_description')}
                 rows={3}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                placeholder={DEFAULT_HERO_DESCRIPTION}
+                placeholder={defaultHeroDescription(doc.title)}
               />
             </fieldset>
 
