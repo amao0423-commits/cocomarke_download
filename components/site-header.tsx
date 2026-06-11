@@ -157,9 +157,9 @@ export function SiteHeader({
             target="_blank"
             rel="noreferrer"
             className={MAIN_SITE_LINK_CLASS}
-            aria-label="COCOマーケ本体サイトへ（別タブで開く）"
+            aria-label="COCOマーケ公式HPへ（別タブで開く）"
           >
-            <span>COCOマーケ本体サイト</span>
+            <span>COCOマーケ公式HP</span>
             <svg
               className="h-3.5 w-3.5"
               viewBox="0 0 24 24"

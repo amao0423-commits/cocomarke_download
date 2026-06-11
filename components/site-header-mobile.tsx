@@ -212,7 +212,7 @@ export function SiteHeaderMobile({
               {/* 本体サイトへの導線（1行にまとめる・枠線あり） */}
               <div className="mt-4 border-t border-design-border pt-4">
                 <p className="px-1 pb-2 text-xs font-medium text-gray-400">
-                  COCOマーケ本体サイト
+                  COCOマーケ公式HP
                 </p>
                 <div className="grid grid-cols-2 gap-1">
                   {MAIN_SITE_LINKS.map((item) => (
