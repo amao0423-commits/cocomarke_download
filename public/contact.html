@@ -177,11 +177,12 @@ const params=new URLSearchParams(location.search);
 function setCtx(id,val){
   if(val){const el=document.getElementById(id);el.style.display='flex';el.querySelector('b').textContent=val;document.getElementById('ctx').classList.add('show');}
 }
-const pType=params.get('type'), pPlan=params.get('plan'), pAcc=params.get('acc');
+const pType=params.get('type'), pPlan=params.get('plan'), pAcc=params.get('acc'), pEmail=params.get('email');
 setCtx('ctxType',pType);
 setCtx('ctxPlan',pPlan);
 setCtx('ctxAcc',pAcc);
 if(pAcc)document.getElementById('acc').value=pAcc;
+if(pEmail)document.getElementById('email').value=pEmail;
 if(pPlan){const sel=document.getElementById('plan');[...sel.options].forEach(o=>{if(o.value===pPlan)sel.value=pPlan;});}
 
 /* メールアドレスは常に必須 */

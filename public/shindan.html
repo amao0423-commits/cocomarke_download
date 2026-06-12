@@ -870,7 +870,8 @@ function showResult(){
   // CTAリンク
   document.getElementById('ctaPricing').href=PRICING_URL;
   const acc=encodeURIComponent(document.getElementById('accId').value.trim());
-  document.getElementById('ctaContact').href=`${CONTACT_URL}?type=${encodeURIComponent(t.name)}&plan=${encodeURIComponent(plan.name)}&acc=${acc}`;
+  const email=encodeURIComponent(document.getElementById('email').value.trim());
+  document.getElementById('ctaContact').href=`${CONTACT_URL}?type=${encodeURIComponent(t.name)}&plan=${encodeURIComponent(plan.name)}&acc=${acc}&email=${email}`;
 
   // CTAクリック計測
   document.getElementById('ctaPricing').onclick=()=>{ if(window.fbq) fbq('trackCustom','ClickPricing',{type:t.name,plan:plan.name}); };
