@@ -380,7 +380,7 @@ const questions = [
     opts:[
       {t:"ほぼ既存フォロワーにしか届いていない",emoji:"🔒",s:{R:0}},
       {t:"たまに知らない人にも届く",emoji:"🌱",s:{R:1}},
-      {t:"発見タブからの新規流入が結構ある",emoji:"🚀",s:{R:2}},
+      {t:"発見・おすすめタブからの新規流入が結構ある",emoji:"🚀",s:{R:2}},
     ]
   },
   {
@@ -408,11 +408,11 @@ const questions = [
     ]
   },
   {
-    q:"「発見タブ」に載った経験は？",
+    q:"「発見・おすすめタブ」に載った経験は？",
     opts:[
       {t:"載ったことがない／わからない",emoji:"❓",s:{R:0}},
       {t:"数回バズった気がする",emoji:"✨",s:{R:1}},
-      {t:"定期的に発見タブ流入がある",emoji:"📈",s:{R:2}},
+      {t:"定期的に発見・おすすめタブ流入がある",emoji:"📈",s:{R:2}},
     ]
   },
   {
@@ -875,41 +875,52 @@ function setupShare(t){
   const shareText = `私のインスタは「${t.name}」だったよ〜🌱✨\n【${t.lvl}】\nあなたの“伸びないタイプ”も無料でわかる👀💭\n#JEMIAインスタ診断`;
   const url = SHARE_URL;
   const full = `${shareText}\n${url}`;
+  const canNativeShare = typeof navigator.share === 'function';
 
+  // PC用フォールバックの共有URL。LINEはアプリ直起動スキーム（多段リダイレクトを回避）。
   const handlers = {
     x:()=>`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
-    line:()=>`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`,
+    line:()=>`https://line.me/R/msg/text/?${encodeURIComponent(full)}`,
     facebook:()=>`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   };
+
+  async function nativeShare(network){
+    if(window.fbq) fbq('trackCustom','ShareResult',{network,type:t.name});
+    try{ await navigator.share({title:'JEMIA インスタ運用診断', text:shareText, url}); }catch(e){/* キャンセル等は無視 */}
+  }
+
+  function copyResult(btn){
+    if(window.fbq) fbq('trackCustom','ShareResult',{network:'copy',type:t.name});
+    const done=()=>{
+      const lbl=document.getElementById('copyLabel');
+      btn.classList.add('done'); if(lbl) lbl.textContent='コピー済み';
+      setTimeout(()=>{ btn.classList.remove('done'); if(lbl) lbl.textContent='コピー'; },1800);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(full).then(done).catch(()=>{ legacyCopy(full); done(); });
+    }else{ legacyCopy(full); done(); }
+  }
+  function legacyCopy(text){
+    const ta=document.createElement('textarea'); ta.value=text;
+    ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+    ta.select(); try{document.execCommand('copy');}catch(_){}
+    document.body.removeChild(ta);
+  }
 
   document.querySelectorAll('.sh').forEach(btn=>{
     const net = btn.dataset.net;
     if(net==='native'){
-      if(navigator.share){
-        btn.style.display='';
-        btn.onclick=async()=>{
-          if(window.fbq) fbq('trackCustom','ShareResult',{network:'native',type:t.name});
-          try{ await navigator.share({title:'JEMIA インスタ運用診断', text:shareText, url}); }catch(e){}
-        };
-      }
+      if(canNativeShare){ btn.style.display=''; btn.onclick=()=>nativeShare('native'); }
       return;
     }
     btn.onclick = async ()=>{
+      if(net==='copy'){ copyResult(btn); return; }
+      // モバイル（Web Share API対応）はネイティブ共有シートに集約し、
+      // LINEへの多段リダイレクト＆「元サイトに戻れない」問題を回避する。
+      if(canNativeShare){ await nativeShare(net); return; }
+      // PC等: 通常の新規タブで開く（ポップアップのサイズ指定はしない）
       if(window.fbq) fbq('trackCustom','ShareResult',{network:net,type:t.name});
-      if(net==='copy'){
-        try{ await navigator.clipboard.writeText(full); }
-        catch(e){
-          const ta=document.createElement('textarea'); ta.value=full;
-          ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
-          ta.select(); try{document.execCommand('copy');}catch(_){}
-          document.body.removeChild(ta);
-        }
-        const lbl=document.getElementById('copyLabel');
-        btn.classList.add('done'); if(lbl) lbl.textContent='コピー済み';
-        setTimeout(()=>{ btn.classList.remove('done'); if(lbl) lbl.textContent='コピー'; },1800);
-        return;
-      }
-      window.open(handlers[net](), '_blank', 'noopener,width=600,height=540');
+      window.open(handlers[net](), '_blank', 'noopener,noreferrer');
     };
   });
 }
