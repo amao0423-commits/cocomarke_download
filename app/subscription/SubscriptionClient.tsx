@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./subscription.module.css";
 
 /* ── brand tokens ── */
@@ -154,7 +155,10 @@ export default function SubscriptionClient() {
               <a key={href} href={href}>{label}</a>
             ))}
           </nav>
-          <button className={styles.headerCta} onClick={openModal}>無料で相談する</button>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <Link href="/subscription/corporate" className={styles.headerCorp}>法人のお客様</Link>
+            <button className={styles.headerCta} onClick={openModal}>無料で相談する</button>
+          </div>
         </div>
       </header>
 
@@ -524,6 +528,7 @@ export default function SubscriptionClient() {
           {([["特徴","#features"],["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
             <a key={href} href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>{label}</a>
           ))}
+          <Link href="/subscription/corporate" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>法人のお客様</Link>
         </div>
         <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>
           受付時間：平日 09:00 - 18:00（土日祝日は除く）<br />

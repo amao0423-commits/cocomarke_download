@@ -79,6 +79,23 @@
   font-family: inherit;
   white-space: nowrap;
 }
+.headerCorp {
+  display: inline-block;
+  background: #fff;
+  color: #2D7A4F;
+  border: 1.5px solid #2D7A4F;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.headerCorp:hover { background: #E8F5ED; }
+@media (max-width: 420px) {
+  .headerCta { padding: 9px 14px; font-size: 13px; }
+  .headerCorp { padding: 7px 12px; font-size: 12px; }
+}
 @media (max-width: 720px) {
   .headerNav { display: none; }
 }
