@@ -120,3 +120,59 @@
   .grid4 { grid-template-columns: 1fr; }
 }
 
+/* ── 実績スタッツ（カード内の区切り線をレスポンシブに） ── */
+.statCell {
+  padding: 0 24px;
+}
+.statCell:not(:last-child) {
+  border-right: 1px solid #D8EDE1;
+}
+@media (max-width: 600px) {
+  .statCell {
+    padding: 22px 0;
+  }
+  .statCell:first-child { padding-top: 4px; }
+  .statCell:last-child { padding-bottom: 4px; }
+  /* 縦積み時は右の縦線をやめ、下の区切り線にする（途中で切れた縦線を解消） */
+  .statCell:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid #D8EDE1;
+  }
+}
+
+/* ── 横スクロール（プランバー）のヒント ── */
+.swipeHint {
+  display: none;
+}
+@media (max-width: 880px) {
+  .swipeHint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #888888;
+    margin-bottom: 10px;
+  }
+}
+
+/* ── 導入の流れ（モバイルで適切な間隔を確保） ── */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 880px) {
+  .stepsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 44px;
+    column-gap: 16px;
+  }
+}
+@media (max-width: 600px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+    row-gap: 32px;
+  }
+}
+

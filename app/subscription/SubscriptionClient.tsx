@@ -159,7 +159,7 @@ export default function SubscriptionClient() {
       </header>
 
       {/* ── Hero ── */}
-      <section id="top" style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 0", position:"relative", overflow:"hidden", scrollMarginTop:64 }}>
+      <section id="top" style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 64px", position:"relative", overflow:"hidden", scrollMarginTop:64 }}>
         <div className={styles.heroGrid} style={{ maxWidth:1100, margin:"0 auto", alignItems:"center", paddingBottom:80 }}>
           {/* left */}
           <div className={styles.fadeUp}>
@@ -235,14 +235,14 @@ export default function SubscriptionClient() {
           </div>
         </div>
         {/* stats bar */}
-        <div style={{ background:"#fff", borderTop:`1px solid ${BD}`, padding:"28px 24px" }}>
-          <div className={styles.grid3} style={{ maxWidth:1100, margin:"0 auto" }}>
+        <div style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:"28px 24px", maxWidth:1100, margin:"0 auto", boxShadow:"0 10px 36px rgba(45,122,79,.08)" }}>
+          <div className={styles.grid3}>
             {[
               ["12,400","導入アカウント フォロワー増加","平均 3ヶ月後の実績",false],
               ["340%","発見タブ リーチ増加率","先月比 平均値",true],
               ["4.9","顧客満足度","/ 5点満点（20件）",false],
-            ].map(([n,l,d,coral],i)=>(
-              <div key={l as string} style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"0 24px", borderRight:i<2?`1px solid ${BD}`:undefined }}>
+            ].map(([n,l,d,coral])=>(
+              <div key={l as string} className={styles.statCell} style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
                 <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:42, fontWeight:900, color:coral?C:G, lineHeight:1, letterSpacing:"-.03em" }}>{n}</div>
                 <div style={{ fontSize:12, color:TL, marginTop:6, fontWeight:500 }}>{l}</div>
                 <div style={{ fontSize:11, color:TL, marginTop:2, opacity:.7 }}>{d}</div>
@@ -341,7 +341,8 @@ export default function SubscriptionClient() {
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:12 }} />
           <p style={{ fontSize:15, color:TM, marginBottom:36, lineHeight:1.8 }}>目的に合わせて選べる5プラン。すべて月額固定・解約自由。</p>
           {/* tabs */}
-          <div style={{ display:"flex", borderBottom:`2px solid ${BD}`, marginBottom:32, overflow:"auto" }}>
+          <div className={styles.swipeHint}><span>←</span><span>横にスライドできます</span><span>→</span></div>
+          <div style={{ display:"flex", borderBottom:`2px solid ${BD}`, marginBottom:32, overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
             {plans.map((p,i)=>(
               <div key={p.name} style={{ position:"relative", display:"inline-flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end" }}>
                 {p.popular && <span style={{ background:C, color:"#fff", fontSize:9, fontWeight:700, padding:"2px 8px", borderRadius:100, marginBottom:4, whiteSpace:"nowrap" }}>人気 No.1</span>}
@@ -386,9 +387,9 @@ export default function SubscriptionClient() {
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it works</div>
             <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>導入の流れ</h2>
           </div>
-          <div className={styles.grid4} style={{ gap:0, position:"relative" }}>
+          <div className={styles.stepsGrid} style={{ position:"relative" }}>
             {[["01","無料相談","LINEまたはフォームからご連絡。現状のアカウントをヒアリングし最適なプランをご提案。"],
-              ["02","プラン選択・決済","ご希望のプランを選択し、オンラインで決済。クレジットカード・銀行振込に対応。"],
+              ["02","プラン選択・決済","ご希望のプランを選択し、オンラインで決済。"],
               ["03","設定・運用開始","最短翌日から運用スタート。初期設定はすべて担当が対応。お客様の作業は不要。"],
               ["04","レポート・改善","毎月レポートで成果をご報告。継続的に改善しながらフォロワー増加を加速。"],
             ].map(([n,h,p])=>(
