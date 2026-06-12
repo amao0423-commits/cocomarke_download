@@ -1,7 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const HERO_SELECT =
-  "id, title, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url";
+  "id, title, hero_description, hero_highlight_1, hero_highlight_2, hero_highlight_3, hero_highlights_extra, hero_image_1_url, thumbnail_url";
 
 type HeroFields = {
   title: string | null;
@@ -12,6 +12,17 @@ type HeroFields = {
   hero_highlights_extra: string | null;
   hero_image_1_url: string | null;
 };
+
+/** ヒーロー画像未設定時は資料サムネイルを流用する */
+function resolveHeroImage(
+  heroImage: string | null | undefined,
+  thumbnail: string | null | undefined,
+): string | null {
+  const hero = typeof heroImage === "string" ? heroImage.trim() : "";
+  if (hero) return hero;
+  const thumb = typeof thumbnail === "string" ? thumbnail.trim() : "";
+  return thumb || null;
+}
 
 export type PageDocument = {
   id: string;
@@ -67,7 +78,7 @@ export async function getDownloadPageContext(
             hero_highlight_2: r.hero_highlight_2 ?? null,
             hero_highlight_3: r.hero_highlight_3 ?? null,
             hero_highlights_extra: r.hero_highlights_extra ?? null,
-            hero_image_1_url: r.hero_image_1_url ?? null,
+            hero_image_1_url: resolveHeroImage(r.hero_image_1_url, r.thumbnail_url),
           },
         ])
       );
@@ -112,7 +123,7 @@ export async function getDownloadPageContext(
         hero_highlight_2: document.hero_highlight_2 ?? null,
         hero_highlight_3: document.hero_highlight_3 ?? null,
         hero_highlights_extra: document.hero_highlights_extra ?? null,
-        hero_image_1_url: document.hero_image_1_url ?? null,
+        hero_image_1_url: resolveHeroImage(document.hero_image_1_url, document.thumbnail_url),
       }
     : null;
 

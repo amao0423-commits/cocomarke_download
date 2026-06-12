@@ -143,10 +143,10 @@ export default function DownloadPageShell({
               </p>
 
               <div className="mt-5 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
-                <div className="aspect-[16/10] bg-[#F4F6F9]">
+                <div className="aspect-[16/10] bg-white">
                   {thumbSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={thumbSrc} alt={heroTitle} className="h-full w-full object-cover" />
+                    <img src={thumbSrc} alt={heroTitle} className="h-full w-full object-contain" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-xs font-bold text-[#94A3B8]">
                       PDF
