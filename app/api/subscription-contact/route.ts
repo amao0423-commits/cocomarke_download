@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
 
-const NOTIFY_TO = 'a-ando@hotseller.jp';
+const NOTIFY_TO = 'info@cocomake-guide.com';
 
 function sanitize(v: unknown): string {
   return String(v ?? '').replace(/[\r\n]/g, ' ').trim();

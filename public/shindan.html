@@ -458,7 +458,7 @@ const types = {
     card:"linear-gradient(140deg,#FFF0EB,#ffffff)",
     tag:"コンテンツはあるのに反応も到達も少ない状態。きっかけさえあれば一気に伸びる伸びしろ大のタイプ。",
     diag:"発信はできているのに、初動の反応（いいね・保存）が弱く、アルゴリズムに『良い投稿』と判断されずリーチが頭打ちになっています。初速の後押しが効果的です。",
-    points:["初動エンゲージが弱く拡散スイッチが入らない","新規層に届く前に投稿が埋もれている","初速いいね＋発見タブ対策で化ける可能性大"],
+    points:["初動エンゲージが弱く拡散スイッチが入らない","新規層に届く前に投稿が埋もれている","初速いいね＋発見・おすすめタブ対策で化ける可能性大"],
     plan:"setPlan"},
   DRIFTER:{code:"S0·R0",face:"🧭",name:"ノープラン迷子型",
     lvl:"LEVEL 1 / 要改善",lc:"#FF6633",lbg:"#FFF0EB",
@@ -471,8 +471,8 @@ const types = {
     lvl:"LEVEL 2 / 成長中",lc:"#C77A00",lbg:"#FFF6E5",
     card:"linear-gradient(140deg,#FFF6E5,#ffffff)",
     tag:"投稿は続けられているのに、リーチが伸び悩む踊り場の状態。露出の天井を外す施策が鍵です。",
-    diag:"継続力はあるのにリーチが既存フォロワー内で頭打ちになっています。発見タブ・検索面への露出を増やせば、積み上げた継続力が一気に成果へ変わります。",
-    points:["継続できているのに新規到達が伸びない","発見タブ露出が弱く天井にぶつかっている","発見表示ブーストで露出の上限を引き上げる"],
+    diag:"継続力はあるのにリーチが既存フォロワー内で頭打ちになっています。発見・おすすめタブ・検索面への露出を増やせば、積み上げた継続力が一気に成果へ変わります。",
+    points:["継続できているのに新規到達が伸びない","発見・おすすめタブ露出が弱く天井にぶつかっている","発見表示ブーストで露出の上限を引き上げる"],
     plan:"discoverBoost"},
   INVISIBLE:{code:"S1·R0",face:"🫥",name:"検索イマイチ型",
     lvl:"LEVEL 2 / 成長中",lc:"#C77A00",lbg:"#FFF6E5",
@@ -492,7 +492,7 @@ const types = {
     lvl:"LEVEL 2 / 成長中",lc:"#C77A00",lbg:"#FFF6E5",
     card:"linear-gradient(140deg,#FFF6E5,#ffffff)",
     tag:"新規流入も戦略意識も育ってきた成長期。ブーストをかければ加速度的に伸ばせます。",
-    diag:"リーチも戦略意識も平均以上に育っています。あとは露出の量を増やすだけ。発見タブとセット施策で成長スピードを一段引き上げられます。",
+    diag:"リーチも戦略意識も平均以上に育っています。あとは露出の量を増やすだけ。発見・おすすめタブとセット施策で成長スピードを一段引き上げられます。",
     points:["新規流入が出始めている好調期","あと一押しの露出量で加速できる","セットプランで複合的に伸びを最大化"],
     plan:"setPlan"},
   LOCALSTAR:{code:"S2·R1",face:"📍",name:"ローカル特化型",
@@ -537,9 +537,9 @@ const plans = {
   likeBoost:{name:"いいね代行プラン",price:"9,800円 / 月（税込）〜",
     why:"ターゲット層への自動いいねで認知の入口を作り、初動の反応を底上げします。まず『見つけてもらう動き』を補うのに最適なスタートプランです。"},
   discoverBoost:{name:"発見表示ブーストプラン",price:"人気プラン",
-    why:"発見タブ・検索面への露出を強化し、リーチの天井を引き上げます。継続力や反応がある今こそ効果が出やすいプランです。"},
+    why:"発見・おすすめタブ・検索面への露出を強化し、リーチの天井を引き上げます。継続力や反応がある今こそ効果が出やすいプランです。"},
   setPlan:{name:"セットプラン",price:"No.1 人気プラン",
-    why:"いいね・発見タブ・上位表示を組み合わせ、複合的に伸びを最大化。成長期のアカウントを一段押し上げる王道の組み合わせです。"},
+    why:"いいね・発見・おすすめタブ・上位表示を組み合わせ、複合的に伸びを最大化。成長期のアカウントを一段押し上げる王道の組み合わせです。"},
   listTop:{name:"リスト上位表示プラン",price:"狙いワードを押さえる",
     why:"狙ったキーワードの上位表示を押し上げ、『その地域・ジャンルで一番に出る』状態を狙います。明確な勝ち筋があるアカウント向け。"},
   premium:{name:"プレミアムプラン",price:"最上位プラン",
@@ -738,9 +738,29 @@ function submitForm(){
   document.getElementById('errMail').classList.toggle('show',!mailOk); if(!mailOk)ok=false;
   document.getElementById('errConsent').classList.toggle('show',!consent); if(!consent)ok=false;
   if(!ok)return;
-  /* リード獲得（診断完了＝メール+ID送信）を計測。自動返信メールは送らない方針 */
+  /* リード獲得（診断完了＝メール+ID送信）を計測。申込者への自動返信メールは送らない方針 */
   if(window.fbq) fbq('track','Lead',{content_name:'instagram_diagnosis'});
-  /* 必要に応じてCRM登録等の送信処理をここに実装（サンクスメールは送らない） */
+  /* 担当(info@cocomake-guide.com)へ診断完了の通知メールを送信（既存Brevo: /api/subscription-contact） */
+  try{
+    computeScore();
+    const {key}=pickType();
+    const ty=types[key], pl=plans[ty.plan];
+    fetch('/api/subscription-contact',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name: acc,
+        email: mail,
+        inquiry_type: 'インスタ運用診断',
+        instagram_id: acc.replace(/^@/,''),
+        message:[
+          '【インスタ運用診断 完了】',
+          'アカウントID: '+acc,
+          '診断タイプ: '+ty.name+'（'+ty.lvl+'）',
+          'おすすめプラン: '+pl.name,
+        ].join('\n')
+      })
+    }).catch(()=>{});
+  }catch(e){ /* 通知失敗でも診断は続行 */ }
   runAnalysis();
 }
 
@@ -749,7 +769,7 @@ function runAnalysis(){
   show('analyzeScreen');
   const steps=[
     "投稿パターンを読み込んでいます",
-    "発見タブ到達率を推定しています",
+    "発見・おすすめタブ到達率を推定しています",
     "エンゲージメントを分析しています",
     "狙いキーワードの競合度を確認しています",
     "あなたのタイプを判定しています",
