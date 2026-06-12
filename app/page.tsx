@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { loadHomeDocumentSections } from "@/lib/homeDocuments";
-import { pickFeaturedDocuments } from "@/lib/pickFeaturedDocuments";
+import { loadHomeDocumentsFlat } from "@/lib/homeDocuments";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
-import { CategoryNav } from "@/components/home/CategoryNav";
-import { HomeGenreSection } from "@/components/home/HomeGenreSection";
+import { DocumentGrid } from "@/components/home/DocumentGrid";
+import { DocumentCard } from "@/components/home/DocumentCard";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import Image from "next/image";
@@ -11,9 +10,7 @@ import Image from "next/image";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const { sections } = await loadHomeDocumentSections();
-  const featured = pickFeaturedDocuments(sections, 3);
-  const featuredIds = new Set(featured.map((d) => d.id));
+  const documents = await loadHomeDocumentsFlat();
 
   return (
     <div>
@@ -83,19 +80,34 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* ===== Library ===== */}
+      {/* ===== Library（アップロード順のフラット一覧） ===== */}
       <section
         id="document-categories"
-        className="scroll-mt-4 bg-white pb-5 pt-10 sm:pb-6 sm:pt-12 lg:pb-7 lg:pt-14"
+        className="scroll-mt-4 bg-white pb-10 pt-10 sm:pb-12 sm:pt-12 lg:pb-14 lg:pt-14"
         aria-labelledby="library-heading"
       >
         <div className="mx-auto max-w-[1200px] px-5">
-          {sections.length > 0 ? (
-            <CategoryNav sections={sections} />
+          <h2
+            id="library-heading"
+            className="text-xl font-bold tracking-tight text-[#01408D] sm:text-2xl"
+          >
+            お役立ち資料
+          </h2>
+          {documents.length === 0 ? (
+            <p className="mt-6 text-sm text-[#6B7280]">公開中の資料はまだありません。</p>
           ) : (
-            <h2 id="library-heading" className="sr-only">カテゴリー</h2>
+            <DocumentGrid className="mt-8">
+              {documents.map((doc) => (
+                <li key={doc.id}>
+                  <DocumentCard
+                    document={doc}
+                    href={`/download?documentId=${encodeURIComponent(doc.id)}`}
+                    description={doc.description}
+                  />
+                </li>
+              ))}
+            </DocumentGrid>
           )}
-          <HomeGenreSection sections={sections} featuredIds={featuredIds} />
         </div>
       </section>
 

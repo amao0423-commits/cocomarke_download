@@ -3,6 +3,7 @@ import {
   PRIVATE_CATEGORY_NAME,
   UNCATEGORIZED_CATEGORY_NAME,
 } from '@/lib/documentCategoryConstants';
+import { getHomeCategoryCopy } from '@/lib/homeCategoryCopy';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
@@ -26,12 +27,19 @@ export type HomeSection = {
   documents: HomeDocument[];
 };
 
+/** カード1枚分。カテゴリ名はバッジ、説明文はカテゴリ説明（または既定文）から解決する */
+export type HomeFlatDocument = HomeDocument & {
+  /** カテゴリ説明（バッジ下の説明文に使用） */
+  description: string;
+};
+
 type DocumentRow = {
   id: string;
   title: string;
   category: string;
   thumbnail_url?: string | null;
   updated_at?: string | null;
+  created_at?: string | null;
   sort_order?: number;
 };
 
@@ -168,5 +176,61 @@ async function fetchTopDocuments(): Promise<HomeDocument[]> {
 export const loadTopDocuments = unstable_cache(
   fetchTopDocuments,
   ['home-top-documents'],
+  { revalidate: 3600, tags: ['documents'] }
+);
+
+/**
+ * トップ用（フラット表示）: カテゴリで分けず、公開資料をアップロード順（created_at 昇順）に並べる。
+ * カードの説明文には所属カテゴリの説明（管理画面設定 → 既定文）を割り当てる。
+ */
+async function fetchHomeDocumentsFlat(): Promise<HomeFlatDocument[]> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) {
+    return [];
+  }
+
+  const [catsRes, docsRes] = await Promise.all([
+    supabase.from('document_categories').select('name, description'),
+    supabase
+      .from('documents')
+      .select('id, title, category, thumbnail_url, updated_at, created_at')
+      .eq('is_published', true)
+      .order('created_at', { ascending: true }),
+  ]);
+
+  let documentsRaw: DocumentRow[] = [];
+  if (docsRes.error) {
+    const basic = await supabase
+      .from('documents')
+      .select('id, title, category, created_at')
+      .eq('is_published', true)
+      .order('created_at', { ascending: true });
+    documentsRaw = (basic.data ?? []) as DocumentRow[];
+  } else {
+    documentsRaw = (docsRes.data ?? []) as DocumentRow[];
+  }
+
+  const categoryDescription = new Map<string, string | null>(
+    ((catsRes.data ?? []) as { name: string; description?: string | null }[]).map((c) => [
+      c.name,
+      c.description?.trim() || null,
+    ]),
+  );
+
+  return documentsRaw.map((row) => {
+    const base = mapDocumentRow(row);
+    return {
+      ...base,
+      description:
+        categoryDescription.get(base.category) ??
+        getHomeCategoryCopy(base.category).description,
+    };
+  });
+}
+
+/** ISR の外でも Supabase を叩かないよう1時間キャッシュ */
+export const loadHomeDocumentsFlat = unstable_cache(
+  fetchHomeDocumentsFlat,
+  ['home-documents-flat'],
   { revalidate: 3600, tags: ['documents'] }
 );

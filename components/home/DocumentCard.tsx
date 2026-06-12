@@ -1,46 +1,67 @@
 import type { HomeDocument } from '@/lib/homeDocuments';
-import { DocumentThumbnail } from '@/components/home/DocumentThumbnail';
 
-type BadgeKind = 'pickup' | 'recommended';
+/** 出典ロゴ（COCOマーケ ファビコン） */
+const FAVICON_URL =
+  'https://gnfbcjgwgomzutrdozkw.supabase.co/storage/v1/object/public/images/favicon.png';
 
 type Props = {
   document: HomeDocument;
   href: string;
+  /** バッジ下の説明文（カテゴリ説明など） */
   description?: string;
-  badge?: BadgeKind | null;
 };
 
-export function DocumentCard({ document: doc, href, description, badge }: Props) {
+export function DocumentCard({ document: doc, href, description }: Props) {
   return (
-    <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-[#E8EBF0] bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(15,23,42,.2)]">
+    <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[#E8EBF0] bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(15,23,42,.2)]">
       <a href={href} style={{ display: 'contents' }}>
-        {/* サムネイル 4:3 */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-[#E8EBF0] bg-white">
-          <DocumentThumbnail src={doc.thumbnailUrl} alt={doc.title} />
+        {/* ヘッダー：左に出典ロゴ、右に小型サムネイル */}
+        <div className="flex items-start justify-between gap-3 border-b border-[#EEF1F5] bg-[#F8FAFC] px-4 pb-3 pt-4">
+          <div className="flex min-w-0 items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={FAVICON_URL}
+              alt="COCOマーケ"
+              className="h-8 w-8 shrink-0 object-contain"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-[11px] font-bold leading-tight text-[#1F2937]">
+                COCOマーケ
+              </p>
+              <p className="text-[10px] leading-tight text-[#9CA3AF]">資料</p>
+            </div>
+          </div>
+
+          <div className="relative h-[60px] w-20 shrink-0 overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#E2E8F0]">
+            {doc.thumbnailUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={doc.thumbnailUrl}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3.5">
-          {badge === 'pickup' ? (
-            <span className="mb-2 inline-block w-fit rounded-full bg-[#F2EEFF] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[#5b46b8]">
-              ピックアップ
-            </span>
-          ) : badge === 'recommended' ? (
-            <span className="mb-2 inline-block w-fit rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[#01408D]">
-              おすすめ
-            </span>
-          ) : null}
+        {/* 本文：タグ・タイトル・説明・ボタン */}
+        <div className="flex min-h-0 flex-1 flex-col gap-2 px-4 pb-4 pt-3.5">
+          <span className="inline-block w-fit rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[#0C447C]">
+            {doc.category}
+          </span>
 
           <h4 className="text-sm font-bold leading-snug tracking-[.005em] text-[#1F2937] line-clamp-2 sm:text-[14.5px]">
             {doc.title}
           </h4>
 
           {description && (
-            <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-[#6B7280]">
+            <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-[#6B7280]">
               {description}
             </p>
           )}
 
-          <div className="mt-3 shrink-0">
+          <div className="mt-auto pt-2.5">
             <span className="flex w-full items-center justify-center gap-1.5 rounded-full bg-[#2563A8] py-2.5 text-[13px] font-bold text-white transition group-hover:bg-[#1d5390]">
               ダウンロード
             </span>
