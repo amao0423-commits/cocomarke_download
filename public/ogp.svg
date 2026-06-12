@@ -1,0 +1,71 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8F5ED"/>
+      <stop offset="1" stop-color="#F8FAF7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 飾りドット -->
+  <circle cx="120" cy="110" r="10" fill="#FF6633" opacity=".5"/>
+  <circle cx="1080" cy="540" r="14" fill="#2D7A4F" opacity=".25"/>
+  <circle cx="1010" cy="120" r="8" fill="#FF6633" opacity=".4"/>
+  <circle cx="150" cy="520" r="9" fill="#2D7A4F" opacity=".3"/>
+  <path d="M1120 230 l8 -16 l8 16" stroke="#FF6633" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+  <path d="M70 300 l7 -14 l7 14" stroke="#2D7A4F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".4"/>
+
+  <!-- ロゴ -->
+  <text x="80" y="120" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif" font-size="44" font-weight="900" letter-spacing="2">
+    <tspan fill="#2D7A4F">J</tspan><tspan fill="#2D7A4F">EM</tspan><tspan fill="#FF6633">I</tspan><tspan fill="#2D7A4F">A</tspan>
+  </text>
+
+  <!-- 見出し -->
+  <text x="80" y="265" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif" font-size="74" font-weight="900" fill="#1A1A1A">あなたのインスタ、</text>
+  <text x="80" y="360" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif" font-size="74" font-weight="900" fill="#1A1A1A">伸びないタイプは<tspan fill="#FF6633">？</tspan></text>
+
+  <!-- コーラル下線 -->
+  <rect x="84" y="378" width="430" height="14" rx="7" fill="#FF6633" opacity=".35"/>
+
+  <!-- サブコピー -->
+  <text x="80" y="455" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif" font-size="34" font-weight="700" fill="#2D7A4F">60秒・無料 ／ 12タイプ診断 🌱</text>
+
+  <!-- バッジ -->
+  <rect x="80" y="500" width="300" height="62" rx="31" fill="#FF6633"/>
+  <text x="230" y="541" font-family="'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif" font-size="30" font-weight="900" fill="#fff" text-anchor="middle">無料で診断する →</text>
+
+  <!-- ===== キャラ3体 ===== -->
+  <!-- 情けない(要改善) -->
+  <g transform="translate(770,150) scale(1.7)">
+    <ellipse cx="58" cy="64" rx="40" ry="43" fill="#F6D7BE"/>
+    <path d="M20 50 Q58 22 96 50 Q94 30 58 24 Q22 30 20 50Z" fill="#5b4636"/>
+    <ellipse cx="32" cy="73" rx="7" ry="4.5" fill="#FF9E80" opacity=".5"/><ellipse cx="84" cy="73" rx="7" ry="4.5" fill="#FF9E80" opacity=".5"/>
+    <path d="M55 66 L53 74 L60 74Z" fill="#E6B594"/>
+    <path d="M35 52 Q42 50 49 53" stroke="#3a2b20" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M67 53 Q74 50 81 52" stroke="#3a2b20" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="42" cy="61" r="6" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="74" cy="61" r="6" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="42" cy="62" r="2.2" fill="#1A1A1A"/><circle cx="74" cy="62" r="2.2" fill="#1A1A1A"/>
+    <path d="M50 86 Q58 82 66 86" stroke="#3a2b20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M40 70 q-3 6 0 11" stroke="#7fb8e6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- やる気(成長中) -->
+  <g transform="translate(905,310) scale(1.7)">
+    <ellipse cx="58" cy="64" rx="40" ry="43" fill="#F6D7BE"/>
+    <path d="M20 50 Q58 22 96 50 Q94 30 58 24 Q22 30 20 50Z" fill="#4a3326"/>
+    <ellipse cx="32" cy="73" rx="7" ry="4.5" fill="#FF9E80" opacity=".5"/><ellipse cx="84" cy="73" rx="7" ry="4.5" fill="#FF9E80" opacity=".5"/>
+    <path d="M55 66 L53 74 L60 74Z" fill="#E6B594"/>
+    <path d="M35 49 Q42 45 49 49" stroke="#3a2b20" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M67 49 Q74 45 81 49" stroke="#3a2b20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="42" cy="60" r="6.5" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="74" cy="60" r="6.5" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="43" cy="61" r="3" fill="#1A1A1A"/><circle cx="75" cy="61" r="3" fill="#1A1A1A"/><circle cx="44.5" cy="59" r="1" fill="#fff"/><circle cx="76.5" cy="59" r="1" fill="#fff"/>
+    <path d="M48 84 Q58 92 68 84 Q58 88 48 84Z" fill="#9c4a3c"/>
+    <path d="M90 50 l5 -10 l5 10" stroke="#FF6633" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- ドヤ(好調) -->
+  <g transform="translate(770,400) scale(1.7)">
+    <ellipse cx="58" cy="64" rx="40" ry="43" fill="#F6D7BE"/>
+    <path d="M20 50 Q58 22 96 50 Q94 30 58 24 Q22 30 20 50Z" fill="#3a2b20"/>
+    <ellipse cx="32" cy="73" rx="7" ry="4.5" fill="#FF7A55" opacity=".6"/><ellipse cx="84" cy="73" rx="7" ry="4.5" fill="#FF7A55" opacity=".6"/>
+    <path d="M55 66 L53 74 L60 74Z" fill="#E6B594"/>
+    <path d="M34 47 Q42 44 50 47" stroke="#3a2b20" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M66 47 Q74 44 82 47" stroke="#3a2b20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="42" cy="59" r="7" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="74" cy="59" r="7" fill="#fff" stroke="#3a2b20" stroke-width="1.5"/><circle cx="43" cy="59" r="3.2" fill="#1A1A1A"/><circle cx="75" cy="59" r="3.2" fill="#1A1A1A"/><circle cx="45" cy="57" r="1.2" fill="#fff"/><circle cx="77" cy="57" r="1.2" fill="#fff"/>
+    <path d="M46 82 Q58 95 70 82 Q58 89 46 82Z" fill="#9c4a3c"/>
+    <path d="M92 34 l1.8 4.4 l4.7 .4 l-3.6 3.1 l1.1 4.6 l-4 -2.5 l-4 2.5 l1.1 -4.6 l-3.6 -3.1 l4.7 -.4Z" fill="#FF6633"/>
+  </g>
+</svg>

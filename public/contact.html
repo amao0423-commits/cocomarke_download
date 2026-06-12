@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無料相談・お問い合わせ | JEMIA</title>
+
+<!-- ===== Meta Pixel ===== ※ 3571994076297031 を実際のピクセルIDに置き換えてください -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '3571994076297031');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=3571994076297031&ev=PageView&noscript=1"/></noscript>
+<!-- ===== /Meta Pixel ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--ink:#1A1A1A;--muted:#555555;--line:#D8EDE1;
+  --g:#2D7A4F;--gm:#4CAF75;--gl:#E8F5ED;--c:#FF6633;--cl:#FFF0EB;--ow:#F8FAF7;--bd:#D8EDE1;--tm:#555;--tl:#888;--grape:#2D7A4F;--magenta:#2D7A4F;--tangerine:#FF6633;--lime:#2D7A4F;--sky:#4CAF75;
+  --card:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:
+    var(--bg);
+  color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.7;min-height:100vh}
+.wrap{max-width:620px;margin:0 auto;padding:0 20px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 20px;max-width:620px;margin:0 auto}
+.logo{font-family:"Outfit";font-weight:900;font-size:1.4rem;letter-spacing:.04em;color:var(--g)}
+.logo .i{color:var(--c)}
+.logo small{display:block;font-family:"Zen Kaku Gothic New";font-weight:500;font-size:.6rem;letter-spacing:.3em;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.back{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600}
+.back:hover{color:var(--ink)}
+
+.hero{text-align:center;padding:34px 0 22px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:"Outfit";font-weight:700;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--g);border:1px solid var(--bd);background:var(--gl);padding:7px 14px;border-radius:99px;margin-bottom:20px}
+.hero h1{font-weight:900;font-size:clamp(1.9rem,6vw,2.7rem);line-height:1.25;margin-bottom:14px}
+.hero h1 .grad{color:var(--g)}
+.hero p{color:var(--muted);font-size:.98rem;max-width:440px;margin:0 auto}
+
+.context{background:var(--gl);border:1px solid var(--bd);border-radius:18px;padding:18px 20px;margin:18px 0 6px;display:none}
+.context.show{display:block}
+.context .lab{font-family:"Outfit";font-weight:800;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-bottom:8px}
+.context .row{display:flex;justify-content:space-between;gap:12px;font-size:.92rem;padding:4px 0}
+.context .row span:first-child{color:var(--muted)}
+.context .row b{font-weight:700;text-align:right}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:30px 26px;margin:22px 0 40px;box-shadow:0 1px 2px rgba(26,26,26,.04),0 16px 40px -24px rgba(45,122,79,.2)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:.82rem;font-weight:700;letter-spacing:.03em;margin-bottom:8px;color:var(--tm)}
+.field .req{color:var(--c);font-size:.75rem;margin-left:4px}
+.field input,.field select,.field textarea{width:100%;background:#f7f8fa;border:1.5px solid var(--line);border-radius:13px;padding:14px 15px;color:var(--ink);font-size:1rem;font-family:inherit;transition:.2s}
+.field textarea{resize:vertical;min-height:104px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(45,122,79,.16)}
+.field input::placeholder,.field textarea::placeholder{color:#9aa1ad}
+.field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 15px center}
+.err{color:#fb7185;font-size:.78rem;margin-top:6px;display:none}
+.err.show{display:block}
+.method{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.method label{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--line);border-radius:13px;padding:13px;cursor:pointer;font-weight:600;font-size:.92rem;transition:.2s}
+.method label:hover{border-color:var(--g);background:var(--gl)}
+.method input{display:none}
+.method input:checked+span{}
+.method label:has(input:checked){border-color:var(--g);background:var(--gl);box-shadow:0 0 0 1px var(--g)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;font-family:"Zen Kaku Gothic New";font-weight:700;font-size:1.05rem;border:none;cursor:pointer;border-radius:99px;padding:17px 30px;color:#ffffff;
+  background:var(--c);
+  box-shadow:0 10px 24px -8px rgba(255,102,51,.45);transition:transform .2s,box-shadow .2s;margin-top:6px}
+.btn:hover{transform:translateY(-2px)}
+.note{font-size:.78rem;color:var(--muted);text-align:center;margin-top:14px}
+
+.success{display:none;text-align:center;padding:30px 10px}
+.success.show{display:block}
+.success .ico{font-size:3.4rem;margin-bottom:14px}
+.success h2{font-weight:900;font-size:1.6rem;margin-bottom:12px}
+.success p{color:var(--muted);font-size:.95rem;max-width:400px;margin:0 auto 22px}
+.success .btn{max-width:320px;margin:0 auto}
+
+footer{background:#1A1A1A;color:#cfcfcf;padding:30px 20px;text-align:center;font-size:.76rem;margin-top:40px;line-height:1.9}
+footer a{color:#fff}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span class="j">J</span>EM<span class="i">I</span>A<small>無料相談・お問い合わせ</small></div>
+  <a class="back" href="shindan.html">← 診断に戻る</a>
+</div>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="eyebrow">翌営業日以内に返信します</div>
+    <h1>あなたに合った<br><span class="grad">サブスク</span>を相談する</h1>
+    <p>プラン選びに迷ったら、まずは気軽にご相談ください。診断結果をもとに、最適なプランをご提案します。</p>
+  </div>
+
+  <!-- 診断から引き継いだ情報 -->
+  <div class="context" id="ctx">
+    <div class="lab">診断結果より引き継ぎ</div>
+    <div class="row" id="ctxType" style="display:none"><span>あなたのタイプ</span><b></b></div>
+    <div class="row" id="ctxPlan" style="display:none"><span>おすすめプラン</span><b></b></div>
+    <div class="row" id="ctxAcc" style="display:none"><span>アカウントID</span><b></b></div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="field">
+      <label>お名前 / 店舗・ブランド名<span class="req">必須</span></label>
+      <input type="text" id="name" placeholder="例）JEMIAカフェ 山田">
+      <div class="err" id="errName">入力してください。</div>
+    </div>
+    <div class="field">
+      <label>Instagram アカウントID<span class="req">必須</span></label>
+      <input type="text" id="acc" placeholder="@your_account">
+      <div class="err" id="errAcc">入力してください。</div>
+    </div>
+
+    <label style="display:block;font-size:.82rem;font-weight:700;margin-bottom:8px;color:var(--tm)">希望の連絡方法<span class="req" style="color:var(--c);font-size:.75rem;margin-left:4px">必須</span></label>
+    <div class="method">
+      <label><input type="radio" name="method" value="Instagram DM" checked><span>💬 Instagram DM</span></label>
+      <label><input type="radio" name="method" value="メール"><span>✉️ メール</span></label>
+    </div>
+
+    <div class="field" id="emailField">
+      <label>メールアドレス<span class="req">必須</span></label>
+      <input type="email" id="email" placeholder="you@example.com">
+      <div class="err" id="errMail">正しいメールアドレスを入力してください。</div>
+    </div>
+
+    <div class="field">
+      <label>気になっているプラン</label>
+      <select id="plan">
+        <option value="">まだ決めていない / 相談したい</option>
+        <option>いいね代行プラン</option>
+        <option>発見表示ブーストプラン</option>
+        <option>セットプラン</option>
+        <option>リスト上位表示プラン</option>
+        <option>プレミアムプラン</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>相談したいこと（任意）</label>
+      <textarea id="msg" placeholder="例）地域の検索で上位に出したい。どのプランが合うか相談したいです。"></textarea>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="submitContact()">無料相談を送信する →</button>
+    <p class="note">契約縛りなし・解約自由。営業電話はありません。</p>
+  </div>
+
+  <div class="success" id="success">
+    <div class="ico">🎉</div>
+    <h2>送信が完了しました</h2>
+    <p>担当より翌営業日以内にご連絡します。診断結果をもとに、あなたに最適なプランをご提案します。</p>
+    <a class="btn" href="shindan.html">診断トップに戻る</a>
+  </div>
+</main>
+
+<footer>
+  © 2026 株式会社ホットセラー / JEMIA<br>
+  受付時間：平日 09:00 - 18:00（土日祝日は除く）
+</footer>
+
+<script>
+/* 診断ページから渡されたパラメータを表示 */
+const params=new URLSearchParams(location.search);
+function setCtx(id,val){
+  if(val){const el=document.getElementById(id);el.style.display='flex';el.querySelector('b').textContent=val;document.getElementById('ctx').classList.add('show');}
+}
+const pType=params.get('type'), pPlan=params.get('plan'), pAcc=params.get('acc');
+setCtx('ctxType',pType);
+setCtx('ctxPlan',pPlan);
+setCtx('ctxAcc',pAcc);
+if(pAcc)document.getElementById('acc').value=pAcc;
+if(pPlan){const sel=document.getElementById('plan');[...sel.options].forEach(o=>{if(o.value===pPlan)sel.value=pPlan;});}
+
+/* メールアドレスは常に必須 */
+function methodVal(){return document.querySelector('input[name=method]:checked').value;}
+
+async function submitContact(){
+  const name=document.getElementById('name').value.trim();
+  const acc=document.getElementById('acc').value.trim();
+  const mail=document.getElementById('email').value.trim();
+  let ok=true;
+  document.getElementById('errName').classList.toggle('show',!name); if(!name)ok=false;
+  document.getElementById('errAcc').classList.toggle('show',!acc); if(!acc)ok=false;
+  const mailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
+  document.getElementById('errMail').classList.toggle('show',!mailOk); if(!mailOk)ok=false;
+  if(!ok){window.scrollTo({top:0,behavior:'smooth'});return;}
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='送信中…';
+
+  /* お問い合わせ完了を計測。自動返信メールは送らない方針 */
+  if(window.fbq){
+    fbq('track','Lead',{content_name:'contact_form'});
+    fbq('track','CompleteRegistration',{content_name:'free_consultation'});
+  }
+
+  /* 担当(a-ando@hotseller.jp)へ通知メールを送信（既存Brevo: /api/subscription-contact） */
+  const msgBody=[
+    `希望の連絡方法: ${methodVal()}`,
+    `気になっているプラン: ${document.getElementById('plan').value||'未選択'}`,
+    pType?`診断タイプ: ${pType}`:null,
+    pPlan?`診断おすすめプラン: ${pPlan}`:null,
+    '',
+    '相談内容:',
+    document.getElementById('msg').value.trim()||'（記載なし）'
+  ].filter(l=>l!==null).join('\n');
+  try{
+    await fetch('/api/subscription-contact',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name,
+        email:mail,
+        inquiry_type:document.getElementById('plan').value||'無料相談（広告LP）',
+        instagram_id:acc.replace(/^@/,''),
+        message:msgBody
+      })
+    });
+  }catch(e){ /* 通知失敗でもユーザーには完了表示。サーバーログで検知する想定 */ }
+
+  document.getElementById('formCard').style.display='none';
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('success').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
