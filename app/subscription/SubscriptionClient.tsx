@@ -183,6 +183,7 @@ export default function SubscriptionClient() {
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:36 }}>
               <button style={btnPrimary} onClick={openModal}>無料で相談する →</button>
               <a href="#plans" style={{ background:"transparent", color:G, border:`2px solid ${G}`, padding:"12px 24px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none", display:"inline-block" }}>料金を見る</a>
+              <Link href="/subscription/diagnosis" style={{ display:"inline-flex", alignItems:"center", gap:6, color:C, fontSize:14, fontWeight:700, textDecoration:"none", padding:"12px 4px" }}>30秒でプラン診断 →</Link>
             </div>
             <div style={{ display:"flex", gap:28 }}>
               {[["3000+","導入アカウント数"],["4.9","平均満足度"],["3x","平均フォロワー増加"]].map(([n,l])=>(
@@ -338,6 +339,17 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Plans ── */}
+      {/* ── プラン診断への導線バナー ── */}
+      <section style={{ padding:"56px 24px 0", background:"#fff" }}>
+        <Link href="/subscription/diagnosis" style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap", background:`linear-gradient(135deg,${GL},#fff)`, border:`1.5px solid ${BD}`, borderRadius:16, padding:"22px 26px", textDecoration:"none" }}>
+          <div>
+            <div style={{ fontSize:16, fontWeight:700, color:TXT, marginBottom:4 }}>どのプランが合うか迷っていませんか？</div>
+            <div style={{ fontSize:13, color:TM }}>かんたん4問・30秒で、あなたに最適なプランがわかります。</div>
+          </div>
+          <span style={{ background:C, color:"#fff", padding:"12px 22px", borderRadius:10, fontSize:14, fontWeight:700, whiteSpace:"nowrap", boxShadow:"0 4px 20px rgba(255,102,51,.25)" }}>30秒でプラン診断 →</span>
+        </Link>
+      </section>
+
       <section id="plans" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Plans & Pricing</div>
@@ -462,7 +474,10 @@ export default function SubscriptionClient() {
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
         <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
         <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>プラン選びに迷ったら気軽にまずはフォームからどうぞ。<br />翌営業日以内に返信します。</p>
-        <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={openModal}>無料で相談する →</button>
+        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
+          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={openModal}>無料で相談する →</button>
+          <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
+        </div>
       </section>
 
       {/* ── Modal ── */}
