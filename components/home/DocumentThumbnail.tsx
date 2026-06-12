@@ -56,7 +56,7 @@ export function DocumentThumbnail({ src, alt, className = '' }: Props) {
         src={src}
         alt={alt}
         fill
-        className="object-cover object-center opacity-[0.92] saturate-[0.95]"
+        className="object-contain object-center opacity-[0.92] saturate-[0.95]"
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
         unoptimized={/^https?:\/\//.test(src)}
         onError={onError}
