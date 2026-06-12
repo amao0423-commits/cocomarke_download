@@ -53,7 +53,7 @@ const plans = [
 const faqs = [
   { q:"いつでも解約できますか？", a:"はい、月単位での契約ですので翌月分から解約が可能です。違約金や解約手数料は一切かかりません。" },
   { q:"効果が出るまでどれくらいかかりますか？", a:"多くのお客様で1〜2ヶ月以内に数値の改善が見られます。特に発見タブへの掲載は早いケースで2〜3週間で効果が出始めます。" },
-  { q:"アカウントが凍結されるリスクはありませんか？", a:"Instagramのガイドラインに準拠した安全な手法のみを使用しています。過去200件以上の導入で凍結事例はゼロです。" },
+  { q:"アカウントが凍結されるリスクはありませんか？", a:"Instagramのガイドラインに準拠した安全な手法のみを使用しています。過去3000件以上の導入で凍結事例はゼロです。" },
   { q:"支払い方法は何に対応していますか？", a:"クレジットカード（VISA・Mastercard・JCB）および銀行振込に対応しています。" },
   { q:"個人アカウントでも利用できますか？", a:"はい、個人・法人を問わずご利用いただけます。ビジネスアカウントへの切り替えを推奨しています（無料でサポートします）。" },
 ];
@@ -181,7 +181,7 @@ export default function SubscriptionClient() {
               <a href="#plans" style={{ background:"transparent", color:G, border:`2px solid ${G}`, padding:"12px 24px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none", display:"inline-block" }}>料金を見る</a>
             </div>
             <div style={{ display:"flex", gap:28 }}>
-              {[["200+","導入アカウント数"],["4.9","平均満足度"],["3x","平均フォロワー増加"]].map(([n,l])=>(
+              {[["3000+","導入アカウント数"],["4.9","平均満足度"],["3x","平均フォロワー増加"]].map(([n,l])=>(
                 <div key={l}>
                   <div style={{ fontFamily:"Montserrat,sans-serif", fontWeight:900, fontSize:26, color:G, lineHeight:1 }}>{n}</div>
                   <div style={{ fontSize:11, color:TL, marginTop:2 }}>{l}</div>
@@ -302,7 +302,7 @@ export default function SubscriptionClient() {
           </div>
           {/* stats */}
           <div className={styles.grid4} style={{ gap:20 }}>
-            {[["3x","平均フォロワー増加率"],["200+","累計導入アカウント"],["4.9","顧客満足度（5点満点）"],["92%","3ヶ月継続率"]].map(([n,l])=>(
+            {[["3x","平均フォロワー増加率"],["3000+","累計導入アカウント"],["4.9","顧客満足度（5点満点）"],["92%","3ヶ月継続率"]].map(([n,l])=>(
               <div key={l} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:12, padding:"24px 20px", textAlign:"center" }}>
                 <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:32, fontWeight:900, color:G, lineHeight:1 }}>{n}</div>
                 <div style={{ fontSize:12, color:TL, marginTop:6 }}>{l}</div>
