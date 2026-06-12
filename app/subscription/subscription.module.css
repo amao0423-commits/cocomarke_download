@@ -90,3 +90,33 @@
   padding: 56px 24px 40px;
 }
 
+/* ── レスポンシブ・グリッド（モバイルで折り返し、はみ出し防止） ── */
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 880px) {
+  .grid3 { grid-template-columns: repeat(2, 1fr); }
+  .grid4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .heroGrid { grid-template-columns: 1fr; gap: 36px; }
+  .grid2,
+  .grid3,
+  .grid4 { grid-template-columns: 1fr; }
+}
+

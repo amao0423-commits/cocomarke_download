@@ -160,7 +160,7 @@ export default function SubscriptionClient() {
 
       {/* ── Hero ── */}
       <section id="top" style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 0", position:"relative", overflow:"hidden", scrollMarginTop:64 }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:64, alignItems:"center", paddingBottom:80 }}>
+        <div className={styles.heroGrid} style={{ maxWidth:1100, margin:"0 auto", alignItems:"center", paddingBottom:80 }}>
           {/* left */}
           <div className={styles.fadeUp}>
             <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:CL, color:C, fontSize:12, fontWeight:700, letterSpacing:".06em", padding:"6px 14px", borderRadius:100, marginBottom:20 }}>
@@ -191,7 +191,7 @@ export default function SubscriptionClient() {
           </div>
           {/* right: search sim */}
           <div style={{ display:"flex", justifyContent:"center" }}>
-            <div style={{ width:280, background:"#fff", borderRadius:24, border:`1.5px solid ${BD}`, boxShadow:`0 2px 16px rgba(45,122,79,.08),0 24px 60px rgba(45,122,79,.14)`, overflow:"hidden" }}>
+            <div style={{ width:280, maxWidth:"100%", background:"#fff", borderRadius:24, border:`1.5px solid ${BD}`, boxShadow:`0 2px 16px rgba(45,122,79,.08),0 24px 60px rgba(45,122,79,.14)`, overflow:"hidden" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 10px", borderBottom:`1px solid ${BD}` }}>
                 <span style={{ fontFamily:"Montserrat,sans-serif", fontWeight:900, fontSize:15 }}>Instagram</span>
                 <span style={{ fontSize:18, color:TL }}>⊕</span>
@@ -236,7 +236,7 @@ export default function SubscriptionClient() {
         </div>
         {/* stats bar */}
         <div style={{ background:"#fff", borderTop:`1px solid ${BD}`, padding:"28px 24px" }}>
-          <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(3,1fr)" }}>
+          <div className={styles.grid3} style={{ maxWidth:1100, margin:"0 auto" }}>
             {[
               ["12,400","導入アカウント フォロワー増加","平均 3ヶ月後の実績",false],
               ["340%","発見タブ リーチ増加率","先月比 平均値",true],
@@ -258,7 +258,7 @@ export default function SubscriptionClient() {
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Features</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>選ばれる3つの理由</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, margin:"0 0 40px" }} />
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
+          <div className={styles.grid3} style={{ gap:24 }}>
             {[
               { icon:"📅", title:"月額固定・解約自由", desc:"契約縛りなし。月々定額で予算が読める。いつでも解約OK。成果が出なければ継続しなくていい。" },
               { icon:"🎛️", title:"自由な組み合わせ",   desc:"いいね代行・発見タブ・リスト上位・セットプランなど、目的に合わせてプランを選択・変更できる。" },
@@ -281,7 +281,7 @@ export default function SubscriptionClient() {
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Results</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>導入前後の変化</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24, marginBottom:40 }}>
+          <div className={styles.grid2} style={{ gap:24, marginBottom:40 }}>
             {[
               { badge:"導入前 — Before", badgeBg:"#f0f0f0", badgeColor:"#888", title:"よくある状況", img:"/jemia/grapefruit-ade.png", caption:"フォロワーにしか届かない投稿イメージ", items:["フォロワーが増えない","投稿しても反応がない","発見タブに載らない","何をすれば良いかわからない","リソースがなく更新が止まる"], dotColor:"#ccc" },
               { badge:"導入後 — After",  badgeBg:GL,       badgeColor:G,     title:"JEMIAを使った結果", img:"/jemia/search-result-top.png", caption:"発見タブに掲載された後の検索結果イメージ", items:["3ヶ月でフォロワー3倍以上","エンゲージメント率 8〜12%","発見タブ流入が劇的に増加","専任担当が戦略をサポート","オーナーはコアに集中できる"], dotColor:G },
@@ -301,7 +301,7 @@ export default function SubscriptionClient() {
             ))}
           </div>
           {/* stats */}
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:20 }}>
+          <div className={styles.grid4} style={{ gap:20 }}>
             {[["3x","平均フォロワー増加率"],["200+","累計導入アカウント"],["4.9","顧客満足度（5点満点）"],["92%","3ヶ月継続率"]].map(([n,l])=>(
               <div key={l} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:12, padding:"24px 20px", textAlign:"center" }}>
                 <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:32, fontWeight:900, color:G, lineHeight:1 }}>{n}</div>
@@ -350,7 +350,7 @@ export default function SubscriptionClient() {
             ))}
           </div>
           {/* panel */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:40, alignItems:"start" }}>
+          <div className={styles.grid2} style={{ gap:40, alignItems:"start" }}>
             <div>
               {plans[tab].popular && (
                 <div style={{ display:"flex", alignItems:"center", gap:8, background:CL, border:`1px solid rgba(255,102,51,.25)`, borderRadius:8, padding:"8px 14px", marginBottom:16 }}>
@@ -386,7 +386,7 @@ export default function SubscriptionClient() {
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it works</div>
             <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>導入の流れ</h2>
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:0, position:"relative" }}>
+          <div className={styles.grid4} style={{ gap:0, position:"relative" }}>
             {[["01","無料相談","LINEまたはフォームからご連絡。現状のアカウントをヒアリングし最適なプランをご提案。"],
               ["02","プラン選択・決済","ご希望のプランを選択し、オンラインで決済。クレジットカード・銀行振込に対応。"],
               ["03","設定・運用開始","最短翌日から運用スタート。初期設定はすべて担当が対応。お客様の作業は不要。"],
@@ -408,7 +408,7 @@ export default function SubscriptionClient() {
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Reviews</div>
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>利用者の声</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:20 }}>
+          <div className={styles.grid3} style={{ gap:20 }}>
             {visibleVoices.map((v)=>(
               <div key={v.name} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:24 }}>
                 <div style={{ color:C, fontSize:14, marginBottom:12 }}>{"★".repeat(v.stars)}{"☆".repeat(5-v.stars)}</div>
