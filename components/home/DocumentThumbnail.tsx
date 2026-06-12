@@ -50,7 +50,7 @@ export function DocumentThumbnail({ src, alt, className = '' }: Props) {
 
   return (
     <div
-      className={`absolute inset-0 h-full w-full overflow-hidden bg-design-bg-sub ${className}`}
+      className={`absolute inset-0 h-full w-full overflow-hidden bg-white ${className}`}
     >
       <Image
         src={src}
