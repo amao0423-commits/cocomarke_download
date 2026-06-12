@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { loadHomeDocumentsFlat } from "@/lib/homeDocuments";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
-import { DocumentGrid } from "@/components/home/DocumentGrid";
-import { DocumentCard } from "@/components/home/DocumentCard";
+import { DocumentLibrary } from "@/components/home/DocumentLibrary";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import Image from "next/image";
@@ -89,24 +88,14 @@ export default async function Home() {
         <div className="mx-auto max-w-[1200px] px-5">
           <h2
             id="library-heading"
-            className="text-xl font-bold tracking-tight text-[#01408D] sm:text-2xl"
+            className="mb-6 text-xl font-bold tracking-tight text-[#01408D] sm:text-2xl"
           >
             お役立ち資料
           </h2>
           {documents.length === 0 ? (
             <p className="mt-6 text-sm text-[#6B7280]">公開中の資料はまだありません。</p>
           ) : (
-            <DocumentGrid className="mt-8">
-              {documents.map((doc) => (
-                <li key={doc.id}>
-                  <DocumentCard
-                    document={doc}
-                    href={`/download?documentId=${encodeURIComponent(doc.id)}`}
-                    description={doc.description}
-                  />
-                </li>
-              ))}
-            </DocumentGrid>
+            <DocumentLibrary documents={documents} />
           )}
         </div>
       </section>

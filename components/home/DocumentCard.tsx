@@ -1,8 +1,7 @@
 import type { HomeDocument } from '@/lib/homeDocuments';
 
-/** 出典ロゴ（COCOマーケ ファビコン） */
-const FAVICON_URL =
-  'https://gnfbcjgwgomzutrdozkw.supabase.co/storage/v1/object/public/images/favicon.png';
+/** 出典ロゴ（COCOマーケ アイコン: app/icon.png → /icon.png 配信） */
+const LOGO_URL = '/icon.png';
 
 type Props = {
   document: HomeDocument;
@@ -20,9 +19,9 @@ export function DocumentCard({ document: doc, href, description }: Props) {
           <div className="flex min-w-0 items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={FAVICON_URL}
+              src={LOGO_URL}
               alt="COCOマーケ"
-              className="h-8 w-8 shrink-0 object-contain"
+              className="h-8 w-8 shrink-0 rounded-md object-contain"
             />
             <div className="min-w-0">
               <p className="truncate text-[11px] font-bold leading-tight text-[#1F2937]">
@@ -32,13 +31,13 @@ export function DocumentCard({ document: doc, href, description }: Props) {
             </div>
           </div>
 
-          <div className="relative h-[60px] w-20 shrink-0 overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#E2E8F0]">
+          <div className="relative h-[60px] w-20 shrink-0 overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
             {doc.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={doc.thumbnailUrl}
                 alt=""
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
                 loading="lazy"
               />
             ) : null}
