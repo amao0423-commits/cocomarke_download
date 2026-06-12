@@ -130,7 +130,7 @@ export default function DownloadPageShell({
           React がコンポーネントを再マウントすると state がリセットされ
           サンクス画面が消えるため、DOM ツリー上の位置を変えてはいけない。
         */}
-        <div className={thanksMode ? '' : 'grid grid-cols-1 items-start gap-11 lg:grid-cols-2'}>
+        <div className={thanksMode ? '' : 'grid grid-cols-1 items-start gap-11 lg:grid-cols-[1.12fr_1fr]'}>
 
           {/* 左：資料情報（thanksMode 時は非表示） */}
           {!thanksMode && (
@@ -143,16 +143,14 @@ export default function DownloadPageShell({
               </p>
 
               <div className="mt-5 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
-                <div className="aspect-[16/10] bg-white">
-                  {thumbSrc ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={thumbSrc} alt={heroTitle} className="h-full w-full object-contain" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs font-bold text-[#94A3B8]">
-                      PDF
-                    </div>
-                  )}
-                </div>
+                {thumbSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={thumbSrc} alt={heroTitle} className="block w-full" />
+                ) : (
+                  <div className="flex aspect-[16/10] w-full items-center justify-center bg-[#F4F6F9] text-xs font-bold text-[#94A3B8]">
+                    PDF
+                  </div>
+                )}
                 <div className="flex items-center gap-2.5 border-t border-[#E2E8F0] px-4 py-3.5 text-[13px] text-[#64748B]">
                   <span className="rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[11px] font-bold text-[#01408D]">PDF</span>
                   <span>無料ダウンロード・約5分で読了</span>
