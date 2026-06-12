@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { loadHomeDocumentSections } from "@/lib/homeDocuments";
 import { pickFeaturedDocuments } from "@/lib/pickFeaturedDocuments";
@@ -7,7 +6,6 @@ import { CategoryNav } from "@/components/home/CategoryNav";
 import { HomeGenreSection } from "@/components/home/HomeGenreSection";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
-import { TopDocuments } from "@/components/TopDocuments";
 import Image from "next/image";
 
 export const dynamic = 'force-dynamic';
@@ -55,11 +53,6 @@ export default async function Home() {
               </span>
             </h1>
 
-            {/* Lead */}
-            <p className="mt-5 max-w-[30em] text-[17px] leading-relaxed text-[#6B7280]">
-              アカウント設計から最新アルゴリズム対策まで、現場で使える資料をひとつの場所に集めました。登録不要のものをすぐにダウンロードできます。
-            </p>
-
             {/* CTA */}
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <Link
@@ -89,20 +82,6 @@ export default async function Home() {
           </div>
         </div>
       </div>
-
-      {/* ===== Popular TOP 3 ===== */}
-      <Suspense fallback={
-        <div className="border-b border-[#E8EBF0] bg-white py-10 sm:py-12">
-          <div className="mx-auto max-w-[1200px] px-5">
-            <div className="h-6 w-36 animate-pulse rounded bg-gray-100" />
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {[0, 1, 2].map(i => <div key={i} className="h-48 animate-pulse rounded-xl bg-gray-100" />)}
-            </div>
-          </div>
-        </div>
-      }>
-        <TopDocuments />
-      </Suspense>
 
       {/* ===== Library ===== */}
       <section
