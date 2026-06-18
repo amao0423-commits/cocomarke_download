@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS public.broadcast_email_campaigns (
   body_content TEXT NOT NULL DEFAULT '',
   body_mode TEXT NOT NULL DEFAULT 'plain',
   recipient_sources TEXT[] NOT NULL DEFAULT '{}',
+  recipient_document_id UUID,
   sender_email TEXT,
   status TEXT NOT NULL DEFAULT 'draft',
   scheduled_at TIMESTAMPTZ,

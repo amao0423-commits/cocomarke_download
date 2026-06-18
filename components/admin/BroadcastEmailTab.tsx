@@ -68,6 +68,9 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
   const [selectedSources, setSelectedSources] = useState<RecipientSource[]>(
     RECIPIENT_SOURCE_OPTIONS.map((option) => option.value)
   );
+  /** 資料ダウンロード申請の絞り込み（空＝すべての資料の請求者） */
+  const [downloadDocumentId, setDownloadDocumentId] = useState('');
+  const [documents, setDocuments] = useState<{ id: string; title: string }[]>([]);
   const [testEmailTo, setTestEmailTo] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -85,6 +88,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
     try {
       const params = new URLSearchParams();
       selectedSources.forEach((source) => params.append('source', source));
+      if (downloadDocumentId) params.append('downloadDocumentId', downloadDocumentId);
       const res = await fetch(`/api/admin/broadcast-email?${params.toString()}`, {
         headers: auth,
       });
@@ -101,11 +105,26 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
     } finally {
       setCountLoading(false);
     }
-  }, [secretKey, selectedSources]);
+  }, [secretKey, selectedSources, downloadDocumentId]);
 
   useEffect(() => {
     void loadCount();
   }, [loadCount]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/documents', { headers: auth });
+        const data = (await res.json()) as { documents?: { id: string; title: string }[] };
+        if (!cancelled && res.ok) setDocuments(data.documents ?? []);
+      } catch {
+        // 取得失敗時は絞り込みなし（すべての資料）で続行
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [secretKey]);
 
   const loadCampaigns = useCallback(async () => {
     try {
@@ -165,6 +184,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
+          downloadDocumentId,
         }),
       });
       const data = (await res.json()) as SendResponse;
@@ -255,6 +275,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
+          downloadDocumentId,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -289,6 +310,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
+          downloadDocumentId,
           scheduledAt: new Date(scheduledAt).toISOString(),
         }),
       });
@@ -408,6 +430,33 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
             );
           })}
         </div>
+
+        {selectedSources.includes('download_requests') && (
+          <div className="rounded-2xl border border-blue-100 bg-blue-50/40 px-4 py-3 space-y-1.5">
+            <label htmlFor="broadcast-doc-filter" className="block text-sm font-semibold text-slate-700">
+              資料で絞り込む（資料ダウンロード申請）
+            </label>
+            <p className="text-xs text-slate-500">
+              特定の資料を選ぶと、その資料を請求した人だけに送信します。
+            </p>
+            <select
+              id="broadcast-doc-filter"
+              value={downloadDocumentId}
+              onChange={(e) => {
+                setRecipientCount(null);
+                setDownloadDocumentId(e.target.value);
+              }}
+              className={`w-full max-w-md rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
+            >
+              <option value="">すべての資料の請求者</option>
+              {documents.map((doc) => (
+                <option key={doc.id} value={doc.id}>
+                  {doc.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </section>
 
       <div className="flex flex-wrap items-center gap-2 text-sm">

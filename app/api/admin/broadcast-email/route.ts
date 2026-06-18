@@ -38,6 +38,7 @@ const postSchema = z.discriminatedUnion('action', [
     bodyMode: z.enum(['plain', 'html']).optional(),
     sources: z.array(z.string()).optional(),
     senderEmail: emailSchema.optional().or(z.literal('')),
+    downloadDocumentId: z.string().uuid().optional().or(z.literal('')),
   }),
   z.object({
     action: z.literal('preview'),
@@ -61,6 +62,7 @@ const postSchema = z.discriminatedUnion('action', [
     bodyMode: z.enum(['plain', 'html']).optional(),
     sources: z.array(z.string()).optional(),
     senderEmail: emailSchema.optional().or(z.literal('')),
+    downloadDocumentId: z.string().uuid().optional().or(z.literal('')),
   }),
   z.object({
     action: z.literal('schedule'),
@@ -69,6 +71,7 @@ const postSchema = z.discriminatedUnion('action', [
     bodyMode: z.enum(['plain', 'html']).optional(),
     sources: z.array(z.string()).optional(),
     senderEmail: emailSchema.optional().or(z.literal('')),
+    downloadDocumentId: z.string().uuid().optional().or(z.literal('')),
     scheduledAt: z.string().datetime(),
   }),
   z.object({
@@ -102,7 +105,10 @@ export async function GET(request: NextRequest) {
     }
 
     const sources = normalizeBroadcastRecipientSources(request.nextUrl.searchParams.getAll('source'));
-    const { emails, error } = await collectBroadcastRecipientEmails(supabase, sources);
+    const downloadDocumentId = request.nextUrl.searchParams.get('downloadDocumentId') || null;
+    const { emails, error } = await collectBroadcastRecipientEmails(supabase, sources, {
+      downloadDocumentId,
+    });
     if (error) {
       return NextResponse.json({ error }, { status: 500 });
     }
@@ -142,6 +148,7 @@ export async function POST(request: NextRequest) {
       bodyMode?: 'plain' | 'html';
       sources?: string[];
       senderEmail?: string;
+      downloadDocumentId?: string;
       scheduledAt?: string;
     };
     const action = data.action ?? 'send_now';
@@ -194,6 +201,7 @@ export async function POST(request: NextRequest) {
         bodyContent: data.bodyContent ?? '',
         bodyMode: normalizeBroadcastBodyMode(data.bodyMode),
         recipientSources: sources,
+        recipientDocumentId: data.downloadDocumentId || null,
         senderEmail: data.senderEmail || undefined,
         status: action === 'schedule' ? 'scheduled' : 'draft',
         scheduledAt,
@@ -234,6 +242,7 @@ export async function POST(request: NextRequest) {
       bodyMode: normalizeBroadcastBodyMode(data.bodyMode),
       sources,
       senderEmail: data.senderEmail || undefined,
+      downloadDocumentId: data.downloadDocumentId || null,
     });
 
     if (!result.ok) {
@@ -253,6 +262,7 @@ export async function POST(request: NextRequest) {
         bodyContent: data.bodyContent ?? data.mainBodyHtml ?? '',
         bodyMode: normalizeBroadcastBodyMode(data.bodyMode),
         recipientSources: sources,
+        recipientDocumentId: data.downloadDocumentId || null,
         senderEmail: data.senderEmail || undefined,
         totalCount: result.total,
         sentCount: result.sent,

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://api.github.com/repos/amao0423-commits/cocomarke_download/deployments?per_page=6\" -o d.json)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://api.github.com/repos/amao0423-commits/cocomarke_download/deployments?per_page=4\" -o d2.json)",
+      "Bash(curl -sL \"https://www.cocomake-guide.com/admin/entered-ids\" -o a.html)",
+      "Bash(curl -s https://api.github.com/repos/amao0423-commits/cocomarke_download/commits/f450489/status)",
+      "Bash(curl -s \"https://api.github.com/repos/amao0423-commits/cocomarke_download/deployments?per_page=4\")",
+      "Bash(python3 -c \"import sys,json;[print\\(x['sha'][:8],x.get\\('environment'\\),x.get\\('created_at'\\)\\) for x in json.load\\(sys.stdin\\)[:4]]\")",
+      "Bash(curl -sL \"https://www.cocomake-guide.com/admin/entered-ids?cb=$\\(date +%s%N\\)\" -o L.html -w \"http=%{http_code}\\\\n\")"
+    ]
+  }
+}

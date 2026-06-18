@@ -39,15 +39,26 @@ export function normalizeBroadcastRecipientSources(
   return normalized;
 }
 
+/** 宛先絞り込みオプション。downloadDocumentId 指定時は資料ダウンロード申請をその資料の請求者のみに限定 */
+export type BroadcastRecipientFilter = {
+  downloadDocumentId?: string | null;
+};
+
 /** 選択された申請元から宛先を集約（重複は小文字キーで1件） */
 export async function collectBroadcastRecipientEmails(
   supabase: SupabaseClient<Database>,
-  sources: BroadcastRecipientSource[] = DEFAULT_BROADCAST_RECIPIENT_SOURCES
+  sources: BroadcastRecipientSource[] = DEFAULT_BROADCAST_RECIPIENT_SOURCES,
+  filter: BroadcastRecipientFilter = {}
 ): Promise<{ emails: string[]; error?: string }> {
   const byLower = new Map<string, string>();
 
   if (sources.includes('download_requests')) {
-    const { data: dr, error: e1 } = await supabase.from('download_requests').select('email');
+    let query = supabase.from('download_requests').select('email');
+    const docId = filter.downloadDocumentId?.trim();
+    if (docId) {
+      query = query.eq('document_id', docId);
+    }
+    const { data: dr, error: e1 } = await query;
     if (e1) {
       console.error('collectBroadcastRecipientEmails download_requests:', e1);
       return { emails: [], error: 'ダウンロード申請の取得に失敗しました' };
@@ -97,6 +108,7 @@ export async function sendBroadcastEmails(params: {
   bodyMode?: BroadcastBodyMode;
   sources?: BroadcastRecipientSource[];
   senderEmail?: string;
+  downloadDocumentId?: string | null;
 }): Promise<(BroadcastSendResult & { ok: true }) | { ok: false; reason: string }> {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
@@ -108,7 +120,8 @@ export async function sendBroadcastEmails(params: {
 
   const { emails, error } = await collectBroadcastRecipientEmails(
     supabase,
-    params.sources ?? DEFAULT_BROADCAST_RECIPIENT_SOURCES
+    params.sources ?? DEFAULT_BROADCAST_RECIPIENT_SOURCES,
+    { downloadDocumentId: params.downloadDocumentId ?? null }
   );
   if (error) {
     return { ok: false, reason: error };

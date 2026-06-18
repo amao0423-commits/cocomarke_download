@@ -22,6 +22,7 @@ export type BroadcastCampaign = {
   bodyContent: string;
   bodyMode: BroadcastBodyMode;
   recipientSources: BroadcastRecipientSource[];
+  recipientDocumentId: string | null;
   senderEmail: string | null;
   status: BroadcastCampaignStatus;
   scheduledAt: string | null;
@@ -40,6 +41,7 @@ type CampaignRow = {
   body_content: string;
   body_mode: BroadcastBodyMode;
   recipient_sources: BroadcastRecipientSource[];
+  recipient_document_id: string | null;
   sender_email: string | null;
   status: BroadcastCampaignStatus;
   scheduled_at: string | null;
@@ -59,6 +61,7 @@ function mapCampaign(row: CampaignRow): BroadcastCampaign {
     bodyContent: row.body_content,
     bodyMode: row.body_mode,
     recipientSources: row.recipient_sources,
+    recipientDocumentId: row.recipient_document_id ?? null,
     senderEmail: row.sender_email,
     status: row.status,
     scheduledAt: row.scheduled_at,
@@ -81,7 +84,7 @@ export async function listBroadcastCampaigns(
   const { data, error } = await (supabase as any)
     .from('broadcast_email_campaigns')
     .select(
-      'id, subject, body_content, body_mode, recipient_sources, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
+      'id, subject, body_content, body_mode, recipient_sources, recipient_document_id, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
     )
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -100,6 +103,7 @@ export async function createBroadcastCampaign(
     bodyContent: string;
     bodyMode: BroadcastBodyMode;
     recipientSources: BroadcastRecipientSource[];
+    recipientDocumentId?: string | null;
     senderEmail?: string;
     status: 'draft' | 'scheduled';
     scheduledAt?: string | null;
@@ -113,13 +117,14 @@ export async function createBroadcastCampaign(
       body_content: params.bodyContent,
       body_mode: params.bodyMode,
       recipient_sources: params.recipientSources,
+      recipient_document_id: params.recipientDocumentId?.trim() || null,
       sender_email: params.senderEmail?.trim() || null,
       status: params.status,
       scheduled_at: params.scheduledAt ?? null,
       updated_at: new Date().toISOString(),
     })
     .select(
-      'id, subject, body_content, body_mode, recipient_sources, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
+      'id, subject, body_content, body_mode, recipient_sources, recipient_document_id, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
     )
     .single();
 
@@ -137,6 +142,7 @@ export async function recordCompletedBroadcastCampaign(
     bodyContent: string;
     bodyMode: BroadcastBodyMode;
     recipientSources: BroadcastRecipientSource[];
+    recipientDocumentId?: string | null;
     senderEmail?: string;
     totalCount: number;
     sentCount: number;
@@ -151,6 +157,7 @@ export async function recordCompletedBroadcastCampaign(
     body_content: params.bodyContent,
     body_mode: params.bodyMode,
     recipient_sources: params.recipientSources,
+    recipient_document_id: params.recipientDocumentId?.trim() || null,
     sender_email: params.senderEmail?.trim() || null,
     status: params.failedCount > 0 ? 'failed' : 'sent',
     sent_at: now,
@@ -207,6 +214,7 @@ async function sendCampaignRow(
     bodyMode: row.body_mode,
     sources: row.recipient_sources,
     senderEmail: row.sender_email ?? undefined,
+    downloadDocumentId: row.recipient_document_id ?? null,
   });
 
   const finishedAt = new Date().toISOString();
@@ -249,7 +257,7 @@ export async function sendSavedBroadcastCampaign(
   const { data, error } = await (supabase as any)
     .from('broadcast_email_campaigns')
     .select(
-      'id, subject, body_content, body_mode, recipient_sources, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
+      'id, subject, body_content, body_mode, recipient_sources, recipient_document_id, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
     )
     .eq('id', id)
     .maybeSingle();
@@ -281,7 +289,7 @@ export async function processDueBroadcastCampaigns(): Promise<{
   const { data, error } = await (supabase as any)
     .from('broadcast_email_campaigns')
     .select(
-      'id, subject, body_content, body_mode, recipient_sources, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
+      'id, subject, body_content, body_mode, recipient_sources, recipient_document_id, sender_email, status, scheduled_at, sent_at, total_count, sent_count, failed_count, errors, created_at, updated_at'
     )
     .eq('status', 'scheduled')
     .lte('scheduled_at', now)
