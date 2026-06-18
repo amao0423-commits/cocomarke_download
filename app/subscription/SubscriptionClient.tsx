@@ -172,9 +172,8 @@ export default function SubscriptionClient() {
               インスタ運用サブスク
             </div>
             <h1 style={{ fontSize:"clamp(26px,3.5vw,44px)", fontWeight:700, lineHeight:1.25, letterSpacing:"-.03em", marginBottom:20, color:TXT }}>
-              Instagramを<br />
-              <span style={{ color:G, borderBottom:`3px solid ${C}` }}>プロが動かす</span>、<br />
-              成果が変わる。
+              インスタ運用を<span style={{ color:G, borderBottom:`3px solid ${C}` }}>サブスクで</span>。<br />
+              月額固定の<span style={{ color:G }}>フォロワー増加</span>サービス
             </h1>
             <p style={{ fontSize:15, color:TM, marginBottom:32, lineHeight:1.8 }}>
               月額固定でインスタ運用をまるごとお任せ。<br />
@@ -261,7 +260,8 @@ export default function SubscriptionClient() {
       <section id="features" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Features</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>選ばれる3つの理由</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスクが選ばれる3つの理由</h2>
+          <p style={{ fontSize:15, color:TM, margin:"0 0 16px", lineHeight:1.8 }}>インスタ集客・SNS運用をプロにまるごとお任せ。月額サブスクだから続けやすく、成果につながります。</p>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, margin:"0 0 40px" }} />
           <div className={styles.grid3} style={{ gap:24 }}>
             {[
@@ -284,7 +284,8 @@ export default function SubscriptionClient() {
       <section style={{ padding:"80px 24px", background:OW }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Results</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>導入前後の変化</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行の導入で変わるフォロワーと発見タブ流入</h2>
+          <p style={{ fontSize:15, color:TM, margin:"0 0 8px", lineHeight:1.8 }}>発見タブ流入を増やし、フォロワーを増やすまでの変化を導入前後で比較します。</p>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
           <div className={styles.grid2} style={{ gap:24, marginBottom:40 }}>
             {[
@@ -321,7 +322,7 @@ export default function SubscriptionClient() {
       <section style={{ background:G, padding:"64px 0", overflow:"hidden" }}>
         <div style={{ padding:"0 24px", maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.6)", textTransform:"uppercase", marginBottom:12 }}>Keywords</div>
-          <h2 style={{ fontSize:"clamp(20px,3vw,32px)", fontWeight:700, color:"#fff", marginBottom:32, letterSpacing:"-.02em" }}>独占キーワード実績</h2>
+          <h2 style={{ fontSize:"clamp(20px,3vw,32px)", fontWeight:700, color:"#fff", marginBottom:32, letterSpacing:"-.02em" }}>発見タブ・検索上位の独占キーワード実績</h2>
         </div>
         {[kw1, kw2, kw3].map((row, ri)=>{
           const cls = ri===1 ? styles.marqueeTrack2 : ri===2 ? styles.marqueeTrack3 : styles.marqueeTrack;
@@ -353,7 +354,7 @@ export default function SubscriptionClient() {
       <section id="plans" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Plans & Pricing</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サービスと料金</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスクの料金プラン（月額固定・5プラン）</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:12 }} />
           <p style={{ fontSize:15, color:TM, marginBottom:36, lineHeight:1.8 }}>目的に合わせて選べる5プラン。すべて月額固定・解約自由。</p>
           {/* tabs */}
@@ -401,7 +402,8 @@ export default function SubscriptionClient() {
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:48 }}>
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it works</div>
-            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>導入の流れ</h2>
+            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行サービスの導入の流れ</h2>
+            <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>インスタ集客・SNS運用の代行を、ご相談から運用開始までスムーズに進めます。</p>
           </div>
           <div className={styles.stepsGrid} style={{ position:"relative" }}>
             {[["01","無料相談","LINEまたはフォームからご連絡。現状のアカウントをヒアリングし最適なプランをご提案。"],
@@ -423,7 +425,7 @@ export default function SubscriptionClient() {
       <section id="voices" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Reviews</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>利用者の声</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスク利用者の口コミ・評判</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
           <div className={styles.grid3} style={{ gap:20 }}>
             {visibleVoices.map((v)=>(
@@ -456,7 +458,7 @@ export default function SubscriptionClient() {
       <section id="faq" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:720, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>FAQ</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:40, letterSpacing:"-.02em", color:TXT }}>よくある質問</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:40, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行サブスクのよくある質問</h2>
           {faqs.map((faq,i)=>(
             <div key={i} style={{ borderBottom:`1px solid ${BD}` }}>
               <button onClick={()=>setOpenFaq(openFaq===i?null:i)} style={{ width:"100%", textAlign:"left", background:"none", border:"none", padding:"20px 0", fontSize:15, fontWeight:700, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", gap:16, fontFamily:"inherit", color:TXT }}>
@@ -473,7 +475,7 @@ export default function SubscriptionClient() {
       <section style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px" }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
         <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
-        <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>プラン選びに迷ったら気軽にまずはフォームからどうぞ。<br />翌営業日以内に返信します。</p>
+        <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。翌営業日以内に返信します。</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
           <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={openModal}>無料で相談する →</button>
           <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
