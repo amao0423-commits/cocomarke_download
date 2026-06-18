@@ -68,7 +68,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
   const [selectedSources, setSelectedSources] = useState<RecipientSource[]>(
     RECIPIENT_SOURCE_OPTIONS.map((option) => option.value)
   );
-  const [senderEmail, setSenderEmail] = useState('');
   const [testEmailTo, setTestEmailTo] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -117,7 +116,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
         return;
       }
       setCampaigns(data.campaigns ?? []);
-      if (data.senderEmail) setSenderEmail((current) => current || data.senderEmail || '');
     } catch {
       setFormError('配信履歴の取得中にエラーが発生しました');
     }
@@ -167,7 +165,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
-          senderEmail,
         }),
       });
       const data = (await res.json()) as SendResponse;
@@ -229,7 +226,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           subject: sub,
           bodyContent,
           bodyMode,
-          senderEmail,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -259,7 +255,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
-          senderEmail,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -294,7 +289,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyContent,
           bodyMode,
           sources: selectedSources,
-          senderEmail,
           scheduledAt: new Date(scheduledAt).toISOString(),
         }),
       });
@@ -307,28 +301,6 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
       void loadCampaigns();
     } catch {
       setFormError('予約保存中にエラーが発生しました');
-    } finally {
-      setBusyAction('');
-    }
-  };
-
-  const saveSender = async () => {
-    setFormError('');
-    setBusyAction('sender');
-    try {
-      const res = await fetch('/api/admin/broadcast-email', {
-        method: 'POST',
-        headers: { ...auth, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save_sender', senderEmail }),
-      });
-      const data = (await res.json()) as { error?: string };
-      if (!res.ok) {
-        setFormError(data?.error ?? '送信元の保存に失敗しました');
-        return;
-      }
-      setFormError('送信元メールアドレスを保存しました');
-    } catch {
-      setFormError('送信元の保存中にエラーが発生しました');
     } finally {
       setBusyAction('');
     }
@@ -451,8 +423,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
         )}
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-        <div className="space-y-2">
+      <div className="space-y-2">
         <label htmlFor="broadcast-subject" className="text-sm font-medium text-slate-600">
           件名
         </label>
@@ -462,32 +433,8 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           placeholder="【COCOマーケ】…"
-          className={`w-full max-w-2xl rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
+          className={`w-full rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
         />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="broadcast-sender" className="text-sm font-medium text-slate-600">
-            送信元メールアドレス
-          </label>
-          <div className="flex gap-2">
-            <input
-              id="broadcast-sender"
-              type="email"
-              value={senderEmail}
-              onChange={(e) => setSenderEmail(e.target.value)}
-              placeholder="info@example.com"
-              className={`min-w-0 flex-1 rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
-            />
-            <button
-              type="button"
-              onClick={() => void saveSender()}
-              disabled={busyAction === 'sender'}
-              className={ADMIN_BTN_OUTLINE}
-            >
-              保存
-            </button>
-          </div>
-        </div>
       </div>
 
       <div className="space-y-2">
