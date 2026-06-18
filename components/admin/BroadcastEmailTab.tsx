@@ -26,6 +26,14 @@ const RECIPIENT_SOURCE_OPTIONS = [
 
 type RecipientSource = (typeof RECIPIENT_SOURCE_OPTIONS)[number]['value'];
 
+/** 予約日の最小値（今日）。無料プランの送信は毎朝9:00 JST のため日付のみ選択可 */
+function todayDateString(): string {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
 type BodyMode = 'plain' | 'html';
 
 type Campaign = {
@@ -296,7 +304,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
     const sub = ensureReady();
     if (!sub) return;
     if (!scheduledAt) {
-      setFormError('予約日時を入力してください');
+      setFormError('予約日（送信日）を選択してください');
       return;
     }
     setBusyAction('schedule');
@@ -311,7 +319,8 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           bodyMode,
           sources: selectedSources,
           downloadDocumentId,
-          scheduledAt: new Date(scheduledAt).toISOString(),
+          // 無料プランの cron は毎朝9:00 JST に1日1回。選んだ日の朝9:00(JST)に送信予約する
+          scheduledAt: new Date(`${scheduledAt}T09:00:00+09:00`).toISOString(),
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -551,16 +560,40 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
         </div>
         <div className="space-y-2">
           <label htmlFor="broadcast-schedule" className="text-sm font-medium text-slate-600">
-            予約日時
+            予約日（送信日）
           </label>
           <input
             id="broadcast-schedule"
-            type="datetime-local"
+            type="date"
+            min={todayDateString()}
             value={scheduledAt}
             onChange={(e) => setScheduledAt(e.target.value)}
             className={`w-full rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
           />
+          <p className="text-xs text-slate-500 leading-relaxed">
+            指定日の<strong className="text-slate-700">朝9:00頃</strong>にまとめて送信されます（時刻は選べません）。
+            {scheduledAt && (
+              <span className="block text-slate-700">
+                送信予定:{' '}
+                {new Date(`${scheduledAt}T09:00:00+09:00`).toLocaleDateString('ja-JP', {
+                  month: 'long',
+                  day: 'numeric',
+                  weekday: 'short',
+                })}{' '}
+                朝9:00頃
+              </span>
+            )}
+          </p>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-xs text-slate-600 leading-relaxed">
+        <p className="font-semibold text-slate-700 mb-0.5">予約送信について（無料プラン）</p>
+        <ul className="list-disc pl-4 space-y-0.5">
+          <li>予約は<strong className="text-slate-700">毎朝9:00頃に1日1回</strong>まとめて送信されます（指定時刻ぴったりには送られません）。</li>
+          <li>1回の送信で<strong className="text-slate-700">最大3件</strong>まで。それ以上は翌日に持ち越します。</li>
+          <li>時間を問わずすぐ送りたい場合は「<strong className="text-slate-700">今すぐ一斉送信</strong>」をご利用ください（回数・時間の制限なし）。</li>
+        </ul>
       </div>
 
       {formError && (
