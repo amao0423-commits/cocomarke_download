@@ -57,6 +57,7 @@ const faqs = [
   { q:"アカウントが凍結されるリスクはありませんか？", a:"Instagramのガイドラインに準拠した安全な手法のみを使用しています。過去3000件以上の導入で凍結事例はゼロです。" },
   { q:"支払い方法は何に対応していますか？", a:"クレジットカード（VISA・Mastercard・JCB）および銀行振込に対応しています。" },
   { q:"個人アカウントでも利用できますか？", a:"はい、個人・法人を問わずご利用いただけます。ビジネスアカウントへの切り替えを推奨しています（無料でサポートします）。" },
+  { q:"上位表示を保証してくれますか？", a:"成果保証は一切しておりません。これはGoogleによるアルゴリズム（検索順位決定の仕様）で順位が決定されていく為、保証は不可能である為です。また、上位表示を達成したとしても、アルゴリズム変動によって順位変動する可能性は常に存在します。そのため、常にSEO状況の現状把握と変動時の対応を続けていく必要があることをご理解ください。" },
 ];
 
 const voices = [
@@ -409,7 +410,6 @@ export default function SubscriptionClient() {
             {[["01","無料相談","LINEまたはフォームからご連絡。現状のアカウントをヒアリングし最適なプランをご提案。"],
               ["02","プラン選択・決済","ご希望のプランを選択し、オンラインで決済。"],
               ["03","設定・運用開始","最短翌日から運用スタート。初期設定はすべて担当が対応。お客様の作業は不要。"],
-              ["04","レポート・改善","毎月レポートで成果をご報告。継続的に改善しながらフォロワー増加を加速。"],
             ].map(([n,h,p])=>(
               <div key={n} style={{ textAlign:"center", padding:"0 12px", position:"relative", zIndex:1 }}>
                 <div style={{ fontFamily:"Montserrat,sans-serif", width:64, height:64, borderRadius:"50%", background:"#fff", border:`2px solid ${G}`, color:G, fontSize:20, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>{n}</div>

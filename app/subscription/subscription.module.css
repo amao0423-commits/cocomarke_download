@@ -177,19 +177,13 @@
 /* ── 導入の流れ（モバイルで適切な間隔を確保） ── */
 .stepsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-@media (max-width: 880px) {
-  .stepsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 44px;
-    column-gap: 16px;
-  }
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 @media (max-width: 600px) {
   .stepsGrid {
     grid-template-columns: 1fr;
-    row-gap: 32px;
+    row-gap: 28px;
   }
 }
 
