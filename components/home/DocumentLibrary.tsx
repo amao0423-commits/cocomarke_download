@@ -7,6 +7,8 @@ import { DocumentCard } from '@/components/home/DocumentCard';
 
 type Props = {
   documents: HomeFlatDocument[];
+  /** カテゴリの表示順（管理画面の並び替え順）。タブの並びに使用 */
+  categoryOrder?: string[];
 };
 
 function FilterTab({
@@ -43,15 +45,21 @@ function FilterTab({
   );
 }
 
-export function DocumentLibrary({ documents }: Props) {
-  /** 出現順にカテゴリと件数を集計 */
+export function DocumentLibrary({ documents, categoryOrder = [] }: Props) {
+  /** カテゴリと件数を集計し、管理画面の並び順（categoryOrder）で並べる */
   const categories = useMemo(() => {
     const counts = new Map<string, number>();
     for (const d of documents) {
       counts.set(d.category, (counts.get(d.category) ?? 0) + 1);
     }
-    return Array.from(counts, ([name, count]) => ({ name, count }));
-  }, [documents]);
+    const rank = (name: string) => {
+      const i = categoryOrder.indexOf(name);
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    return Array.from(counts, ([name, count]) => ({ name, count })).sort(
+      (a, b) => rank(a.name) - rank(b.name),
+    );
+  }, [documents, categoryOrder]);
 
   const [active, setActive] = useState<string>('all');
 

@@ -183,14 +183,20 @@ export const loadTopDocuments = unstable_cache(
  * トップ用（フラット表示）: カテゴリで分けず、公開資料をアップロード順（created_at 昇順）に並べる。
  * カードの説明文には所属カテゴリの説明（管理画面設定 → 既定文）を割り当てる。
  */
-async function fetchHomeDocumentsFlat(): Promise<HomeFlatDocument[]> {
+async function fetchHomeDocumentsFlat(): Promise<{
+  documents: HomeFlatDocument[];
+  categoryOrder: string[];
+}> {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
-    return [];
+    return { documents: [], categoryOrder: [] };
   }
 
   const [catsRes, docsRes] = await Promise.all([
-    supabase.from('document_categories').select('name, description'),
+    supabase
+      .from('document_categories')
+      .select('name, description, sort_order')
+      .order('sort_order', { ascending: true }),
     supabase
       .from('documents')
       .select('id, title, category, thumbnail_url, updated_at, created_at')
@@ -210,14 +216,17 @@ async function fetchHomeDocumentsFlat(): Promise<HomeFlatDocument[]> {
     documentsRaw = (docsRes.data ?? []) as DocumentRow[];
   }
 
+  const cats = (catsRes.data ?? []) as {
+    name: string;
+    description?: string | null;
+    sort_order?: number;
+  }[];
   const categoryDescription = new Map<string, string | null>(
-    ((catsRes.data ?? []) as { name: string; description?: string | null }[]).map((c) => [
-      c.name,
-      c.description?.trim() || null,
-    ]),
+    cats.map((c) => [c.name, c.description?.trim() || null]),
   );
+  const categoryOrder = cats.map((c) => c.name);
 
-  return documentsRaw.map((row) => {
+  const documents = documentsRaw.map((row) => {
     const base = mapDocumentRow(row);
     return {
       ...base,
@@ -226,6 +235,8 @@ async function fetchHomeDocumentsFlat(): Promise<HomeFlatDocument[]> {
         getHomeCategoryCopy(base.category).description,
     };
   });
+
+  return { documents, categoryOrder };
 }
 
 /** ISR の外でも Supabase を叩かないよう1時間キャッシュ */

@@ -29,18 +29,6 @@ async function generatePdfThumbnail(file: File): Promise<Blob | null> {
     return null;
   }
 }
-import {
-  buildHeroHighlights,
-  DEFAULT_HIGHLIGHT_2,
-  DOCUMENT_SUMMARY_HEADING,
-  defaultHeroDescription,
-  defaultHeroHighlight1,
-  defaultHeroHighlight3,
-  HeroSummaryCheckIcon,
-} from '@/app/download/DownloadPageShell';
-
-/** 管理プレビュー用（実ページではフォーム設定名が使われます） */
-const HERO_PREVIEW_FORM_NAME = '資料請求フォーム';
 
 type DocumentRow = {
   id: string;
@@ -52,13 +40,6 @@ type DocumentRow = {
   created_at: string;
   sort_order: number;
   thumbnail_url?: string | null;
-  hero_description?: string | null;
-  hero_highlight_1?: string | null;
-  hero_highlight_2?: string | null;
-  hero_highlight_3?: string | null;
-  hero_highlights_extra?: string | null;
-  hero_image_1_url?: string | null;
-  hero_image_2_url?: string | null;
   is_published?: boolean;
 };
 
@@ -66,302 +47,22 @@ type CategoryRow = {
   id: string;
   name: string;
   sort_order: number;
-  headline: string | null;
-  description: string | null;
 };
 
-type HeroForm = {
-  hero_description: string;
-  hero_highlight_1: string;
-  hero_highlight_2: string;
-  hero_highlight_3: string;
-  hero_highlights_extra: string;
-  hero_image_1_url: string;
-  hero_image_2_url: string;
-};
-
-function docToHeroForm(doc: DocumentRow): HeroForm {
-  return {
-    hero_description: doc.hero_description ?? '',
-    hero_highlight_1: doc.hero_highlight_1 ?? '',
-    hero_highlight_2: doc.hero_highlight_2 ?? '',
-    hero_highlight_3: doc.hero_highlight_3 ?? '',
-    hero_highlights_extra: doc.hero_highlights_extra ?? '',
-    hero_image_1_url: doc.hero_image_1_url ?? '',
-    hero_image_2_url: doc.hero_image_2_url ?? '',
-  };
-}
-
-function HeroPreview({ title, form }: { title: string; form: HeroForm }) {
-  const description = form.hero_description.trim() || defaultHeroDescription(title);
-  const highlights = buildHeroHighlights(HERO_PREVIEW_FORM_NAME, title, {
-    hero_highlight_1: form.hero_highlight_1,
-    hero_highlight_2: form.hero_highlight_2,
-    hero_highlight_3: form.hero_highlight_3,
-    hero_highlights_extra: form.hero_highlights_extra,
-  });
-
+function Chevron({ open }: { open: boolean }) {
   return (
-    <div
-      className="overflow-hidden rounded-2xl border border-white/10 shadow-lg text-left"
-      style={{ background: 'linear-gradient(160deg, #1a3a6b 0%, #0d2a55 60%, #0a2040 100%)' }}
+    <svg
+      className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
     >
-      <div className="relative flex min-w-0 max-w-full flex-col gap-3 overflow-hidden p-4 text-white">
-        {/* バッジ */}
-        <div className="flex max-w-full items-center gap-1.5 self-start rounded-full border border-sky-400/35 bg-sky-400/18 px-2.5 py-0.5">
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" aria-hidden />
-          <span className="max-w-full break-words text-[10px] font-medium tracking-wide text-white/85">
-            お役立ち資料
-          </span>
-        </div>
-
-        {/* 資料名 */}
-        <h4 className="min-w-0 break-words text-[13px] font-bold leading-snug text-white">{title}</h4>
-
-        {/* 説明文 */}
-        <p className="min-w-0 whitespace-pre-line break-words text-[10px] leading-relaxed text-white/90">
-          {description}
-        </p>
-
-        {/* プレビュー行 */}
-        <div className="flex min-w-0 max-w-full items-start gap-2 rounded-xl border border-white/10 bg-white/5 p-2">
-          <div className="h-12 w-[68px] shrink-0 overflow-hidden rounded-lg bg-white sm:h-12 sm:w-20 min-h-0 min-w-0">
-            {form.hero_image_1_url.trim() ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={form.hero_image_1_url.trim()}
-                alt=""
-                className="block h-full w-full min-h-0 min-w-0 max-h-full max-w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-[9px] font-medium text-neutral-600">
-                画像1
-              </div>
-            )}
-          </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
-            <p className="min-w-0 break-words text-[11px] font-bold leading-snug text-white line-clamp-3">
-              {title}
-            </p>
-            <p className="min-w-0 shrink-0 break-words text-[9px] font-medium text-white/85">PDF · 無料ダウンロード</p>
-          </div>
-        </div>
-
-        {/* 区切り */}
-        <div className="h-px bg-white/8" />
-
-        {/* 資料概要 */}
-        <div className="min-w-0 max-w-full">
-          <p className="mb-1.5 text-[12px] font-bold uppercase tracking-widest text-white">
-            {DOCUMENT_SUMMARY_HEADING}
-          </p>
-          <ul className="flex min-w-0 flex-col gap-1.5">
-            {highlights.map((item, i) => (
-              <li key={i} className="flex min-w-0 items-start gap-1.5 text-[10px] leading-relaxed text-white/90">
-                <HeroSummaryCheckIcon size="sm" />
-                <span className="min-w-0 flex-1 break-words">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Stat バー */}
-        <div className="grid min-w-0 grid-cols-2 gap-2">
-          {([['無料', 'ダウンロード'], ['5分', '読了目安']] as const).map(([num, label]) => (
-            <div
-              key={label}
-              className="flex min-w-0 flex-col items-center rounded-xl border border-white/8 bg-white/5 px-1 py-2"
-            >
-              <span className="max-w-full truncate text-center text-sm font-bold text-sky-400">{num}</span>
-              <span className="max-w-full break-words text-center text-[9px] leading-tight text-white/85">
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type HeroEditModalProps = {
-  doc: DocumentRow;
-  secretKey: string;
-  onSaved: (updated: DocumentRow) => void;
-  onClose: () => void;
-};
-
-function HeroEditModal({ doc, secretKey, onSaved, onClose }: HeroEditModalProps) {
-  const auth = { Authorization: `Bearer ${secretKey}` };
-  const [form, setForm] = useState<HeroForm>(docToHeroForm(doc));
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-
-  const set = (key: keyof HeroForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
-
-  const handleSave = async () => {
-    setBusy(true);
-    setError('');
-    try {
-      const payload: Record<string, string | null> = {};
-      for (const [k, v] of Object.entries(form)) {
-        payload[k] = v.trim() || null;
-      }
-      const res = await fetch(`/api/admin/documents/${doc.id}`, {
-        method: 'PATCH',
-        headers: { ...auth, 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data?.error ?? '保存に失敗しました');
-        return;
-      }
-      onSaved(data.document as DocumentRow);
-    } catch {
-      setError('保存中にエラーが発生しました');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 backdrop-blur-sm p-4"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="w-full max-w-5xl my-6 rounded-3xl bg-white border border-blue-50/90 shadow-xl shadow-blue-500/10 flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <div>
-            <p className="text-xs text-gray-500 font-medium">ダウンロードページ 左カラム編集</p>
-            <h2 className="font-semibold text-slate-600 mt-0.5">{doc.title}</h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
-            aria-label="閉じる"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-0 flex-1 min-h-0">
-          <div className="p-6 space-y-5 overflow-y-auto border-r border-gray-100">
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-
-            <fieldset className="space-y-1.5">
-              <label className="block text-xs font-medium text-gray-600">
-                ① ヒーロー説明文
-                <span className="ml-1 font-normal text-gray-400">
-                  （空欄でデフォルト。改行は公開ページでもそのまま表示されます）
-                </span>
-              </label>
-              <textarea
-                value={form.hero_description}
-                onChange={set('hero_description')}
-                rows={3}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                placeholder={defaultHeroDescription(doc.title)}
-              />
-            </fieldset>
-
-            <fieldset className="space-y-3">
-              <legend className="text-xs font-medium text-gray-600">
-                ② 箇条書き（1〜3行＋任意で4行目以降）
-                <span className="ml-1 font-normal text-gray-400">（1〜3行は空欄でデフォルト）</span>
-              </legend>
-              <div className="space-y-1.5">
-                <label className="block text-xs text-gray-500">1 行目</label>
-                <input
-                  type="text"
-                  value={form.hero_highlight_1}
-                  onChange={set('hero_highlight_1')}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                  placeholder={defaultHeroHighlight1(doc.title)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs text-gray-500">2 行目</label>
-                <input
-                  type="text"
-                  value={form.hero_highlight_2}
-                  onChange={set('hero_highlight_2')}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                  placeholder={DEFAULT_HIGHLIGHT_2}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs text-gray-500">3 行目</label>
-                <input
-                  type="text"
-                  value={form.hero_highlight_3}
-                  onChange={set('hero_highlight_3')}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                  placeholder={defaultHeroHighlight3(HERO_PREVIEW_FORM_NAME)}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs text-gray-500">
-                  4 行目以降
-                  <span className="ml-1 font-normal text-gray-400">（1行に1項目。空行は無視）</span>
-                </label>
-                <textarea
-                  value={form.hero_highlights_extra}
-                  onChange={set('hero_highlights_extra')}
-                  rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                  placeholder={'4行目の文\n5行目の文'}
-                />
-              </div>
-            </fieldset>
-
-            <fieldset className="space-y-2">
-              <legend className="text-xs font-medium text-gray-600">
-                ③ プレビュー画像URL
-                <span className="ml-1 font-normal text-gray-400">（公開URLを入力）</span>
-              </legend>
-              <div className="flex items-center gap-2">
-                <span className="shrink-0 text-xs text-gray-500 w-12">画像</span>
-                <input
-                  type="url"
-                  value={form.hero_image_1_url}
-                  onChange={set('hero_image_1_url')}
-                  className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-200/80"
-                  placeholder="https://…"
-                />
-              </div>
-            </fieldset>
-          </div>
-
-          <div className="p-5 bg-gray-50 rounded-br-2xl lg:rounded-tr-2xl overflow-y-auto">
-            <p className="text-xs font-medium text-gray-500 mb-3">リアルタイムプレビュー</p>
-            <HeroPreview title={doc.title} form={form} />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-          >
-            キャンセル
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSave()}
-            disabled={busy}
-            className="px-5 py-2 rounded-2xl bg-[#A0D8EF] text-[#2C657A] text-sm font-medium disabled:opacity-40 hover:brightness-105 transition"
-          >
-            {busy ? '保存中…' : '保存する'}
-          </button>
-        </div>
-      </div>
-    </div>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
 
@@ -378,12 +79,13 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
   const [busy, setBusy] = useState(false);
   const [replacingDocumentId, setReplacingDocumentId] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [uploadThumbnailUrl, setUploadThumbnailUrl] = useState('');
   const [uploadIsPublished, setUploadIsPublished] = useState(false);
   const [autoThumbBlob, setAutoThumbBlob] = useState<Blob | null>(null);
   const [thumbPreviewUrl, setThumbPreviewUrl] = useState('');
   const [thumbGenerating, setThumbGenerating] = useState(false);
   const [manualThumbOverride, setManualThumbOverride] = useState('');
+  const [reorderBusy, setReorderBusy] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const prevThumbPreviewRef = useRef('');
 
   // オブジェクトURL の解放
@@ -393,11 +95,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       if (prevThumbPreviewRef.current) URL.revokeObjectURL(prevThumbPreviewRef.current);
     };
   }, [thumbPreviewUrl]);
-  const [editingDoc, setEditingDoc] = useState<DocumentRow | null>(null);
-  const [reorderBusy, setReorderBusy] = useState(false);
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
-  const [categoryDraft, setCategoryDraft] = useState({ headline: '', description: '' });
-  const [categorySaveBusy, setCategorySaveBusy] = useState(false);
 
   const auth = { Authorization: `Bearer ${secretKey}` };
 
@@ -410,7 +107,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     } catch {
       // ignore
     }
-  }, [secretKey]);
+  }, [secretKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -432,7 +129,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     } finally {
       setIsLoading(false);
     }
-  }, [secretKey, filterCategory]);
+  }, [secretKey, filterCategory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     void loadCategories();
@@ -556,7 +253,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
 
       setTitle('');
       setFile(null);
-      setUploadThumbnailUrl('');
       setUploadIsPublished(false);
       setUploadCategory(PRIVATE_CATEGORY_NAME);
       setAutoThumbBlob(null);
@@ -711,45 +407,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     }
   };
 
-  const openCategoryEdit = (cat: CategoryRow) => {
-    setEditingCategoryId(cat.id);
-    setCategoryDraft({
-      headline: cat.headline ?? '',
-      description: cat.description ?? '',
-    });
-  };
-
-  const saveCategoryCopy = async (id: string) => {
-    setCategorySaveBusy(true);
-    try {
-      const res = await fetch(`/api/admin/document-categories/${id}`, {
-        method: 'PATCH',
-        headers: { ...auth, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          headline: categoryDraft.headline || null,
-          description: categoryDraft.description || null,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMessage(data?.error ?? '見出し・説明の保存に失敗しました');
-        return;
-      }
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.id === id
-            ? { ...c, headline: data.category.headline, description: data.category.description }
-            : c,
-        ),
-      );
-      setEditingCategoryId(null);
-    } catch {
-      setErrorMessage('保存中にエラーが発生しました');
-    } finally {
-      setCategorySaveBusy(false);
-    }
-  };
-
   const moveCategory = async (index: number, direction: -1 | 1) => {
     const next = [...categories];
     const target = index + direction;
@@ -804,14 +461,19 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     return <div className="py-16 text-center text-gray-500">読み込み中...</div>;
   }
 
+  const filteredDocs =
+    filterCategory === 'all'
+      ? documents
+      : documents.filter((d) => d.category === filterCategory);
+
   return (
     <div className="space-y-8">
       {errorMessage && <p className="text-red-600 text-sm">{errorMessage}</p>}
 
+      {/* 資料を追加 */}
       <div className="border border-blue-50/90 rounded-3xl p-5 space-y-4 shadow-xl shadow-blue-500/[0.04]">
         <h2 className="font-semibold">資料を追加</h2>
 
-        {/* Step 1: ファイル選択（最初に見える唯一の操作） */}
         <label className="block">
           <span className="text-xs font-medium text-gray-500">PDFファイルを選択</span>
           <input
@@ -822,11 +484,9 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
           />
         </label>
 
-        {/* ファイル選択後に展開 */}
         {file && (
           <div className="space-y-4 border-t border-blue-50/80 pt-4">
             <div className="flex gap-4 items-start">
-              {/* サムネプレビュー */}
               <div className="shrink-0 w-24 h-[3.5rem] rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
                 {thumbGenerating ? (
                   <span className="text-[10px] text-gray-400 text-center leading-tight px-1">生成中…</span>
@@ -838,7 +498,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                 )}
               </div>
 
-              {/* 表示名 */}
               <label className="flex-1 block">
                 <span className="text-xs font-medium text-gray-500">表示名</span>
                 <input
@@ -851,7 +510,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
               </label>
             </div>
 
-            {/* カテゴリ + 公開トグル */}
             <div className="flex flex-wrap items-center gap-3">
               <label className="block flex-1 min-w-[160px]">
                 <span className="text-xs font-medium text-gray-500">カテゴリ</span>
@@ -878,7 +536,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
               </label>
             </div>
 
-            {/* 登録ボタン */}
             <button
               type="button"
               onClick={() => void handleUpload()}
@@ -888,7 +545,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
               {busy ? '処理中…' : '登録する'}
             </button>
 
-            {/* 折りたたみ: サムネイル手動差し替え */}
             <details className="text-sm">
               <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600 select-none">
                 サムネイルを手動で差し替える
@@ -907,7 +563,6 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
           </div>
         )}
 
-        {/* 折りたたみ: カテゴリ追加 */}
         <details className="text-sm border-t border-blue-50/80 pt-3">
           <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600 select-none">
             カテゴリを新規追加
@@ -934,104 +589,49 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
         </details>
       </div>
 
+      {/* カテゴリの表示順（並び替えのみ） */}
       <div className="border border-gray-200 rounded-xl p-4 space-y-3">
-        <h2 className="font-semibold">カテゴリの表示順・見出し・説明</h2>
-        <p className="text-xs text-gray-500">↑↓ で順序変更（即時保存）。「編集」でトップページの見出しと説明を変更できます。</p>
+        <h2 className="font-semibold">カテゴリの表示順</h2>
+        <p className="text-xs text-gray-500">
+          ↑↓ で並び替え（即時保存）。トップページのカテゴリタブの並び順に反映されます。
+        </p>
         {categories.length === 0 ? (
           <p className="text-gray-400 text-xs">カテゴリがありません</p>
         ) : (
           <ul className="space-y-2">
             {categories.map((cat, i) => (
-              <li key={cat.id} className="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
-                <div className="flex items-center gap-2 px-3 py-2">
-                  <span className="flex-1 text-sm font-medium text-gray-800">{cat.name}</span>
+              <li
+                key={cat.id}
+                className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
+              >
+                <span className="flex-1 text-sm font-medium text-gray-800">{cat.name}</span>
+                <div className="flex gap-1 shrink-0">
                   <button
                     type="button"
-                    onClick={() =>
-                      editingCategoryId === cat.id
-                        ? setEditingCategoryId(null)
-                        : openCategoryEdit(cat)
-                    }
-                    className="rounded border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 transition whitespace-nowrap"
+                    disabled={i === 0 || reorderBusy}
+                    onClick={() => void moveCategory(i, -1)}
+                    className="rounded border border-gray-300 bg-white px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
+                    aria-label="上へ"
                   >
-                    {editingCategoryId === cat.id ? '閉じる' : '見出し・説明を編集'}
+                    ↑
                   </button>
-                  <div className="flex gap-1 shrink-0">
-                    <button
-                      type="button"
-                      disabled={i === 0 || reorderBusy}
-                      onClick={() => void moveCategory(i, -1)}
-                      className="rounded border border-gray-300 bg-white px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
-                      aria-label="上へ"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      disabled={i === categories.length - 1 || reorderBusy}
-                      onClick={() => void moveCategory(i, 1)}
-                      className="rounded border border-gray-300 bg-white px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
-                      aria-label="下へ"
-                    >
-                      ↓
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    disabled={i === categories.length - 1 || reorderBusy}
+                    onClick={() => void moveCategory(i, 1)}
+                    className="rounded border border-gray-300 bg-white px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
+                    aria-label="下へ"
+                  >
+                    ↓
+                  </button>
                 </div>
-
-                {editingCategoryId === cat.id && (
-                  <div className="border-t border-gray-200 bg-white px-3 pb-3 pt-2 space-y-2">
-                    <p className="text-[11px] text-gray-500">
-                      空のままにすると、デフォルトの文章が表示されます。
-                    </p>
-                    <label className="block">
-                      <span className="text-xs font-medium text-gray-700">見出し（大きい文字）</span>
-                      <input
-                        type="text"
-                        value={categoryDraft.headline}
-                        onChange={(e) =>
-                          setCategoryDraft((d) => ({ ...d, headline: e.target.value }))
-                        }
-                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                        placeholder="例：Instagram運用のヒントがまとまった資料集"
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-xs font-medium text-gray-700">説明文（小さい文字）</span>
-                      <textarea
-                        value={categoryDraft.description}
-                        onChange={(e) =>
-                          setCategoryDraft((d) => ({ ...d, description: e.target.value }))
-                        }
-                        rows={3}
-                        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-y"
-                        placeholder="例：投稿の設計や運用の見直し、成果につなげるためのノウハウが揃っています。"
-                      />
-                    </label>
-                    <div className="flex gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => void saveCategoryCopy(cat.id)}
-                        disabled={categorySaveBusy}
-                        className="rounded-2xl bg-[#A0D8EF] px-4 py-1.5 text-xs font-medium text-[#2C657A] hover:brightness-105 disabled:opacity-40 transition"
-                      >
-                        {categorySaveBusy ? '保存中…' : '保存'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingCategoryId(null)}
-                        className="rounded-lg border border-gray-300 px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition"
-                      >
-                        キャンセル
-                      </button>
-                    </div>
-                  </div>
-                )}
               </li>
             ))}
           </ul>
         )}
       </div>
 
+      {/* 登録済み（アコーディオン） */}
       <div>
         <h2 className="font-semibold mb-2">登録済み</h2>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -1052,174 +652,159 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
         </div>
         {filterCategory !== 'all' && (
           <p className="text-xs text-gray-500 mb-3">
-            ↑↓ ボタンで資料の表示順を変更できます（即座に保存されます）
+            ↑↓ ボタンで資料の表示順を変更できます（即時保存）
           </p>
         )}
-        {documents.length === 0 ? (
+
+        {filteredDocs.length === 0 ? (
           <p className="text-gray-500 text-sm">該当する資料がありません</p>
         ) : (
-          <div className="overflow-x-auto border border-blue-50/90 rounded-3xl shadow-sm">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  {filterCategory !== 'all' && <th className="py-2 px-2 w-16" />}
-                  <th className="text-left py-2 px-3">タイトル</th>
-                  <th className="text-left py-2 px-3">カテゴリ</th>
-                  <th className="text-left py-2 px-3 whitespace-nowrap">公開</th>
-                  <th className="text-left py-2 px-3 min-w-[200px]">サムネイルURL</th>
-                  <th className="text-left py-2 px-3 min-w-[220px] whitespace-nowrap">ファイル名</th>
-                  <th className="text-left py-2 px-3">登録日時</th>
-                  <th className="text-left py-2 px-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  const filtered =
-                    filterCategory === 'all'
-                      ? documents
-                      : documents.filter((d) => d.category === filterCategory);
-                  return filtered.map((d, i) => (
-                    <tr key={d.id} className="border-b border-gray-100">
-                      {filterCategory !== 'all' && (
-                        <td className="py-2 px-2">
-                          <div className="flex flex-col gap-0.5">
-                            <button
-                              type="button"
-                              disabled={i === 0 || reorderBusy}
-                              onClick={() => void moveDocument(i, -1)}
-                              className="rounded border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
-                              aria-label="上へ"
-                            >
-                              ↑
-                            </button>
-                            <button
-                              type="button"
-                              disabled={i === filtered.length - 1 || reorderBusy}
-                              onClick={() => void moveDocument(i, 1)}
-                              className="rounded border border-gray-200 bg-white px-1.5 py-0.5 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
-                              aria-label="下へ"
-                            >
-                              ↓
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                      <td className="py-2 px-3 font-medium text-slate-600">{d.title}</td>
-                      <td className="py-2 px-3 text-center">
+          <ul className="space-y-2">
+            {filteredDocs.map((d, i) => {
+              const open = expandedId === d.id;
+              return (
+                <li
+                  key={d.id}
+                  className="rounded-2xl border border-blue-50/90 bg-white overflow-hidden shadow-sm"
+                >
+                  {/* 行ヘッダー（クリックで開閉） */}
+                  <div className="flex items-center gap-2 px-3 py-2.5">
+                    {filterCategory !== 'all' && (
+                      <div className="flex flex-col gap-0.5 shrink-0">
                         <button
                           type="button"
-                          onClick={() => void updateDocumentPublished(d.id, !d.is_published)}
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition ${
-                            d.is_published
-                              ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                          }`}
-                          aria-label={d.is_published ? '公開中（クリックで非公開）' : '非公開（クリックで公開）'}
+                          disabled={i === 0 || reorderBusy}
+                          onClick={() => void moveDocument(i, -1)}
+                          className="rounded border border-gray-200 bg-white px-1.5 py-0 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
+                          aria-label="上へ"
                         >
-                          {d.is_published ? '公開中' : '非公開'}
+                          ↑
                         </button>
-                      </td>
-                      <td className="py-2 px-3 text-gray-700">
-                        <select
-                          value={d.category}
-                          onChange={(e) => void updateDocumentCategory(d.id, e.target.value)}
-                          className="max-w-[220px] border border-gray-300 rounded-lg px-2 py-1.5 text-xs bg-white"
+                        <button
+                          type="button"
+                          disabled={i === filteredDocs.length - 1 || reorderBusy}
+                          onClick={() => void moveDocument(i, 1)}
+                          className="rounded border border-gray-200 bg-white px-1.5 py-0 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
+                          aria-label="下へ"
                         >
-                          {(categoryNames.length ? categoryNames : [PRIVATE_CATEGORY_NAME]).map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                          {!categoryNames.includes(d.category) && (
-                            <option value={d.category}>{d.category}</option>
-                          )}
-                        </select>
-                      </td>
-                      <td className="py-2 px-3 text-gray-600 align-top">
+                          ↓
+                        </button>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(open ? null : d.id)}
+                      className="flex flex-1 min-w-0 items-center gap-2 text-left"
+                    >
+                      <span className="flex-1 min-w-0 truncate font-medium text-slate-700">
+                        {d.title}
+                      </span>
+                      <span className="hidden sm:inline-block shrink-0 rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[10px] font-bold text-[#0C447C]">
+                        {d.category}
+                      </span>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          d.is_published
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        {d.is_published ? '公開中' : '非公開'}
+                      </span>
+                      <Chevron open={open} />
+                    </button>
+                  </div>
+
+                  {/* 詳細（開いたときだけ） */}
+                  {open && (
+                    <div className="border-t border-gray-100 bg-gray-50/60 px-4 py-4 space-y-4 text-sm">
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-500 w-16">公開状態</span>
+                          <button
+                            type="button"
+                            onClick={() => void updateDocumentPublished(d.id, !d.is_published)}
+                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold transition ${
+                              d.is_published
+                                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                            }`}
+                          >
+                            {d.is_published ? '公開中（クリックで非公開）' : '非公開（クリックで公開）'}
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-500 w-16">カテゴリ</span>
+                          <select
+                            value={d.category}
+                            onChange={(e) => void updateDocumentCategory(d.id, e.target.value)}
+                            className="max-w-[220px] border border-gray-300 rounded-lg px-2 py-1.5 text-xs bg-white"
+                          >
+                            {(categoryNames.length ? categoryNames : [PRIVATE_CATEGORY_NAME]).map((n) => (
+                              <option key={n} value={n}>
+                                {n}
+                              </option>
+                            ))}
+                            {!categoryNames.includes(d.category) && (
+                              <option value={d.category}>{d.category}</option>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
+                      <label className="block">
+                        <span className="text-xs font-medium text-gray-500">サムネイルURL</span>
                         <input
                           type="url"
                           defaultValue={d.thumbnail_url ?? ''}
                           key={`${d.id}-${d.thumbnail_url ?? ''}`}
                           onBlur={(e) =>
-                            void updateDocumentThumbnail(
-                              d.id,
-                              d.thumbnail_url ?? null,
-                              e.target.value,
-                            )
+                            void updateDocumentThumbnail(d.id, d.thumbnail_url ?? null, e.target.value)
                           }
-                          className="w-full min-w-[180px] max-w-[280px] border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
+                          className="mt-1 w-full max-w-xl border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs"
                           placeholder="https://…"
                           title="フォーカスを外すと保存されます。空にすると解除"
                         />
-                      </td>
-                      <td className="py-2 px-3 text-gray-600 min-w-[220px]">
-                        {d.file_name ? (
-                          <span
-                            className="block max-w-[260px] truncate whitespace-nowrap"
-                            title={d.file_name}
-                          >
-                            {d.file_name}
-                          </span>
-                        ) : (
-                          '—'
-                        )}
-                      </td>
-                      <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
-                        {new Date(d.created_at).toLocaleString('ja-JP')}
-                      </td>
-                      <td className="py-2 px-3">
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditingDoc(d)}
-                            className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 transition whitespace-nowrap"
-                          >
-                            左カラム編集
-                          </button>
-                          <label className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50 whitespace-nowrap cursor-pointer">
-                            {replacingDocumentId === d.id ? '差し替え中…' : 'ファイル差し替え'}
-                            <input
-                              type="file"
-                              className="hidden"
-                              disabled={replacingDocumentId !== null}
-                              onChange={(e) => {
-                                const selectedFile = e.target.files?.[0] ?? null;
-                                void replaceDocumentFile(d, selectedFile);
-                                e.target.value = '';
-                              }}
-                            />
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => void remove(d.id)}
-                            className="text-red-600 hover:underline text-xs"
-                          >
-                            削除
-                          </button>
+                      </label>
+
+                      <div className="text-xs text-gray-500 space-y-0.5">
+                        <div>
+                          ファイル名:{' '}
+                          <span className="text-gray-700 break-all">{d.file_name ?? '—'}</span>
                         </div>
-                      </td>
-                    </tr>
-                  ));
-                })()}
-              </tbody>
-            </table>
-          </div>
+                        <div>登録日時: {new Date(d.created_at).toLocaleString('ja-JP')}</div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
+                        <label className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-50 whitespace-nowrap cursor-pointer">
+                          {replacingDocumentId === d.id ? '差し替え中…' : 'ファイル差し替え'}
+                          <input
+                            type="file"
+                            className="hidden"
+                            disabled={replacingDocumentId !== null}
+                            onChange={(e) => {
+                              const selectedFile = e.target.files?.[0] ?? null;
+                              void replaceDocumentFile(d, selectedFile);
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => void remove(d.id)}
+                          className="rounded-md border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
-
-      {editingDoc && (
-        <HeroEditModal
-          doc={editingDoc}
-          secretKey={secretKey}
-          onSaved={(updated) => {
-            setDocuments((prev) =>
-              prev.map((d) => (d.id === updated.id ? { ...d, ...updated } : d)),
-            );
-            setEditingDoc(null);
-          }}
-          onClose={() => setEditingDoc(null)}
-        />
-      )}
     </div>
   );
 }

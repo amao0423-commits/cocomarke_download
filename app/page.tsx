@@ -9,7 +9,7 @@ import Image from "next/image";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const documents = await loadHomeDocumentsFlat();
+  const { documents, categoryOrder } = await loadHomeDocumentsFlat();
 
   return (
     <div>
@@ -94,7 +94,7 @@ export default async function Home() {
           {documents.length === 0 ? (
             <p className="mt-6 text-sm text-[#6B7280]">公開中の資料はまだありません。</p>
           ) : (
-            <DocumentLibrary documents={documents} />
+            <DocumentLibrary documents={documents} categoryOrder={categoryOrder} />
           )}
         </div>
       </section>
