@@ -46,7 +46,7 @@ function formatRequestDate(iso: string): string {
 
 function statusSelectClasses(status: DownloadRequestStatus): string {
   switch (status) {
-    case '送付済':
+    case '受取済':
       return 'bg-[#FFD1D1] text-[#D32F2F] border-[#FFD1D1]';
     case 'リタ中':
       return 'bg-[#FFF9C4] text-[#F57F17] border-[#FFF9C4]';
@@ -59,7 +59,7 @@ function statusSelectClasses(status: DownloadRequestStatus): string {
 
 function statusOptionClasses(status: DownloadRequestStatus): string {
   switch (status) {
-    case '送付済': return 'bg-[#FFD1D1] text-[#D32F2F]';
+    case '受取済': return 'bg-[#FFD1D1] text-[#D32F2F]';
     case 'リタ中': return 'bg-[#FFF9C4] text-[#F57F17]';
     case '契約':   return 'bg-[#C8E6C9] text-[#2E7D32]';
     default:       return '';

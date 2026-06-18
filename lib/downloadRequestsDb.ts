@@ -46,7 +46,7 @@ export async function insertDownloadRequestRow(params: {
     questions: params.questions,
     privacy_consent: params.privacyConsent,
     requested_at: params.requestedAt,
-    workflow_status: '送付済',
+    workflow_status: '受取済',
     email_status: 'pending',
     template_id: params.templateId ?? null,
     document_id: params.documentId ?? null,

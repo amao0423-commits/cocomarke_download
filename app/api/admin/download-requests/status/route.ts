@@ -30,7 +30,7 @@ export async function PATCH(request: NextRequest) {
       !DOWNLOAD_REQUEST_STATUSES.includes(status as DownloadRequestStatus)
     ) {
       return NextResponse.json(
-        { error: 'status は 送付済 / リタ中 / 契約 のいずれかを指定してください' },
+        { error: 'status は 受取済 / リタ中 / 契約 のいずれかを指定してください' },
         { status: 400 }
       );
     }

@@ -11,7 +11,7 @@ export {
   type DownloadRequestEntry,
 } from '@/lib/downloadRequestShared';
 
-const DEFAULT_STATUS: DownloadRequestStatus = '送付済';
+const DEFAULT_STATUS: DownloadRequestStatus = '受取済';
 
 const LIST_KEY = 'download-requests';
 const STATUS_KEY_PREFIX = 'download:status:';

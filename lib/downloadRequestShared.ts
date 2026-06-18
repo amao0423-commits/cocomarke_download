@@ -1,12 +1,13 @@
 import type { EmailStatus } from '@/types/database.types';
 
 /** クライアントでも import 可（サーバー専用モジュールを引かない） */
-export const DOWNLOAD_REQUEST_STATUSES = ['送付済', 'リタ中', '契約'] as const;
+export const DOWNLOAD_REQUEST_STATUSES = ['受取済', 'リタ中', '契約'] as const;
 export type DownloadRequestStatus = (typeof DOWNLOAD_REQUEST_STATUSES)[number];
 
 /** 旧ステータスを一覧の選択肢に合わせて表示する（保存は PATCH 時に新ラベルへ更新） */
 const LEGACY_STATUS_TO_UI: Record<string, DownloadRequestStatus> = {
-  未対応: '送付済',
+  送付済: '受取済',
+  未対応: '受取済',
   商談中: 'リタ中',
   NG: '契約',
 };
@@ -18,7 +19,7 @@ export function normalizeDownloadRequestStatusForUi(
   if (DOWNLOAD_REQUEST_STATUSES.includes(v as DownloadRequestStatus)) {
     return v as DownloadRequestStatus;
   }
-  return LEGACY_STATUS_TO_UI[v] ?? '送付済';
+  return LEGACY_STATUS_TO_UI[v] ?? '受取済';
 }
 
 /** 資料請求フォーム「目的」選択肢（API と同一） */
