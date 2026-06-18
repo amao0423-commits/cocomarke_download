@@ -14,9 +14,9 @@ export function DocumentCard({ document: doc, href, description }: Props) {
   return (
     <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[#E8EBF0] bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(15,23,42,.2)]">
       <a href={href} style={{ display: 'contents' }}>
-        {/* ヘッダー：左に出典ロゴ、右に小型サムネイル */}
-        <div className="flex items-start justify-between gap-3 border-b border-[#EEF1F5] bg-[#F8FAFC] px-4 pb-3 pt-4">
-          <div className="flex min-w-0 items-center gap-2">
+        {/* ヘッダー：左に出典ロゴ（現状維持）、右に拡大したサムネイル */}
+        <div className="flex items-center justify-between gap-3 border-b border-[#EEF1F5] bg-[#F8FAFC] px-4 pb-3 pt-4">
+          <div className="flex min-w-0 shrink-0 items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={LOGO_URL}
@@ -31,13 +31,13 @@ export function DocumentCard({ document: doc, href, description }: Props) {
             </div>
           </div>
 
-          <div className="relative h-[60px] w-20 shrink-0 overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
             {doc.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={doc.thumbnailUrl}
                 alt=""
-                className="h-full w-full object-contain"
+                className="absolute inset-0 h-full w-full object-contain"
                 loading="lazy"
               />
             ) : null}

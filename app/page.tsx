@@ -38,9 +38,9 @@ export default async function Home() {
             {/* H1 */}
             <h1 className="mt-0 font-black leading-[1.3] tracking-[.01em] text-[#01408D]"
               style={{ fontSize: "clamp(30px, 5vw, 54px)" }}>
-              成果につながるInstagram資料を
+              お役立ち
               <span className="relative whitespace-nowrap">
-                一本でも
+                資料
                 <span
                   className="pointer-events-none absolute -inset-x-0.5 bottom-[6px] -z-[1] h-3 rounded-sm"
                   style={{ background: "rgba(16,185,129,.22)" }}
@@ -90,7 +90,7 @@ export default async function Home() {
             id="library-heading"
             className="mb-6 text-xl font-bold tracking-tight text-[#01408D] sm:text-2xl"
           >
-            お役立ち資料
+            資料一覧
           </h2>
           {documents.length === 0 ? (
             <p className="mt-6 text-sm text-[#6B7280]">公開中の資料はまだありません。</p>
