@@ -173,8 +173,8 @@ export default function SubscriptionClient() {
               インスタ運用サブスク
             </div>
             <h1 style={{ fontSize:"clamp(26px,3.5vw,44px)", fontWeight:700, lineHeight:1.25, letterSpacing:"-.03em", marginBottom:20, color:TXT }}>
-              インスタ運用を<span style={{ color:G, borderBottom:`3px solid ${C}` }}>サブスクで</span>。<br />
-              月額固定の<span style={{ color:G }}>フォロワー増加</span>サービス
+              インスタ運用を<br />
+              <span style={{ color:G, borderBottom:`3px solid ${C}` }}>サブスクで</span>。
             </h1>
             <p style={{ fontSize:15, color:TM, marginBottom:32, lineHeight:1.8 }}>
               月額固定でインスタ運用をまるごとお任せ。<br />
