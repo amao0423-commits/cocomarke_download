@@ -31,13 +31,13 @@ export function DocumentCard({ document: doc, href, description }: Props) {
             </div>
           </div>
 
-          <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
+          <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#E2E8F0]">
             {doc.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={doc.thumbnailUrl}
                 alt=""
-                className="absolute inset-0 h-full w-full object-contain"
+                className="absolute inset-0 h-full w-full object-cover"
                 loading="lazy"
               />
             ) : null}

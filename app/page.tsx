@@ -38,9 +38,8 @@ export default async function Home() {
             {/* H1 */}
             <h1 className="mt-0 font-black leading-[1.3] tracking-[.01em] text-[#01408D]"
               style={{ fontSize: "clamp(30px, 5vw, 54px)" }}>
-              お役立ち
               <span className="relative whitespace-nowrap">
-                資料
+                お役立ち資料
                 <span
                   className="pointer-events-none absolute -inset-x-0.5 bottom-[6px] -z-[1] h-3 rounded-sm"
                   style={{ background: "rgba(16,185,129,.22)" }}
