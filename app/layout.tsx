@@ -28,8 +28,12 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.cocomake-guide.com"),
   title: "COCOマーケ お役立ち資料",
   description: "アカウント分析・サービス資料のポータル",
+  verification: {
+    google: "SV9FeVtPztdkWh-8WnmZaeMgQxUE0dRDHYbzzhNuVN8",
+  },
 };
 
 export default function RootLayout({
