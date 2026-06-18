@@ -36,14 +36,14 @@ const jsonLd = {
       ],
     },
     {
-      "@type": "Service",
-      "@id": `${BASE}/subscription#service`,
+      // Google はレビュー/評価を Service 型では認識しないため Product 型で表現
+      "@type": "Product",
+      "@id": `${BASE}/subscription#product`,
       name: "インスタ運用サブスク JEMIA",
-      serviceType: "Instagram運用代行・サブスクリプション",
       description: "月額固定でインスタ運用をまるごとお任せできるサブスク。いいね代行・発見タブ最適化・リスト上位表示・LINE相談まで対応。契約縛りなし・解約自由。",
       url: `${BASE}/subscription`,
-      provider: { "@type": "Organization", name: "株式会社ホットセラー", url: BASE },
-      areaServed: "JP",
+      image: [`${BASE}/ogp.png`],
+      brand: { "@type": "Brand", name: "JEMIA" },
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: "4.9",
@@ -51,16 +51,19 @@ const jsonLd = {
         bestRating: "5",
         worstRating: "1",
       },
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "インスタ運用サブスク 料金プラン",
-        itemListElement: PLANS.map((p) => ({
+      offers: {
+        "@type": "AggregateOffer",
+        priceCurrency: "JPY",
+        lowPrice: Math.min(...PLANS.map((p) => p.price)),
+        highPrice: Math.max(...PLANS.map((p) => p.price)),
+        offerCount: PLANS.length,
+        offers: PLANS.map((p) => ({
           "@type": "Offer",
           name: p.name,
           description: p.desc,
           price: p.price,
           priceCurrency: "JPY",
-          category: "サブスクリプション",
+          availability: "https://schema.org/InStock",
           priceSpecification: {
             "@type": "UnitPriceSpecification",
             price: p.price,
