@@ -31,7 +31,7 @@ export function DocumentCard({ document: doc, href, description }: Props) {
             </div>
           </div>
 
-          <div className="relative aspect-[4/3] w-full max-w-[190px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#E2E8F0]">
+          <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-[#E2E8F0]">
             {doc.thumbnailUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
