@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/admin/broadcast-email/run-due",
+      "schedule": "*/5 * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/subscription/:path*",

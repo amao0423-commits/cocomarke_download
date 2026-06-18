@@ -49,7 +49,7 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<ActiveTab>('diagnostics');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('download');
 
   const handleAuthenticate = async () => {
     if (!secretKey.trim()) {
@@ -80,7 +80,7 @@ export default function AdminPage() {
     setIsAuthenticated(false);
     setSecretKey('');
     setErrorMessage('');
-    setActiveTab('diagnostics');
+    setActiveTab('download');
   };
 
   const tabBtn = (id: ActiveTab, label: string) => (

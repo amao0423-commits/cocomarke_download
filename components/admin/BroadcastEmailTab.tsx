@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Megaphone, RefreshCw } from 'lucide-react';
+import { Clock, Eye, Mail, Megaphone, RefreshCw, Save, Send } from 'lucide-react';
 import {
   ADMIN_BTN_OUTLINE,
   ADMIN_BTN_PINK,
@@ -10,6 +10,45 @@ import {
 } from '@/components/admin/adminPastel';
 
 type CountResponse = { count?: number; error?: string };
+
+const RECIPIENT_SOURCE_OPTIONS = [
+  {
+    value: 'download_requests',
+    label: '資料ダウンロード申請',
+    description: '資料請求フォームに登録されたメール',
+  },
+  {
+    value: 'restaurant_diagnosis_requests',
+    label: '飲食店無料診断',
+    description: 'SNS集客無料診断フォームに登録されたメール',
+  },
+] as const;
+
+type RecipientSource = (typeof RECIPIENT_SOURCE_OPTIONS)[number]['value'];
+
+type BodyMode = 'plain' | 'html';
+
+type Campaign = {
+  id: string;
+  subject: string;
+  bodyContent: string;
+  bodyMode: BodyMode;
+  recipientSources: RecipientSource[];
+  senderEmail: string | null;
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed' | 'cancelled';
+  scheduledAt: string | null;
+  sentAt: string | null;
+  totalCount: number;
+  sentCount: number;
+  failedCount: number;
+  createdAt: string;
+};
+
+type CampaignsResponse = {
+  campaigns?: Campaign[];
+  senderEmail?: string;
+  error?: string;
+};
 
 type SendResponse = {
   ok?: boolean;
@@ -24,11 +63,20 @@ type SendResponse = {
 export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
   const auth = { Authorization: `Bearer ${secretKey}` };
   const [subject, setSubject] = useState('');
-  const [mainBodyHtml, setMainBodyHtml] = useState('');
+  const [bodyMode, setBodyMode] = useState<BodyMode>('plain');
+  const [bodyContent, setBodyContent] = useState('');
+  const [selectedSources, setSelectedSources] = useState<RecipientSource[]>(
+    RECIPIENT_SOURCE_OPTIONS.map((option) => option.value)
+  );
+  const [senderEmail, setSenderEmail] = useState('');
+  const [testEmailTo, setTestEmailTo] = useState('');
+  const [scheduledAt, setScheduledAt] = useState('');
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [previewHtml, setPreviewHtml] = useState('');
   const [recipientCount, setRecipientCount] = useState<number | null>(null);
   const [countLoading, setCountLoading] = useState(true);
   const [countError, setCountError] = useState('');
-  const [sendBusy, setSendBusy] = useState(false);
+  const [busyAction, setBusyAction] = useState('');
   const [formError, setFormError] = useState('');
   const [lastResult, setLastResult] = useState<SendResponse | null>(null);
 
@@ -36,7 +84,11 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
     setCountLoading(true);
     setCountError('');
     try {
-      const res = await fetch('/api/admin/broadcast-email', { headers: auth });
+      const params = new URLSearchParams();
+      selectedSources.forEach((source) => params.append('source', source));
+      const res = await fetch(`/api/admin/broadcast-email?${params.toString()}`, {
+        headers: auth,
+      });
       const data = (await res.json()) as CountResponse;
       if (!res.ok) {
         setCountError(data?.error ?? '件数の取得に失敗しました');
@@ -50,33 +102,72 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
     } finally {
       setCountLoading(false);
     }
-  }, [secretKey]);
+  }, [secretKey, selectedSources]);
 
   useEffect(() => {
     void loadCount();
   }, [loadCount]);
 
-  const send = async () => {
+  const loadCampaigns = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/broadcast-email?view=campaigns', { headers: auth });
+      const data = (await res.json()) as CampaignsResponse;
+      if (!res.ok) {
+        setFormError(data?.error ?? '配信履歴の取得に失敗しました');
+        return;
+      }
+      setCampaigns(data.campaigns ?? []);
+      if (data.senderEmail) setSenderEmail((current) => current || data.senderEmail || '');
+    } catch {
+      setFormError('配信履歴の取得中にエラーが発生しました');
+    }
+  }, [secretKey]);
+
+  useEffect(() => {
+    void loadCampaigns();
+  }, [loadCampaigns]);
+
+  const selectedSourceLabel = () =>
+    RECIPIENT_SOURCE_OPTIONS.filter((option) => selectedSources.includes(option.value))
+      .map((option) => option.label)
+      .join(' / ');
+
+  const ensureReady = () => {
     setFormError('');
     setLastResult(null);
     const sub = subject.trim();
     if (!sub) {
       setFormError('件名を入力してください');
-      return;
+      return null;
     }
+    if (selectedSources.length === 0) {
+      setFormError('送信先の診断・申請を1つ以上選んでください');
+      return null;
+    }
+    return sub;
+  };
+
+  const send = async () => {
+    const sub = ensureReady();
+    if (!sub) return;
+    const targetLabel = selectedSourceLabel();
     const ok = window.confirm(
-      `登録メール宛に一斉送信します。\n件名: ${sub}\n宛先件数: ${recipientCount ?? '（未取得）'} 件\n\n実行しますか？`
+      `選択した宛先に一斉送信します。\n宛先: ${targetLabel}\n件名: ${sub}\n宛先件数: ${recipientCount ?? '（未取得）'} 件\n\n実行しますか？`
     );
     if (!ok) return;
 
-    setSendBusy(true);
+    setBusyAction('send');
     try {
       const res = await fetch('/api/admin/broadcast-email', {
         method: 'POST',
         headers: { ...auth, 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          action: 'send_now',
           subject: sub,
-          mainBodyHtml,
+          bodyContent,
+          bodyMode,
+          sources: selectedSources,
+          senderEmail,
         }),
       });
       const data = (await res.json()) as SendResponse;
@@ -86,11 +177,193 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
       }
       setLastResult(data);
       void loadCount();
+      void loadCampaigns();
     } catch {
       setFormError('送信中にエラーが発生しました');
     } finally {
-      setSendBusy(false);
+      setBusyAction('');
     }
+  };
+
+  const preview = async () => {
+    setFormError('');
+    setBusyAction('preview');
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'preview', bodyContent, bodyMode }),
+      });
+      const data = (await res.json()) as { html?: string; error?: string };
+      if (!res.ok || !data.html) {
+        setFormError(data?.error ?? 'プレビューの作成に失敗しました');
+        return;
+      }
+      setPreviewHtml(data.html);
+    } catch {
+      setFormError('プレビュー作成中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const testSend = async () => {
+    setFormError('');
+    const sub = subject.trim();
+    if (!sub) {
+      setFormError('件名を入力してください');
+      return;
+    }
+    if (!testEmailTo.trim()) {
+      setFormError('テスト送信先を入力してください');
+      return;
+    }
+    setBusyAction('test');
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'test_send',
+          to: testEmailTo.trim(),
+          subject: sub,
+          bodyContent,
+          bodyMode,
+          senderEmail,
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFormError(data?.error ?? 'テスト送信に失敗しました');
+        return;
+      }
+      setFormError('テストメールを送信しました');
+    } catch {
+      setFormError('テスト送信中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const saveDraft = async () => {
+    const sub = ensureReady();
+    if (!sub) return;
+    setBusyAction('draft');
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save_draft',
+          subject: sub,
+          bodyContent,
+          bodyMode,
+          sources: selectedSources,
+          senderEmail,
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFormError(data?.error ?? '下書き保存に失敗しました');
+        return;
+      }
+      setFormError('下書きを保存しました');
+      void loadCampaigns();
+    } catch {
+      setFormError('下書き保存中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const schedule = async () => {
+    const sub = ensureReady();
+    if (!sub) return;
+    if (!scheduledAt) {
+      setFormError('予約日時を入力してください');
+      return;
+    }
+    setBusyAction('schedule');
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'schedule',
+          subject: sub,
+          bodyContent,
+          bodyMode,
+          sources: selectedSources,
+          senderEmail,
+          scheduledAt: new Date(scheduledAt).toISOString(),
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFormError(data?.error ?? '予約保存に失敗しました');
+        return;
+      }
+      setFormError('予約送信を保存しました');
+      void loadCampaigns();
+    } catch {
+      setFormError('予約保存中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const saveSender = async () => {
+    setFormError('');
+    setBusyAction('sender');
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save_sender', senderEmail }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFormError(data?.error ?? '送信元の保存に失敗しました');
+        return;
+      }
+      setFormError('送信元メールアドレスを保存しました');
+    } catch {
+      setFormError('送信元の保存中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const campaignAction = async (action: 'cancel_schedule' | 'send_saved', id: string) => {
+    setFormError('');
+    setBusyAction(`${action}:${id}`);
+    try {
+      const res = await fetch('/api/admin/broadcast-email', {
+        method: 'POST',
+        headers: { ...auth, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, id }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setFormError(data?.error ?? '操作に失敗しました');
+        return;
+      }
+      void loadCampaigns();
+      void loadCount();
+    } catch {
+      setFormError('操作中にエラーが発生しました');
+    } finally {
+      setBusyAction('');
+    }
+  };
+
+  const toggleSource = (source: RecipientSource) => {
+    setRecipientCount(null);
+    setSelectedSources((current) =>
+      current.includes(source)
+        ? current.filter((item) => item !== source)
+        : [...current, source]
+    );
   };
 
   return (
@@ -102,7 +375,7 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
             一斉メール配信
           </h2>
           <p className="text-sm text-slate-500 mt-1 max-w-2xl">
-            資料ダウンロード申請とレストラン診断申請に登録されたメール宛に、同じ内容を送信します（重複アドレスは1通）。
+            選択した診断・申請に登録されたメール宛に、同じ内容を送信します（重複アドレスは1通）。
             下記は本文のメイン部分のみ。フッター（公式サイト・ブログ・連絡先など）は送信時に自動で付きます。
           </p>
         </div>
@@ -124,6 +397,47 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
         大量送信はサーバーの制限時間内で処理されます。件数が非常に多い場合は分割送信や時間帯の調整を検討してください。
       </div>
 
+      <section className="space-y-3" aria-labelledby="broadcast-recipient-sources">
+        <div>
+          <h3 id="broadcast-recipient-sources" className="text-sm font-semibold text-slate-700">
+            送信先の診断・申請
+          </h3>
+          <p className="text-xs text-slate-500 mt-1">
+            チェックした宛先グループだけに送信します。複数選んだ場合、同じメールアドレスは1件にまとめます。
+          </p>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {RECIPIENT_SOURCE_OPTIONS.map((option) => {
+            const checked = selectedSources.includes(option.value);
+            return (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 transition ${
+                  checked
+                    ? 'border-rose-200 bg-rose-50/70'
+                    : 'border-blue-100 bg-white hover:bg-blue-50/40'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleSource(option.value)}
+                  className={`mt-1 h-4 w-4 rounded border-slate-300 text-rose-400 ${ADMIN_FOCUS_RING}`}
+                />
+                <span>
+                  <span className="block text-sm font-semibold text-slate-700">
+                    {option.label}
+                  </span>
+                  <span className="block text-xs text-slate-500 mt-0.5">
+                    {option.description}
+                  </span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium text-slate-600">ユニーク宛先:</span>
         {countLoading ? (
@@ -137,7 +451,8 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+        <div className="space-y-2">
         <label htmlFor="broadcast-subject" className="text-sm font-medium text-slate-600">
           件名
         </label>
@@ -149,25 +464,107 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           placeholder="【COCOマーケ】…"
           className={`w-full max-w-2xl rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
         />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="broadcast-sender" className="text-sm font-medium text-slate-600">
+            送信元メールアドレス
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="broadcast-sender"
+              type="email"
+              value={senderEmail}
+              onChange={(e) => setSenderEmail(e.target.value)}
+              placeholder="info@example.com"
+              className={`min-w-0 flex-1 rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
+            />
+            <button
+              type="button"
+              onClick={() => void saveSender()}
+              disabled={busyAction === 'sender'}
+              className={ADMIN_BTN_OUTLINE}
+            >
+              保存
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="broadcast-main" className="text-sm font-medium text-slate-600">
-          本文メイン（HTML 断片）
-        </label>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <label htmlFor="broadcast-main" className="text-sm font-medium text-slate-600">
+            本文
+          </label>
+          <div className="inline-flex rounded-2xl border border-blue-100 bg-white p-1 text-xs">
+            {(['plain', 'html'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setBodyMode(mode)}
+                className={`rounded-xl px-3 py-1.5 font-semibold ${
+                  bodyMode === mode ? 'bg-rose-100 text-rose-700' : 'text-slate-500'
+                }`}
+              >
+                {mode === 'plain' ? '通常テキスト' : 'HTML'}
+              </button>
+            ))}
+          </div>
+        </div>
         <p className="text-xs text-slate-500">
-          段落なら <code className="text-rose-600/90">&lt;p&gt;…&lt;/p&gt;</code> のみでも可。表組の行から始める場合は{' '}
-          <code className="text-rose-600/90">&lt;tr&gt;…&lt;/tr&gt;</code> でそのまま挿入されます。
+          通常テキストは改行を保ったままメール用HTMLに変換します。細かく整えたい場合だけHTMLに切り替えてください。
         </p>
         <textarea
           id="broadcast-main"
-          value={mainBodyHtml}
-          onChange={(e) => setMainBodyHtml(e.target.value)}
+          value={bodyContent}
+          onChange={(e) => setBodyContent(e.target.value)}
           rows={14}
           spellCheck={false}
           className={`w-full font-mono text-sm rounded-2xl border border-blue-100 bg-white px-4 py-3 text-slate-700 ${ADMIN_FOCUS_RING}`}
-          placeholder={`<p>お世話になっております。</p>\n<p>…</p>`}
+          placeholder={
+            bodyMode === 'plain'
+              ? `お世話になっております。\n\n新しいお知らせをご案内します。`
+              : `<p>お世話になっております。</p>\n<p>…</p>`
+          }
         />
+      </div>
+
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+        <div className="space-y-2">
+          <label htmlFor="broadcast-test" className="text-sm font-medium text-slate-600">
+            テスト送信先
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="broadcast-test"
+              type="email"
+              value={testEmailTo}
+              onChange={(e) => setTestEmailTo(e.target.value)}
+              placeholder="test@example.com"
+              className={`min-w-0 flex-1 rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
+            />
+            <button
+              type="button"
+              onClick={() => void testSend()}
+              disabled={busyAction === 'test'}
+              className={ADMIN_BTN_OUTLINE}
+            >
+              <Mail className="h-4 w-4" aria-hidden />
+              {busyAction === 'test' ? '送信中…' : 'テスト送信'}
+            </button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="broadcast-schedule" className="text-sm font-medium text-slate-600">
+            予約日時
+          </label>
+          <input
+            id="broadcast-schedule"
+            type="datetime-local"
+            value={scheduledAt}
+            onChange={(e) => setScheduledAt(e.target.value)}
+            className={`w-full rounded-2xl border border-blue-100 bg-white px-4 py-2.5 text-slate-700 text-sm ${ADMIN_FOCUS_RING}`}
+          />
+        </div>
       </div>
 
       {formError && (
@@ -206,11 +603,39 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
+          onClick={() => void preview()}
+          disabled={busyAction === 'preview'}
+          className={ADMIN_BTN_OUTLINE}
+        >
+          <Eye className="h-4 w-4" aria-hidden />
+          プレビュー
+        </button>
+        <button
+          type="button"
+          onClick={() => void saveDraft()}
+          disabled={busyAction === 'draft'}
+          className={ADMIN_BTN_PRIMARY}
+        >
+          <Save className="h-4 w-4" aria-hidden />
+          {busyAction === 'draft' ? '保存中…' : '下書き保存'}
+        </button>
+        <button
+          type="button"
+          onClick={() => void schedule()}
+          disabled={busyAction === 'schedule' || !scheduledAt}
+          className={ADMIN_BTN_PRIMARY}
+        >
+          <Clock className="h-4 w-4" aria-hidden />
+          {busyAction === 'schedule' ? '予約中…' : '予約送信'}
+        </button>
+        <button
+          type="button"
           onClick={() => void send()}
-          disabled={sendBusy || countLoading || recipientCount === 0}
+          disabled={busyAction === 'send' || countLoading || recipientCount === 0 || selectedSources.length === 0}
           className={ADMIN_BTN_PINK}
         >
-          {sendBusy ? '送信中…' : '一斉送信する'}
+          <Send className="h-4 w-4" aria-hidden />
+          {busyAction === 'send' ? '送信中…' : '今すぐ一斉送信'}
         </button>
         <button
           type="button"
@@ -221,6 +646,80 @@ export function BroadcastEmailTab({ secretKey }: { secretKey: string }) {
           件数だけ再取得
         </button>
       </div>
+
+      {previewHtml && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 px-4 py-6" role="dialog" aria-modal="true">
+          <div className="mx-auto flex h-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+              <h3 className="text-sm font-semibold text-slate-700">メールプレビュー</h3>
+              <button type="button" onClick={() => setPreviewHtml('')} className={ADMIN_BTN_OUTLINE}>
+                閉じる
+              </button>
+            </div>
+            <iframe title="メールプレビュー" srcDoc={previewHtml} className="min-h-0 flex-1 bg-white" />
+          </div>
+        </div>
+      )}
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-slate-700">下書き・予約・送信履歴</h3>
+          <button type="button" onClick={() => void loadCampaigns()} className={ADMIN_BTN_OUTLINE}>
+            <RefreshCw className="h-4 w-4" aria-hidden />
+            更新
+          </button>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-blue-100 bg-white">
+          {campaigns.length === 0 ? (
+            <p className="px-4 py-5 text-sm text-slate-500">まだ配信データはありません。</p>
+          ) : (
+            <div className="divide-y divide-blue-50">
+              {campaigns.map((campaign) => (
+                <div key={campaign.id} className="grid gap-2 px-4 py-3 text-sm lg:grid-cols-[1fr_auto]">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-slate-700">{campaign.subject}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {campaign.status} · {campaign.bodyMode === 'plain' ? '通常テキスト' : 'HTML'} ·{' '}
+                      作成 {new Date(campaign.createdAt).toLocaleString('ja-JP')}
+                      {campaign.scheduledAt
+                        ? ` · 予約 ${new Date(campaign.scheduledAt).toLocaleString('ja-JP')}`
+                        : ''}
+                      {campaign.sentAt
+                        ? ` · 送信 ${new Date(campaign.sentAt).toLocaleString('ja-JP')}`
+                        : ''}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      成功 {campaign.sentCount} / 全 {campaign.totalCount} / 失敗 {campaign.failedCount}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                    {campaign.status === 'draft' && (
+                      <button
+                        type="button"
+                        onClick={() => void campaignAction('send_saved', campaign.id)}
+                        disabled={busyAction === `send_saved:${campaign.id}`}
+                        className={ADMIN_BTN_PINK}
+                      >
+                        送信
+                      </button>
+                    )}
+                    {campaign.status === 'scheduled' && (
+                      <button
+                        type="button"
+                        onClick={() => void campaignAction('cancel_schedule', campaign.id)}
+                        disabled={busyAction === `cancel_schedule:${campaign.id}`}
+                        className={ADMIN_BTN_OUTLINE}
+                      >
+                        予約取消
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
