@@ -215,16 +215,19 @@ export async function listDownloadRequestsFromDb(
     const effectiveDocIds = junctionIds?.length ? junctionIds : r.document_id ? [r.document_id] : [];
     const titles = effectiveDocIds.map((id) => titleByDocId.get(id)).filter(Boolean) as string[];
     const fromMaster = titles.length > 0 ? titles.join(' / ') : null;
-    const stored =
+    const storedRaw =
       typeof r.requested_document_title === 'string' && r.requested_document_title.trim()
         ? r.requested_document_title.trim()
         : null;
+    // 汎用プレースホルダは資料名として扱わない（document_id から実名を優先表示する）
+    const stored = storedRaw === 'ご指定の資料' || storedRaw === 'ご請求の資料' ? null : storedRaw;
     return {
       ...r,
       template_subject: r.template_id
         ? subjectById.get(r.template_id) ?? null
         : null,
-      document_title: stored ?? fromMaster,
+      // document_id から引いた実際の資料名を優先（無ければ保存スナップショット）
+      document_title: fromMaster ?? stored ?? storedRaw,
     };
   });
 }
