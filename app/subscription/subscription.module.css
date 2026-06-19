@@ -95,6 +95,7 @@
 @media (max-width: 420px) {
   .headerCta { padding: 9px 14px; font-size: 13px; }
   .headerCorp { padding: 7px 12px; font-size: 12px; }
+  .hideSmall { display: none; }
 }
 @media (max-width: 720px) {
   .headerNav { display: none; }

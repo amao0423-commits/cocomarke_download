@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
 
 // ────────────────────────────────────────────────────────────────
 // ⚠️ 差し替え必須: 既存サイトの共通コンポーネントのパスに合わせてください。
@@ -9,7 +10,7 @@ import type { Metadata } from "next";
 
 // ── 記事メタ情報（更新時はここを編集） ──────────────────────────
 const ARTICLE = {
-  url: "https://www.cocomake-guide.com/blog/instagram-explore-tab",
+  url: "https://www.cocomake-guide.com/subscription/blog/instagram-explore-tab",
   title: "インスタの発見タブに載る方法｜仕組みと最適化の7つのコツ",
   description:
     "インスタの発見タブに載る方法を、仕組みから具体策まで解説。表示される投稿の条件、載らない原因、エンゲージメントを高める7つのコツを紹介します。フォロワー以外の見込み客にリーチしたい店舗・サロン運用者は必見。",
@@ -104,7 +105,7 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "JEMIA",
-        url: "https://www.cocomake-guide.com",
+        url: "https://www.cocomake-guide.com/subscription",
       },
       mainEntityOfPage: { "@type": "WebPage", "@id": ARTICLE.url },
       inLanguage: "ja",
@@ -120,8 +121,8 @@ const jsonLd = {
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "ホーム", item: "https://www.cocomake-guide.com" },
-        { "@type": "ListItem", position: 2, name: "お役立ち記事", item: "https://www.cocomake-guide.com/blog" },
+        { "@type": "ListItem", position: 1, name: "ホーム", item: "https://www.cocomake-guide.com/subscription" },
+        { "@type": "ListItem", position: 2, name: "お役立ち記事", item: "https://www.cocomake-guide.com/subscription/blog" },
         { "@type": "ListItem", position: 3, name: ARTICLE.title, item: ARTICLE.url },
       ],
     },
@@ -136,14 +137,16 @@ export default function InstagramExploreTabArticle() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <JemiaHeader />
+
       <article className="bg-white text-slate-800">
         {/* ── Hero ───────────────────────────────────────── */}
         <header className="border-b border-slate-100 bg-gradient-to-b from-emerald-50/60 to-white">
           <div className="mx-auto max-w-2xl px-5 py-12 sm:py-16">
             <nav aria-label="パンくず" className="mb-6 text-xs text-slate-400">
-              <a href="/" className="hover:text-slate-600">ホーム</a>
+              <a href="/subscription" className="hover:text-slate-600">ホーム</a>
               <span className="mx-1.5">/</span>
-              <a href="/blog" className="hover:text-slate-600">お役立ち記事</a>
+              <a href="/subscription/blog" className="hover:text-slate-600">お役立ち記事</a>
               <span className="mx-1.5">/</span>
               <span className="text-slate-500">発見タブに載る方法</span>
             </nav>
@@ -361,6 +364,8 @@ export default function InstagramExploreTabArticle() {
           </aside>
         </div>
       </article>
+
+      <JemiaFooter />
     </>
   );
 }

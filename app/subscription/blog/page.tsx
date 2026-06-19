@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 
 // ────────────────────────────────────────────────────────────────
 // ⚠️ 差し替え必須: 既存サイトの共通コンポーネントのパスに合わせてください。
@@ -39,7 +40,7 @@ type Post = {
 const POSTS: Post[] = [
   {
     slug: "instagram-explore-tab",
-    href: "/blog/instagram-explore-tab",
+    href: "/subscription/blog/instagram-explore-tab",
     category: "algorithm",
     title: "インスタの発見タブに載る方法｜仕組みと最適化の7つのコツ",
     excerpt:
@@ -51,7 +52,7 @@ const POSTS: Post[] = [
   // 例: 記事が増えたら下のように追記
   // {
   //   slug: "increase-followers",
-  //   href: "/blog/increase-followers",
+  //   href: "/subscription/blog/increase-followers",
   //   category: "growth",
   //   title: "インスタのフォロワーを増やす方法【保存版】",
   //   excerpt: "...",
@@ -75,12 +76,13 @@ export default function BlogIndexPage() {
 
   return (
     <div className="bg-white text-slate-800">
+      <JemiaHeader />
 
       {/* ── Hero ───────────────────────────────────────── */}
       <header className="border-b border-slate-100 bg-gradient-to-b from-emerald-50/60 to-white">
         <div className="mx-auto max-w-4xl px-5 py-14 sm:py-20">
           <nav aria-label="パンくず" className="mb-6 text-xs text-slate-400">
-            <a href="/" className="hover:text-slate-600">ホーム</a>
+            <a href="/subscription" className="hover:text-slate-600">ホーム</a>
             <span className="mx-1.5">/</span>
             <span className="text-slate-500">お役立ち記事</span>
           </nav>
@@ -203,6 +205,8 @@ export default function BlogIndexPage() {
           </div>
         </section>
       </main>
+
+      <JemiaFooter />
     </div>
   );
 }

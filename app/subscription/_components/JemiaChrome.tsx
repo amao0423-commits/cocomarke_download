@@ -16,8 +16,9 @@ export function JemiaHeader() {
         <Link href="/subscription" className={styles.headerLogo}>
           JEM<span style={{ color: C }}>I</span>A
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Link href="/subscription/corporate" className={styles.headerCorp}>法人のお客様</Link>
+        <nav style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Link href="/subscription/blog" style={{ fontSize: 13, fontWeight: 700, color: "#555555", textDecoration: "none", whiteSpace: "nowrap" }}>お役立ち記事</Link>
+          <Link href="/subscription/corporate" className={styles.hideSmall} style={{ fontSize: 13, fontWeight: 700, color: "#555555", textDecoration: "none", whiteSpace: "nowrap" }}>法人</Link>
           <Link
             href="/subscription#plans"
             className={styles.headerCta}
@@ -25,7 +26,7 @@ export function JemiaHeader() {
           >
             料金・相談
           </Link>
-        </div>
+        </nav>
       </div>
     </header>
   );
