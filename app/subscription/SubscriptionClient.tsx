@@ -472,7 +472,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px" }}>
+      <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px", scrollMarginTop:64 }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
         <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
         <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。翌営業日以内に返信します。</p>
