@@ -426,19 +426,14 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
     }
   };
 
+  /** 「すべて」ビューで資料カードを全体的に並び替える（トップページの並び順に反映） */
   const moveDocument = async (index: number, direction: -1 | 1) => {
-    const filtered = documents.filter((d) => d.category === filterCategory);
     const target = index + direction;
-    if (target < 0 || target >= filtered.length) return;
-    const next = [...filtered];
+    if (target < 0 || target >= documents.length) return;
+    const next = [...documents];
     [next[index], next[target]] = [next[target], next[index]];
     const reordered = next.map((d, i) => ({ ...d, sort_order: i * 10 }));
-    setDocuments((prev) =>
-      prev.map((d) => {
-        const updated = reordered.find((r) => r.id === d.id);
-        return updated ?? d;
-      }),
-    );
+    setDocuments(reordered);
     setReorderBusy(true);
     try {
       await fetch('/api/admin/documents/reorder', {
@@ -650,9 +645,13 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
             </button>
           ))}
         </div>
-        {filterCategory !== 'all' && (
+        {filterCategory === 'all' ? (
           <p className="text-xs text-gray-500 mb-3">
-            ↑↓ ボタンで資料の表示順を変更できます（即時保存）
+            ↑↓ ボタンで資料カードの並び順を変更できます（トップページに反映・即時保存）
+          </p>
+        ) : (
+          <p className="text-xs text-gray-400 mb-3">
+            並び替えは「すべて」タブで行えます。
           </p>
         )}
 
@@ -669,7 +668,7 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                 >
                   {/* 行ヘッダー（クリックで開閉） */}
                   <div className="flex items-center gap-2 px-3 py-2.5">
-                    {filterCategory !== 'all' && (
+                    {filterCategory === 'all' && (
                       <div className="flex flex-col gap-0.5 shrink-0">
                         <button
                           type="button"

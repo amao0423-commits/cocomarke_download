@@ -199,18 +199,20 @@ async function fetchHomeDocumentsFlat(): Promise<{
       .order('sort_order', { ascending: true }),
     supabase
       .from('documents')
-      .select('id, title, category, thumbnail_url, updated_at, created_at')
+      .select('id, title, category, thumbnail_url, updated_at, created_at, sort_order')
       .eq('is_published', true)
-      .order('created_at', { ascending: true }),
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false }),
   ]);
 
   let documentsRaw: DocumentRow[] = [];
   if (docsRes.error) {
     const basic = await supabase
       .from('documents')
-      .select('id, title, category, created_at')
+      .select('id, title, category, created_at, sort_order')
       .eq('is_published', true)
-      .order('created_at', { ascending: true });
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
     documentsRaw = (basic.data ?? []) as DocumentRow[];
   } else {
     documentsRaw = (docsRes.data ?? []) as DocumentRow[];

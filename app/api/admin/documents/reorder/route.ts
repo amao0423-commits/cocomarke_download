@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
@@ -25,6 +26,7 @@ export async function PATCH(request: NextRequest) {
       supabase.from('documents').update({ sort_order, updated_at: new Date().toISOString() }).eq('id', id),
     );
     await Promise.all(updates);
+    revalidateTag('documents');
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error('documents reorder PATCH:', e);
