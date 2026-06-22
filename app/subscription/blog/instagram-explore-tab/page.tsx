@@ -299,24 +299,24 @@ export default function InstagramExploreTabArticle() {
 
             {/* CTA: プロに任せる */}
             <section id="pro" className="scroll-mt-20">
-              <div className="overflow-hidden rounded-3xl bg-emerald-600 px-7 py-10 text-white">
-                <h2 className="text-xl font-bold">プロに任せるという選択肢</h2>
-                <p className="mt-4 leading-loose text-emerald-50">
+              <div className="overflow-hidden rounded-3xl border-2 border-emerald-200 bg-white px-7 py-10">
+                <h2 className="text-xl font-bold text-emerald-800">プロに任せるという選択肢</h2>
+                <p className="mt-4 leading-loose text-slate-600">
                   JEMIAのインスタ運用サブスクなら、発見タブ最適化を専任担当がまるごと代行します。投稿戦略の設計、エンゲージメント向上、ハッシュタグ設計、月次レポートまで対応し、フォロワー以外の見込み客へのリーチを増やします。
                 </p>
-                <p className="mt-3 leading-loose text-emerald-50">
+                <p className="mt-3 leading-loose text-slate-600">
                   月額固定・解約自由で、成果が出なければいつでも解約できます。発見タブからの集客を本気で伸ばしたい方は、まずは無料相談からどうぞ。
                 </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                   <a
                     href="/subscription"
-                    className="rounded-xl bg-white px-6 py-3 text-center font-bold text-emerald-700 transition hover:bg-emerald-50"
+                    className="rounded-xl bg-emerald-600 px-6 py-3 text-center font-bold text-white transition hover:bg-emerald-700"
                   >
                     インスタ運用サブスクを見る →
                   </a>
                   <a
                     href="/subscription#contact"
-                    className="rounded-xl border border-emerald-300/60 px-6 py-3 text-center font-bold text-white transition hover:bg-emerald-500"
+                    className="rounded-xl border border-slate-300 px-6 py-3 text-center font-bold text-slate-700 transition hover:bg-slate-50"
                   >
                     無料で相談する →
                   </a>
