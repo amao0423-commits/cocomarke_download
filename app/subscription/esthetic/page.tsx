@@ -155,9 +155,9 @@ export default function EstheticSubscriptionPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">忙しいオーナー・施術者に代わって専任担当が運用</h3>
+              <h3 className="text-lg font-semibold">簡単チャット対応</h3>
               <p className="mt-2 leading-relaxed text-gray-600">
-                ヒアリングから戦略設計、いいね代行、発見タブ最適化、月次レポートまで専任担当が対応。施術と接客に集中したまま、新規集客の仕組みだけが回り続けます。LINEでいつでも相談できます。
+                LINEなどのチャットで、いつでも気軽に相談・依頼ができます。サブスク制で好きな時に利用・解約が可能なので、必要な時だけ無理なく続けられます。
               </p>
             </div>
           </div>
