@@ -17,5 +17,14 @@ export const metadata: Metadata = {
 };
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      {/* サムネの装飾アイコン用（Tabler Icons webfont） */}
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"
+      />
+      {children}
+    </>
+  );
 }
