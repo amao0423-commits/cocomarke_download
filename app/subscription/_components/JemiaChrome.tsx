@@ -45,6 +45,7 @@ export function JemiaFooter() {
       </div>
       <div style={{ marginBottom: 16 }}>
         <Link href="/subscription" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>サービス概要</Link>
+        <Link href="/subscription/blog" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>お役立ち記事</Link>
         <Link href="/subscription/corporate" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>法人のお客様</Link>
         <Link href="/subscription/diagnosis" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プラン診断</Link>
       </div>

@@ -3,7 +3,22 @@
 import { useState } from "react";
 import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 
+// ────────────────────────────────────────────────────────────────
+// ⚠️ 差し替え必須: 既存サイトの共通コンポーネントのパスに合わせてください。
+// ────────────────────────────────────────────────────────────────
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+//
+// 📝 metadata について:
+//   このページは "use client"（フィルタ動作のため）なので metadata export は使えません。
+//   SEO用タイトルは同階層の layout.tsx で定義してください。
+// ────────────────────────────────────────────────────────────────
+
 // ── カテゴリ定義（色・アイコン・連番をここで一元管理） ──────────────
+// thumb        : サムネ背景色（Tailwind bg クラス）
+// accentBorder : カテゴリラベルの枠線色
+// accentText   : カテゴリラベルの文字色
+// icon         : 右下に薄く置く装飾アイコン（Tabler。globals で読み込み済み想定）
 const CATEGORY_META = {
   algorithm: {
     label: "発見タブ・アルゴリズム",
@@ -64,6 +79,26 @@ const POSTS: Post[] = [
     dateModified: "2026.06.19",
     readingTime: "約7分",
     featured: true,
+  },
+  {
+    slug: "increase-followers",
+    href: "/subscription/blog/increase-followers",
+    category: "growth",
+    title: "インスタのフォロワーを増やす方法｜土台から作る9つのステップ",
+    excerpt:
+      "小手先のテクニックではなく、フォロワーが自然に増え続ける土台づくりを9ステップで解説。プロフィール設計から継続の仕組みまでまとめました。",
+    dateModified: "2026.06.22",
+    readingTime: "約8分",
+  },
+  {
+    slug: "agency-guide",
+    href: "/subscription/blog/agency-guide",
+    category: "growth",
+    title: "インスタ運用代行の選び方｜料金相場と失敗しない比較ポイント",
+    excerpt:
+      "運用代行の料金相場、自分で運用する場合との比較、失敗しない選び方のチェックポイントを整理。依頼前の判断材料にどうぞ。",
+    dateModified: "2026.06.22",
+    readingTime: "約7分",
   },
 ];
 
