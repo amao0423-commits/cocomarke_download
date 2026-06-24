@@ -41,6 +41,7 @@ type DocumentRow = {
   updated_at?: string | null;
   created_at?: string | null;
   sort_order?: number;
+  hero_description?: string | null;
 };
 
 function withCacheBuster(url: string, version?: string | null): string {
@@ -199,7 +200,7 @@ async function fetchHomeDocumentsFlat(): Promise<{
       .order('sort_order', { ascending: true }),
     supabase
       .from('documents')
-      .select('id, title, category, thumbnail_url, updated_at, created_at, sort_order')
+      .select('id, title, category, thumbnail_url, updated_at, created_at, sort_order, hero_description')
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false }),
@@ -230,9 +231,15 @@ async function fetchHomeDocumentsFlat(): Promise<{
 
   const documents = documentsRaw.map((row) => {
     const base = mapDocumentRow(row);
+    // 資料個別の紹介文（hero_description の1行目）を優先。未設定はカテゴリ説明にフォールバック。
+    const heroFirstLine =
+      typeof row.hero_description === 'string'
+        ? row.hero_description.split('\n').map((l) => l.trim()).find(Boolean) ?? null
+        : null;
     return {
       ...base,
       description:
+        heroFirstLine ??
         categoryDescription.get(base.category) ??
         getHomeCategoryCopy(base.category).description,
     };
