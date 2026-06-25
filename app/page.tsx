@@ -6,7 +6,10 @@ import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import Image from "next/image";
 
-export const dynamic = 'force-dynamic';
+// ISR: 静的生成して CDN から即時配信（about:blank フラッシュ／TTFB 遅延を解消）。
+// データは unstable_cache(tags:['documents']) 済みで、管理画面の編集時に
+// revalidateTag('documents') が走るため、編集内容は即座に反映される。
+export const revalidate = 3600;
 
 export default async function Home() {
   const { documents, categoryOrder } = await loadHomeDocumentsFlat();
