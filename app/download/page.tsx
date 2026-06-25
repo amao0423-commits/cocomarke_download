@@ -1,40 +1,22 @@
 import type { Metadata } from "next";
-import DownloadPageShell from "./DownloadPageShell";
-import { getDownloadPageContext } from "./getDownloadPageContext";
+import { Suspense } from "react";
+import DownloadClient, { DownloadSkeleton } from "./DownloadClient";
 
 export const metadata: Metadata = {
   title: "サービス資料ダウンロード | COCOマーケ",
   description: "COCOマーケサービス資料のダウンロード",
 };
 
-export default async function DownloadPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ documentId?: string; formSlug?: string; thanks?: string }>;
-}) {
-  const sp = await searchParams;
-  const documentId =
-    typeof sp.documentId === "string" && sp.documentId.trim()
-      ? sp.documentId.trim()
-      : undefined;
-  const formSlug =
-    typeof sp.formSlug === "string" && sp.formSlug.trim()
-      ? sp.formSlug.trim()
-      : "default";
-  const thanksInUrl =
-    typeof sp.thanks === "string" && sp.thanks.trim() === "1";
-  const { formName, requestedDocumentLabel, templateId, documents } =
-    await getDownloadPageContext(documentId, formSlug);
-
+/**
+ * ダウンロードページは静的生成（CDN から即時配信）。
+ * documentId / formSlug などのクエリはクライアント（DownloadClient）で読み、
+ * 資料・フォーム情報はキャッシュ済み API (/api/download-context) から取得する。
+ * これにより「about:blank → 表示」のサーバー応答待ちを解消する。
+ */
+export default function DownloadPage() {
   return (
-    <DownloadPageShell
-      formSlug={formSlug}
-      formName={formName}
-      templateId={templateId}
-      documentId={documentId}
-      documentLabel={requestedDocumentLabel}
-      initialDocuments={documents}
-      thanksInUrl={thanksInUrl}
-    />
+    <Suspense fallback={<DownloadSkeleton />}>
+      <DownloadClient />
+    </Suspense>
   );
 }
