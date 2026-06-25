@@ -250,7 +250,7 @@ export default function EstheticSubscriptionPage() {
         <section className="mt-20 rounded-2xl bg-gray-50 px-6 py-12 text-center">
           <h2 className="text-2xl font-bold">まずは無料で相談してみませんか？</h2>
           <p className="mt-4 leading-relaxed text-gray-600">
-            エステ・ネイルサロンのインスタ集客でお悩みなら、まずはフォームからお気軽にどうぞ。翌営業日以内に返信します。
+            エステ・ネイルサロンのインスタ集客でお悩みなら、まずはフォームからお気軽にどうぞ。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a href="/subscription#contact" className="rounded-lg bg-emerald-600 px-6 py-3 text-white">

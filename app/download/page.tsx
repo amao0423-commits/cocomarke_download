@@ -23,13 +23,14 @@ export default async function DownloadPage({
       : "default";
   const thanksInUrl =
     typeof sp.thanks === "string" && sp.thanks.trim() === "1";
-  const { formName, requestedDocumentLabel, documents } =
+  const { formName, requestedDocumentLabel, templateId, documents } =
     await getDownloadPageContext(documentId, formSlug);
 
   return (
     <DownloadPageShell
       formSlug={formSlug}
       formName={formName}
+      templateId={templateId}
       documentId={documentId}
       documentLabel={requestedDocumentLabel}
       initialDocuments={documents}

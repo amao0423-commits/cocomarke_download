@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const source       = sanitize(body.source);
     const cta          = sanitize(body.cta);
 
-    if (!name || !email || !message) {
+    if (!name || !email) {
       return NextResponse.json({ ok: false, error: '必須項目をご入力ください。' }, { status: 400 });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
       inquiryType  ? `ご希望プラン: ${inquiryType}`     : null,
       instagramId  ? `Instagram ID: @${instagramId}`   : null,
       '',
-      'メッセージ:',
-      message,
+      'ご質問事項:',
+      message || '（記載なし）',
       '',
       '──────────────',
       '【流入元情報】',

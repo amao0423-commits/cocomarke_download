@@ -22,6 +22,11 @@
 .marqueeTrack  { animation: marquee    18s linear infinite; }
 .marqueeTrack2 { animation: marqueeRev 22s linear infinite; }
 .marqueeTrack3 { animation: marquee    20s linear infinite; }
+/* 左右端で単語をハードに切らず、自然にフェードさせる */
+.marqueeMask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
 
 .pulseDot { animation: pulse 1.5s ease-in-out infinite; }
 .cursor   { animation: blink .8s step-end infinite; display:inline-block; width:1.5px; height:14px; background:#2D7A4F; vertical-align:middle; margin-left:1px; }
@@ -97,8 +102,18 @@
   .headerCorp { padding: 7px 12px; font-size: 12px; }
   .hideSmall { display: none; }
 }
+/* ナビが隠れるモバイルでも「お役立ち記事」をヘッダーに残す */
+.navLinkMobile { display: none; }
 @media (max-width: 720px) {
   .headerNav { display: none; }
+  .navLinkMobile {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #555555;
+    text-decoration: none;
+    white-space: nowrap;
+  }
 }
 
 .siteFooter {

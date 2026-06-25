@@ -4,7 +4,7 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "送信完了 | JEMIA",
-  description: "お問い合わせありがとうございます。翌営業日以内にご連絡いたします。",
+  description: "お問い合わせありがとうございます。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。",
   // サンクスページは検索結果に出さない
   robots: { index: false, follow: false },
 };
@@ -69,7 +69,7 @@ export default function SubscriptionThanksPage() {
         <p style={{ fontSize: 15, color: TM, lineHeight: 1.9, marginBottom: 8 }}>
           お問い合わせいただきありがとうございます。
           <br />
-          担当より翌営業日以内にご連絡いたします。
+          担当より3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。
         </p>
         <p style={{ fontSize: 13, color: "#888888", lineHeight: 1.8, marginBottom: 32 }}>
           受付時間：平日 09:00 - 18:00（土日祝日は除く）

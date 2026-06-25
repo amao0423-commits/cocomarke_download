@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
@@ -80,6 +81,7 @@ export async function PATCH(request: NextRequest, context: Ctx) {
     if (!data) {
       return NextResponse.json({ error: '見つかりません' }, { status: 404 });
     }
+    revalidateTag('download-form');
     return NextResponse.json({ config: data });
   } catch (e) {
     console.error('download-form-configs PATCH:', e);
@@ -115,6 +117,7 @@ export async function DELETE(request: NextRequest, context: Ctx) {
       console.error('download-form-configs DELETE:', error);
       return NextResponse.json({ error: '削除に失敗しました' }, { status: 500 });
     }
+    revalidateTag('download-form');
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error('download-form-configs DELETE:', e);

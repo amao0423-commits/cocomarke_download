@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const HERO_SELECT =
@@ -30,19 +31,23 @@ export type PageDocument = {
   title?: string | null;
 } & Partial<HeroFields>;
 
-export async function getDownloadPageContext(
-  documentId: string | undefined,
-  formSlug: string
-): Promise<{
+type DownloadPageContext = {
   formName: string;
   requestedDocumentLabel: string | null;
+  templateId: string | null;
   documents: PageDocument[];
-}> {
+};
+
+async function fetchDownloadPageContext(
+  documentId: string | undefined,
+  formSlug: string
+): Promise<DownloadPageContext> {
   const supabase = getSupabaseAdmin();
   if (!supabase) {
     return {
       formName: "COCOマーケ資料ダウンロード",
       requestedDocumentLabel: documentId ? "ご指定の資料" : null,
+      templateId: null,
       documents: [],
     };
   }
@@ -95,6 +100,7 @@ export async function getDownloadPageContext(
     return {
       formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
       requestedDocumentLabel: null,
+      templateId: config?.template_id ?? null,
       documents,
     };
   }
@@ -104,6 +110,7 @@ export async function getDownloadPageContext(
     return {
       formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
       requestedDocumentLabel: matched.title?.trim() || matched.label,
+      templateId: config?.template_id ?? null,
       documents,
     };
   }
@@ -134,6 +141,19 @@ export async function getDownloadPageContext(
   return {
     formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
     requestedDocumentLabel: extraDoc?.label ?? "ご指定の資料",
+    templateId: config?.template_id ?? null,
     documents,
   };
 }
+
+/**
+ * ダウンロードページのデータは Supabase へ複数回クエリするため、
+ * (documentId, formSlug) 単位で1時間キャッシュする。
+ * 資料の編集 → revalidateTag('documents')、
+ * フォーム設定／テンプレートの編集 → revalidateTag('download-form') で即時反映される。
+ */
+export const getDownloadPageContext = unstable_cache(
+  fetchDownloadPageContext,
+  ["download-page-context"],
+  { revalidate: 3600, tags: ["documents", "download-form"] }
+);

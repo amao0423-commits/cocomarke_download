@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { emailTemplateCreateSchema } from '@/lib/validators/adminDocuments';
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    revalidateTag('download-form');
     return NextResponse.json({ template: inserted });
   } catch (e) {
     console.error('email-templates POST:', e);

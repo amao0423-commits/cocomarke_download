@@ -20,35 +20,35 @@ const TXT = "#1A1A1A";
 
 const plans = [
   {
-    name: "いいね代行プラン",
-    price: "9,800",
-    desc: "ターゲット層への自動いいねで認知を拡大。フォロワーへの返しいいねも対応。アカウント保護設定付き。",
-    features: ["1日最大200いいね","ターゲットキーワード設定（最大50個）","競合アカウントフォロワーへのアプローチ","LINE相談サポート","月次レポート"],
-  },
-  {
     name: "発見表示ブーストプラン",
     price: "19,800",
     desc: "投稿の初速エンゲージメントを高め、発見タブへの掲載確率を劇的に向上。新規リーチを最大化。",
     features: ["投稿直後の集中ブースト","ハッシュタグ最適化提案","投稿タイミング分析・提案","発見タブ掲載レポート","LINE相談サポート（優先）"],
   },
   {
+    name: "いいね代行プラン",
+    price: "9,800",
+    desc: "ターゲット層への自動いいねで認知を拡大。フォロワーへの返しいいねも対応。アカウント保護設定付き。",
+    features: ["1日最大200いいね","ターゲットキーワード設定（最大50個）","競合アカウントフォロワーへのアプローチ","LINE相談サポート","月次レポート"],
+  },
+  {
     name: "セットプラン",
     price: "24,800",
     popular: true,
     desc: "最もコスパが良い組み合わせ。いいね代行と発見ブーストを同時運用し、相乗効果で成果を最大化。",
-    features: ["いいね代行プランの全機能","発見表示ブーストの全機能","単独契約より5,000円お得","戦略MTG 月1回（30分）","詳細分析レポート"],
+    features: ["いいね代行プランの全機能","発見表示ブーストの全機能","単独契約より5,000円お得","詳細分析レポート"],
   },
   {
     name: "リスト上位表示プラン",
     price: "29,800",
-    desc: "狙ったキーワード検索でアカウントが上位表示されるよう最適化。地域×業種キーワードの独占を目指す。",
-    features: ["キーワード分析・選定（最大20個）","プロフィール最適化サポート","キャプション戦略アドバイス","検索順位モニタリング","月次ランキングレポート"],
+    desc: "狙ったキーワード検索でアカウントが上位表示されるよう最適化。特定キーワードの独占を目指す。",
+    features: ["キーワード分析・選定（最大20個）","プロフィール最適化サポート","検索順位モニタリング","月次ランキングレポート"],
   },
   {
     name: "プレミアムプラン",
     price: "49,800",
     desc: "全プランの機能に加え、専任コンサルタントが戦略立案から実行まで伴走。最短で最大の成果を狙う。",
-    features: ["全プランの全機能","専任コンサルタント担当","投稿代行（月8本まで）","競合分析レポート"],
+    features: ["全プランの全機能","専任コンサルタント担当","投稿代行（月8本まで）","分析レポート"],
   },
 ];
 
@@ -56,7 +56,7 @@ const faqs = [
   { q:"いつでも解約できますか？", a:"はい、月単位での契約ですので翌月分から解約が可能です。違約金や解約手数料は一切かかりません。" },
   { q:"効果が出るまでどれくらいかかりますか？", a:"多くのお客様で1〜2ヶ月以内に数値の改善が見られます。特に発見タブへの掲載は早いケースで2〜3週間で効果が出始めます。" },
   { q:"アカウントが凍結されるリスクはありませんか？", a:"Instagramのガイドラインに準拠した安全な手法のみを使用しています。過去3000件以上の導入で凍結事例はゼロです。" },
-  { q:"支払い方法は何に対応していますか？", a:"クレジットカード（VISA・Mastercard・JCB）および銀行振込に対応しています。" },
+  { q:"支払い方法は何に対応していますか？", a:"クレジットカード（VISA・Mastercard・JCB）・銀行振込・PayPayに対応しています。" },
   { q:"個人アカウントでも利用できますか？", a:"はい、個人・法人を問わずご利用いただけます。ビジネスアカウントへの切り替えを推奨しています（無料でサポートします）。" },
   { q:"上位表示を保証してくれますか？", a:"成果保証は一切しておりません。これはインスタグラムによるアルゴリズム（検索順位決定の仕様）で順位が決定されていく為、保証は不可能である為です。また、上位表示を達成したとしても、アルゴリズム変動によって順位変動する可能性は常に存在します。そのため、常にインスタグラムのアルゴリズムおよび、SEO状況の現状把握と変動時の対応を続けていく必要があることをご理解ください。" },
 ];
@@ -80,6 +80,8 @@ export default function SubscriptionClient() {
   // どのCTAからフォームを開いたか（メール件名・本文の振り分けに使用）
   const [formSource, setFormSource] = useState<"consult"|"plan_apply">("consult");
   const [formCta, setFormCta]       = useState("");
+  // モーダルの「ご希望のプラン」初期値（プラン申込ボタンから開いたとき自動選択）
+  const [formPlan, setFormPlan]     = useState("");
   const simRef = useRef<HTMLSpanElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -110,9 +112,10 @@ export default function SubscriptionClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModal = (source: "consult"|"plan_apply" = "consult", cta = "") => {
+  const openModal = (source: "consult"|"plan_apply" = "consult", cta = "", plan = "") => {
     setFormSource(source);
     setFormCta(cta);
+    setFormPlan(plan);
     setModal(true); setThanks(false); document.body.style.overflow="hidden";
   };
   const closeModal = () => { setModal(false); document.body.style.overflow=""; };
@@ -123,7 +126,7 @@ export default function SubscriptionClient() {
     const name    = (fd.get("name") as string).trim();
     const email   = (fd.get("email") as string).trim();
     const message = (fd.get("message") as string).trim();
-    if (!name || !email || !message) { alert("お名前・メールアドレス・ご相談内容は必須です。"); return; }
+    if (!name || !email) { alert("お名前・メールアドレスは必須です。"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("メールアドレスの形式が正しくありません。"); return; }
     setSending(true);
     // 診断ページ経由（/subscription?from=diagnosis）なら「プラン診断」を優先
@@ -180,6 +183,7 @@ export default function SubscriptionClient() {
             <Link href="/subscription/blog">お役立ち記事</Link>
           </nav>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <Link href="/subscription/blog" className={styles.navLinkMobile}>お役立ち記事</Link>
             <Link href="/subscription/corporate" className={styles.headerCorp}>法人のお客様</Link>
             <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：無料で相談する")}>無料で相談する</button>
           </div>
@@ -352,10 +356,10 @@ export default function SubscriptionClient() {
           const cls = ri===1 ? styles.marqueeTrack2 : ri===2 ? styles.marqueeTrack3 : styles.marqueeTrack;
           const doubled = [...row,...row];
           return (
-            <div key={ri} style={{ overflow:"hidden", marginTop:ri>0?12:0 }}>
-              <div className={cls} style={{ display:"flex", gap:16, width:"max-content" }}>
+            <div key={ri} className={styles.marqueeMask} style={{ overflow:"hidden", marginTop:ri>0?12:0 }}>
+              <div className={cls} style={{ display:"flex", width:"max-content" }}>
                 {doubled.map((kw,ki)=>(
-                  <span key={ki} style={{ background:ki%3===0?"rgba(255,102,51,1)":"rgba(255,255,255,.15)", color:"#fff", border:"1px solid rgba(255,255,255,.25)", padding:"8px 18px", borderRadius:100, fontSize:13, fontWeight:500, whiteSpace:"nowrap" }}>{kw}</span>
+                  <span key={ki} style={{ background:ki%3===0?"rgba(255,102,51,1)":"rgba(255,255,255,.15)", color:"#fff", border:"1px solid rgba(255,255,255,.25)", padding:"8px 18px", borderRadius:100, fontSize:13, fontWeight:500, whiteSpace:"nowrap", marginRight:16, flexShrink:0 }}>{kw}</span>
                 ))}
               </div>
             </div>
@@ -407,7 +411,7 @@ export default function SubscriptionClient() {
                 <span style={{ fontSize:14, color:TL }}>円 / 月（税込）〜</span>
               </div>
               <p style={{ fontSize:14, color:TM, marginBottom:24, lineHeight:1.8 }}>{plans[tab].desc}</p>
-              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>openModal("plan_apply",`料金表：${plans[tab].name}で申し込む`)}>このプランで申し込む →</button>
+              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>openModal("plan_apply",`料金表：${plans[tab].name}で申し込む`,plans[tab].name)}>このプランで申し込む →</button>
             </div>
             <ul style={{ listStyle:"none" }}>
               {plans[tab].features.map((f)=>(
@@ -498,7 +502,7 @@ export default function SubscriptionClient() {
       <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px", scrollMarginTop:64 }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
         <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
-        <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。翌営業日以内に返信します。</p>
+        <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
           <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：無料で相談する")}>無料で相談する →</button>
           <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
@@ -514,13 +518,13 @@ export default function SubscriptionClient() {
               <div style={{ textAlign:"center", padding:"20px 0" }}>
                 <div style={{ fontSize:48, marginBottom:16 }}>✅</div>
                 <h3 style={{ fontSize:20, fontWeight:700, marginBottom:8, color:TXT }}>送信完了しました</h3>
-                <p style={{ fontSize:14, color:TM, lineHeight:1.8 }}>翌営業日以内にご連絡いたします。</p>
+                <p style={{ fontSize:14, color:TM, lineHeight:1.8 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。</p>
                 <button style={{ ...btnPrimary, marginTop:24 }} onClick={closeModal}>閉じる</button>
               </div>
             ) : (
               <>
                 <h3 style={{ fontSize:20, fontWeight:700, marginBottom:6, color:TXT }}>無料相談・仮申し込み</h3>
-                <p style={{ fontSize:13, color:TL, marginBottom:28 }}>翌営業日以内にご連絡します</p>
+                <p style={{ fontSize:13, color:TL, marginBottom:28 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します</p>
                 <form ref={formRef} onSubmit={submitForm}>
                   <input type="text" name="website" style={{ display:"none" }} tabIndex={-1} autoComplete="off" />
                   {[
@@ -535,15 +539,15 @@ export default function SubscriptionClient() {
                   ))}
                   <div style={{ marginBottom:16 }}>
                     <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご希望のプラン</label>
-                    <select name="inquiry_type" style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, background:"#fff", outline:"none" }}>
+                    <select name="inquiry_type" value={formPlan} onChange={(e)=>setFormPlan(e.target.value)} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, background:"#fff", outline:"none" }}>
                       <option value="">選択してください</option>
                       {plans.map(p=><option key={p.name} value={p.name}>{p.name}（¥{p.price}/月）</option>)}
                       <option value="まだ決めていない">まだ決めていない（相談したい）</option>
                     </select>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご相談内容<span style={{ fontSize:10, color:C, background:CL, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>必須</span></label>
-                    <textarea name="message" placeholder="現在の状況・目標など" required rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
+                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご質問事項<span style={{ fontSize:10, color:TL, background:OW, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>任意</span></label>
+                    <textarea name="message" placeholder="ご質問やご相談があればご記入ください（任意）" rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
                   </div>
                   <button type="submit" disabled={sending} style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, marginTop:8, opacity:sending?.6:1 }}>
                     {sending ? "送信中..." : "送信する →"}

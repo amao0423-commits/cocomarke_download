@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
       console.error('download-form-configs POST:', error);
       return NextResponse.json({ error: '作成に失敗しました' }, { status: 500 });
     }
+    revalidateTag('download-form');
     return NextResponse.json({ config: data });
   } catch (e) {
     console.error('download-form-configs POST:', e);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { verifyAdmin } from '@/lib/authAdmin';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { emailTemplateUpdateSchema } from '@/lib/validators/adminDocuments';
@@ -96,6 +97,7 @@ export async function PATCH(request: NextRequest, context: Ctx) {
       .eq('id', id)
       .single();
 
+    revalidateTag('download-form');
     return NextResponse.json({ template });
   } catch (e) {
     console.error('email-templates PATCH:', e);
@@ -120,6 +122,7 @@ export async function DELETE(request: NextRequest, context: Ctx) {
       return NextResponse.json({ error: '削除に失敗しました' }, { status: 500 });
     }
 
+    revalidateTag('download-form');
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error('email-templates DELETE:', e);

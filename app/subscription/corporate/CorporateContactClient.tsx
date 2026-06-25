@@ -136,7 +136,7 @@ export default function CorporateContactClient() {
           {/* Right: form */}
           <div style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:"32px 28px", boxShadow:"0 10px 36px rgba(45,122,79,.08)" }}>
             <div style={{ fontSize:19, fontWeight:700, color:TXT, marginBottom:4 }}>法人様お問い合わせ</div>
-            <p style={{ fontSize:13, color:TL, marginBottom:24 }}>翌営業日以内にご連絡します（平日 09:00–18:00）</p>
+            <p style={{ fontSize:13, color:TL, marginBottom:24 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します（平日 09:00–18:00）</p>
 
             <form onSubmit={submitForm}>
               <input type="text" name="website" style={{ display:"none" }} tabIndex={-1} autoComplete="off" />

@@ -71,6 +71,7 @@ export function buildHeroHighlights(
 type DownloadPageShellProps = {
   formSlug: string;
   formName: string;
+  templateId?: string | null;
   documentId?: string;
   documentLabel?: string | null;
   initialDocuments: PageDocument[];
@@ -80,6 +81,7 @@ type DownloadPageShellProps = {
 export default function DownloadPageShell({
   formSlug,
   formName,
+  templateId,
   documentId,
   documentLabel,
   initialDocuments,
@@ -181,6 +183,7 @@ export default function DownloadPageShell({
           <div>
             <DownloadForm
               formSlug={formSlug}
+              templateId={templateId}
               documentId={documentId}
               documentLabel={documentLabel}
               thanksInUrl={thanksInUrl}
