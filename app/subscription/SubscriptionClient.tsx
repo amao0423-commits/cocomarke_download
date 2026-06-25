@@ -523,7 +523,7 @@ export default function SubscriptionClient() {
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize:20, fontWeight:700, marginBottom:6, color:TXT }}>無料相談・仮申し込み</h3>
+                <h3 style={{ fontSize:20, fontWeight:700, marginBottom:6, color:TXT }}>{formSource === "plan_apply" ? "無料相談・仮申し込み" : "無料相談"}</h3>
                 <p style={{ fontSize:13, color:TL, marginBottom:28 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します</p>
                 <form ref={formRef} onSubmit={submitForm}>
                   <input type="text" name="website" style={{ display:"none" }} tabIndex={-1} autoComplete="off" />
@@ -538,7 +538,7 @@ export default function SubscriptionClient() {
                     </div>
                   ))}
                   <div style={{ marginBottom:16 }}>
-                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご希望のプラン</label>
+                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>{formSource === "plan_apply" ? "ご希望のプラン" : "関心のあるプラン"}</label>
                     <select name="inquiry_type" value={formPlan} onChange={(e)=>setFormPlan(e.target.value)} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, background:"#fff", outline:"none" }}>
                       <option value="">選択してください</option>
                       {plans.map(p=><option key={p.name} value={p.name}>{p.name}（¥{p.price}/月）</option>)}
@@ -547,7 +547,7 @@ export default function SubscriptionClient() {
                   </div>
                   <div style={{ marginBottom:16 }}>
                     <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご質問事項<span style={{ fontSize:10, color:TL, background:OW, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>任意</span></label>
-                    <textarea name="message" placeholder="ご質問やご相談があればご記入ください（任意）" rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
+                    <textarea name="message" placeholder="プラン・料金に関して等のご質問事項" rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
                   </div>
                   <button type="submit" disabled={sending} style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, marginTop:8, opacity:sending?.6:1 }}>
                     {sending ? "送信中..." : "送信する →"}
