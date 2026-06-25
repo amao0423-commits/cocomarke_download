@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import styles from "../subscription.module.css";
+import { getAttribution } from "@/lib/attribution";
 
 /* ── brand tokens（SubscriptionClient と統一） ── */
 const G   = "#2D7A4F";
@@ -75,6 +76,9 @@ export default function CorporateContactClient() {
           inquiry_type: "法人お問い合わせ",
           instagram_id: get("account").replace(/^@/, ""),
           message,
+          source: "corporate",
+          cta: "法人お問い合わせフォーム",
+          attribution: getAttribution(),
         }),
       });
       const data = await res.json();

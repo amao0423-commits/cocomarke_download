@@ -161,7 +161,7 @@ export default function DiagnosisClient() {
                 </div>
                 <p style={{ fontSize: 14, color: TM, lineHeight: 1.9, marginBottom: 28 }}>{plan.desc}</p>
 
-                <Link href="/subscription#plans" style={{ display: "inline-block", width: "100%", boxSizing: "border-box", background: C, color: "#fff", padding: 16, borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: "none", boxShadow: "0 4px 20px rgba(255,102,51,.25)", marginBottom: 12 }}>
+                <Link href="/subscription?from=diagnosis#plans" style={{ display: "inline-block", width: "100%", boxSizing: "border-box", background: C, color: "#fff", padding: 16, borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: "none", boxShadow: "0 4px 20px rgba(255,102,51,.25)", marginBottom: 12 }}>
                   このプランで相談する →
                 </Link>
                 <div style={{ display: "flex", gap: 10 }}>

@@ -6,9 +6,11 @@ import HeaderShell from "@/components/HeaderShell";
 import { Footer } from "@/components/navigation/Footer";
 import { DiagnosisOverlay } from "@/components/DiagnosisOverlay";
 import ChromeSwitch from "@/components/ChromeSwitch";
+import AttributionTracker from "@/components/AttributionTracker";
 import "./globals.css";
 
-const META_PIXEL_ID = "3571994076297031";
+const META_PIXEL_ID = "1232285451938211";
+const GA4_ID = "G-CV0JM0KPN9";
 
 function HeaderFallback() {
   return (
@@ -44,6 +46,19 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <body className={`${notoSansJp.variable} min-h-screen font-sans`}>
+        {/* Google Analytics 4（gtag.js） */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA4_ID}');
+        `}</Script>
+        {/* 流入元（UTM・参照元）を初回訪問時に記録 */}
+        <AttributionTracker />
         {/* Meta Pixel */}
         <Script id="meta-pixel" strategy="afterInteractive">{`
           !function(f,b,e,v,n,t,s)

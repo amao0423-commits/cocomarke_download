@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./subscription.module.css";
+import { getAttribution } from "@/lib/attribution";
 
 /* ── brand tokens ── */
 const G   = "#2D7A4F";
@@ -76,6 +77,9 @@ export default function SubscriptionClient() {
   const [sending, setSending]   = useState(false);
   const [openFaq, setOpenFaq]   = useState<number|null>(null);
   const [voicePage, setVoicePage] = useState(0);
+  // どのCTAからフォームを開いたか（メール件名・本文の振り分けに使用）
+  const [formSource, setFormSource] = useState<"consult"|"plan_apply">("consult");
+  const [formCta, setFormCta]       = useState("");
   const simRef = useRef<HTMLSpanElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -106,7 +110,11 @@ export default function SubscriptionClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openModal = () => { setModal(true); setThanks(false); document.body.style.overflow="hidden"; };
+  const openModal = (source: "consult"|"plan_apply" = "consult", cta = "") => {
+    setFormSource(source);
+    setFormCta(cta);
+    setModal(true); setThanks(false); document.body.style.overflow="hidden";
+  };
   const closeModal = () => { setModal(false); document.body.style.overflow=""; };
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -118,10 +126,24 @@ export default function SubscriptionClient() {
     if (!name || !email || !message) { alert("お名前・メールアドレス・ご相談内容は必須です。"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("メールアドレスの形式が正しくありません。"); return; }
     setSending(true);
+    // 診断ページ経由（/subscription?from=diagnosis）なら「プラン診断」を優先
+    const fromDiagnosis =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("from") === "diagnosis";
+    const source = fromDiagnosis ? "diagnosis" : formSource;
+    const cta = fromDiagnosis ? `プラン診断経由${formCta ? `（${formCta}）` : ""}` : formCta;
     try {
       const res = await fetch("/api/subscription-contact", {
         method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ name, email, inquiry_type: fd.get("inquiry_type"), instagram_id: fd.get("instagram_id"), message }),
+        body: JSON.stringify({
+          name, email,
+          inquiry_type: fd.get("inquiry_type"),
+          instagram_id: fd.get("instagram_id"),
+          message,
+          source,
+          cta,
+          attribution: getAttribution(),
+        }),
       });
       const data = await res.json();
       if (data.ok) {
@@ -159,7 +181,7 @@ export default function SubscriptionClient() {
           </nav>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <Link href="/subscription/corporate" className={styles.headerCorp}>法人のお客様</Link>
-            <button className={styles.headerCta} onClick={openModal}>無料で相談する</button>
+            <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：無料で相談する")}>無料で相談する</button>
           </div>
         </div>
       </header>
@@ -182,7 +204,7 @@ export default function SubscriptionClient() {
               いいね代行・発見タブ最適化・LINE相談まで。
             </p>
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:36 }}>
-              <button style={btnPrimary} onClick={openModal}>無料で相談する →</button>
+              <button style={btnPrimary} onClick={()=>openModal("consult","ヒーロー：無料で相談する")}>無料で相談する →</button>
               <a href="#plans" style={{ background:"transparent", color:G, border:`2px solid ${G}`, padding:"12px 24px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none", display:"inline-block" }}>料金を見る</a>
               <Link href="/subscription/diagnosis" style={{ display:"inline-flex", alignItems:"center", gap:6, color:C, fontSize:14, fontWeight:700, textDecoration:"none", padding:"12px 4px" }}>30秒でプラン診断 →</Link>
             </div>
@@ -385,7 +407,7 @@ export default function SubscriptionClient() {
                 <span style={{ fontSize:14, color:TL }}>円 / 月（税込）〜</span>
               </div>
               <p style={{ fontSize:14, color:TM, marginBottom:24, lineHeight:1.8 }}>{plans[tab].desc}</p>
-              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={openModal}>このプランで申し込む →</button>
+              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>openModal("plan_apply",`料金表：${plans[tab].name}で申し込む`)}>このプランで申し込む →</button>
             </div>
             <ul style={{ listStyle:"none" }}>
               {plans[tab].features.map((f)=>(
@@ -478,7 +500,7 @@ export default function SubscriptionClient() {
         <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
         <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。翌営業日以内に返信します。</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={openModal}>無料で相談する →</button>
+          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：無料で相談する")}>無料で相談する →</button>
           <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
         </div>
       </section>

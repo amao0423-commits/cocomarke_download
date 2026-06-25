@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "送信完了 | JEMIA",
@@ -23,7 +24,15 @@ const TXT = "#1A1A1A";
  */
 export default function SubscriptionThanksPage() {
   return (
-    <section
+    <>
+      {/* 送信完了＝コンバージョン。GA4 に generate_lead を1回発火させる。
+          このページは送信成功時のみ到達するため重複なく計測できる。 */}
+      <Script id="ga4-generate-lead" strategy="afterInteractive">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('event', 'generate_lead', { send_to: 'G-CV0JM0KPN9' });
+      `}</Script>
+      <section
       style={{
         minHeight: "70vh",
         background: `linear-gradient(160deg,#fff 0%,${GL} 100%)`,
@@ -94,5 +103,6 @@ export default function SubscriptionThanksPage() {
         </div>
       </div>
     </section>
+    </>
   );
 }
