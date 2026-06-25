@@ -127,6 +127,7 @@ export default function SubscriptionClient() {
     const email   = (fd.get("email") as string).trim();
     const message = (fd.get("message") as string).trim();
     if (!name || !email) { alert("お名前・メールアドレスは必須です。"); return; }
+    if (formSource === "consult" && !message) { alert("ご質問事項をご入力ください。"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("メールアドレスの形式が正しくありません。"); return; }
     setSending(true);
     // 診断ページ経由（/subscription?from=diagnosis）なら「プラン診断」を優先
@@ -164,9 +165,9 @@ export default function SubscriptionClient() {
   const voicePages = Math.ceil(voices.length / voicePerPage);
   const visibleVoices = voices.slice(voicePage * voicePerPage, (voicePage+1) * voicePerPage);
 
-  const kw1 = ["新宿ランチ","渋谷カフェ","大宮居酒屋","川越カフェ","中目黒グルメ","札幌グルメ","すすきのカフェ","韓国旅行","箱根温泉","女子旅","沖縄ホテル"];
-  const kw2 = ["ハイトーンカラー","レイヤーカット","髪質改善","縮毛矯正","横浜美容室","渋谷美容室","ブライダルエステ","小顔矯正","アートメイク","ルームツアー","韓国インテリア"];
-  const kw3 = ["시부야 맛집","신주쿠맛집","아트메이크","ネイルサロン","新宿グルメ","姿勢改善","婚約指輪","韓国式足裏角質ケア","프치쁠라코스메"];
+  const kw1 = ["新宿ランチ","渋谷カフェ","大宮居酒屋","川越カフェ","中目黒グルメ","札幌グルメ","すすきのカフェ","韓国旅行","箱根温泉","女子旅","沖縄ホテル","池袋ランチ","横浜カフェ","名古屋グルメ","大阪スイーツ","福岡グルメ","神戸カフェ","京都ランチ","鎌倉カフェ","吉祥寺ディナー","銀座グルメ"];
+  const kw2 = ["ハイトーンカラー","レイヤーカット","髪質改善","縮毛矯正","横浜美容室","渋谷美容室","ブライダルエステ","小顔矯正","アートメイク","ルームツアー","韓国インテリア","表参道美容室","銀座ネイル","梅田美容室","心斎橋ネイル","名古屋美容室","福岡美容室","札幌美容室","まつ毛パーマ","二重整形","脱毛サロン"];
+  const kw3 = ["시부야 맛집","신주쿠맛집","아트메이크","ネイルサロン","新宿グルメ","姿勢改善","婚約指輪","韓国式足裏角質ケア","프치쁠라코스메","原宿カフェ","恵比寿ディナー","大宮ネイル","川崎美容室","横浜ネイル","千葉グルメ","大阪ネイル","시부야 카페","하라주쿠 쇼핑","上野グルメ","町田美容室"];
 
   const btnPrimary: React.CSSProperties = { background:C, color:"#fff", border:"none", padding:"14px 28px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:`0 4px 20px rgba(255,102,51,.3)` };
 
@@ -182,10 +183,14 @@ export default function SubscriptionClient() {
             ))}
             <Link href="/subscription/blog">お役立ち記事</Link>
           </nav>
-          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <div className={styles.headerActions}>
             <Link href="/subscription/blog" className={styles.navLinkMobile}>お役立ち記事</Link>
-            <Link href="/subscription/corporate" className={styles.headerCorp}>法人のお客様</Link>
-            <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：無料で相談する")}>無料で相談する</button>
+            <Link href="/subscription/corporate" className={styles.headerCorp}>
+              <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
+            </Link>
+            <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：無料で相談する")}>
+              <span className={styles.labelFull}>無料で相談する</span><span className={styles.labelShort}>無料相談</span>
+            </button>
           </div>
         </div>
       </header>
@@ -512,7 +517,7 @@ export default function SubscriptionClient() {
       {/* ── Modal ── */}
       {modal && (
         <div onClick={(e)=>{ if(e.target===e.currentTarget) closeModal(); }} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.5)", zIndex:200, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
-          <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:480, padding:40, position:"relative", maxHeight:"90vh", overflowY:"auto" }}>
+          <div style={{ background:"#fff", borderRadius:20, width:"100%", maxWidth:480, padding:"clamp(22px,5vw,40px)", position:"relative", maxHeight:"90vh", overflowY:"auto" }}>
             <button onClick={closeModal} style={{ position:"absolute", top:16, right:20, background:"none", border:"none", fontSize:22, cursor:"pointer", color:TL, lineHeight:1 }}>×</button>
             {thanks ? (
               <div style={{ textAlign:"center", padding:"20px 0" }}>
@@ -523,7 +528,7 @@ export default function SubscriptionClient() {
               </div>
             ) : (
               <>
-                <h3 style={{ fontSize:20, fontWeight:700, marginBottom:6, color:TXT }}>{formSource === "plan_apply" ? "無料相談・仮申し込み" : "無料相談"}</h3>
+                <h3 style={{ fontSize:20, fontWeight:700, marginBottom:6, color:TXT }}>{formSource === "plan_apply" ? "仮申し込み" : "無料相談"}</h3>
                 <p style={{ fontSize:13, color:TL, marginBottom:28 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します</p>
                 <form ref={formRef} onSubmit={submitForm}>
                   <input type="text" name="website" style={{ display:"none" }} tabIndex={-1} autoComplete="off" />
@@ -546,8 +551,10 @@ export default function SubscriptionClient() {
                     </select>
                   </div>
                   <div style={{ marginBottom:16 }}>
-                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご質問事項<span style={{ fontSize:10, color:TL, background:OW, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>任意</span></label>
-                    <textarea name="message" placeholder="プラン・料金に関して等のご質問事項" rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
+                    <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>ご質問事項{formSource === "consult"
+                      ? <span style={{ fontSize:10, color:C, background:CL, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>必須</span>
+                      : <span style={{ fontSize:10, color:TL, background:OW, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>任意</span>}</label>
+                    <textarea name="message" placeholder="プラン・料金に関して等のご質問事項" required={formSource === "consult"} rows={3} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none", resize:"vertical" }} />
                   </div>
                   <button type="submit" disabled={sending} style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, marginTop:8, opacity:sending?.6:1 }}>
                     {sending ? "送信中..." : "送信する →"}

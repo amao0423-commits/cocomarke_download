@@ -42,6 +42,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid #D8EDE1;
+  overflow-x: hidden;
 }
 .headerInner {
   max-width: 1100px;
@@ -97,6 +98,10 @@
   white-space: nowrap;
 }
 .headerCorp:hover { background: #E8F5ED; }
+.headerActions { display: flex; align-items: center; gap: 8px; }
+/* ヘッダーのボタン文言：通常はフル表記、狭い画面では短縮表記 */
+.labelFull { display: inline; }
+.labelShort { display: none; }
 @media (max-width: 420px) {
   .headerCta { padding: 9px 14px; font-size: 13px; }
   .headerCorp { padding: 7px 12px; font-size: 12px; }
@@ -114,6 +119,17 @@
     text-decoration: none;
     white-space: nowrap;
   }
+}
+/* スマホ：ヘッダーが詰まらないよう余白・文言を最適化 */
+@media (max-width: 560px) {
+  .headerInner { padding: 11px 14px; gap: 8px; }
+  .headerActions { gap: 6px; }
+  .headerLogo { font-size: 20px; }
+  .navLinkMobile { font-size: 12px; }
+  .headerCorp { padding: 7px 11px; font-size: 12px; }
+  .headerCta { padding: 9px 13px; font-size: 13px; }
+  .labelFull { display: none; }
+  .labelShort { display: inline; }
 }
 
 .siteFooter {
