@@ -63,33 +63,17 @@ export default function DownloadForm({
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [state, setState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [resolvedTemplateId, setResolvedTemplateId] = useState<string | null>(null);
-  const [configReady, setConfigReady] = useState(templateIdProp !== undefined);
+  // templateId はサーバー（getDownloadPageContext）で解決済みの値が props で渡るため、
+  // クライアントからの追加フェッチは不要。
+  const [resolvedTemplateId, setResolvedTemplateId] = useState<string | null>(
+    templateIdProp?.trim() || null
+  );
+  const configReady = true;
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (templateIdProp !== undefined) {
-      setResolvedTemplateId(templateIdProp?.trim() || null);
-      setConfigReady(true);
-      return;
-    }
-    let cancelled = false;
-    setConfigReady(false);
-    (async () => {
-      try {
-        const res = await fetch(`/api/download-form-config?slug=${encodeURIComponent(formSlug)}`);
-        const d = await res.json();
-        if (!cancelled) {
-          setResolvedTemplateId(typeof d?.templateId === 'string' ? d.templateId.trim() || null : null);
-        }
-      } catch {
-        if (!cancelled) setResolvedTemplateId(null);
-      } finally {
-        if (!cancelled) setConfigReady(true);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [templateIdProp, formSlug]);
+    setResolvedTemplateId(templateIdProp?.trim() || null);
+  }, [templateIdProp]);
 
   useEffect(() => {
     if (state !== 'success') setDownloadUrl(null);

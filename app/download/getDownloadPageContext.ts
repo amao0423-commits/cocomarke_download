@@ -58,12 +58,52 @@ async function fetchDownloadPageContext(
     .eq("slug", formSlug)
     .maybeSingle();
 
+  const formName = config?.name?.trim() || "COCOマーケ資料ダウンロード";
+  const templateId = config?.template_id ?? null;
+
+  // ── documentId 指定時（広告などの個別URL）──
+  // ページは指定資料 1 件しか表示しないため、テンプレ紐づけ一覧は取得せず
+  // その 1 件だけを取りに行く（config + documents の 2 クエリで完結）。
+  if (documentId?.trim()) {
+    const id = documentId.trim();
+    const { data: document } = await supabase
+      .from("documents")
+      .select(`title, ${HERO_SELECT}`)
+      .eq("id", id)
+      .maybeSingle();
+
+    if (!document) {
+      return { formName, requestedDocumentLabel: "ご指定の資料", templateId, documents: [] };
+    }
+
+    const doc: PageDocument = {
+      id,
+      label: document.title ?? "ご指定の資料",
+      title: document.title ?? null,
+      hero_description: document.hero_description ?? null,
+      hero_highlight_1: document.hero_highlight_1 ?? null,
+      hero_highlight_2: document.hero_highlight_2 ?? null,
+      hero_highlight_3: document.hero_highlight_3 ?? null,
+      hero_highlights_extra: document.hero_highlights_extra ?? null,
+      hero_image_1_url: resolveHeroImage(document.hero_image_1_url, document.thumbnail_url),
+    };
+
+    return {
+      formName,
+      requestedDocumentLabel: doc.title?.trim() || doc.label,
+      templateId,
+      documents: [doc],
+    };
+  }
+
+  // ── documentId 未指定（汎用 /download）──
+  // 既定で先頭資料を表示するため、テンプレ紐づけ一覧を取得する。
   let documents: PageDocument[] = [];
-  if (config?.template_id) {
+  if (templateId) {
     const { data: links } = await supabase
       .from("template_document_links")
       .select("document_id, label, sort_order")
-      .eq("template_id", config.template_id)
+      .eq("template_id", templateId)
       .order("sort_order", { ascending: true });
 
     if (links && links.length > 0) {
@@ -96,52 +136,10 @@ async function fetchDownloadPageContext(
     }
   }
 
-  if (!documentId?.trim()) {
-    return {
-      formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
-      requestedDocumentLabel: null,
-      templateId: config?.template_id ?? null,
-      documents,
-    };
-  }
-
-  const matched = documents.find((item) => item.id === documentId.trim());
-  if (matched) {
-    return {
-      formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
-      requestedDocumentLabel: matched.title?.trim() || matched.label,
-      templateId: config?.template_id ?? null,
-      documents,
-    };
-  }
-
-  const { data: document } = await supabase
-    .from("documents")
-    .select(`title, ${HERO_SELECT}`)
-    .eq("id", documentId.trim())
-    .maybeSingle();
-
-  const extraDoc: PageDocument | null = document
-    ? {
-        id: documentId.trim(),
-        label: document.title ?? "ご指定の資料",
-        hero_description: document.hero_description ?? null,
-        hero_highlight_1: document.hero_highlight_1 ?? null,
-        hero_highlight_2: document.hero_highlight_2 ?? null,
-        hero_highlight_3: document.hero_highlight_3 ?? null,
-        hero_highlights_extra: document.hero_highlights_extra ?? null,
-        hero_image_1_url: resolveHeroImage(document.hero_image_1_url, document.thumbnail_url),
-      }
-    : null;
-
-  if (extraDoc && !documents.some((d) => d.id === extraDoc.id)) {
-    documents = [extraDoc, ...documents];
-  }
-
   return {
-    formName: config?.name?.trim() || "COCOマーケ資料ダウンロード",
-    requestedDocumentLabel: extraDoc?.label ?? "ご指定の資料",
-    templateId: config?.template_id ?? null,
+    formName,
+    requestedDocumentLabel: null,
+    templateId,
     documents,
   };
 }
