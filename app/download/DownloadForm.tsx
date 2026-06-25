@@ -10,6 +10,12 @@ import {
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 export type DownloadFormProps = {
   templateId?: string | null;
   formSlug?: string;
@@ -175,6 +181,13 @@ export default function DownloadForm({
         setErrorMessage(data?.error ?? '送信に失敗しました。もう一度お試しください。');
         setState('error');
         return;
+      }
+      // Meta Pixel: 資料ダウンロード（コンバージョン）計測
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+        window.fbq('track', 'Lead', {
+          content_name: documentLabel?.trim() || documentIdProp?.trim() || 'document_download',
+          content_category: 'document_download',
+        });
       }
       setDownloadUrl(typeof data.downloadUrl === 'string' ? data.downloadUrl : null);
       setState('success');
