@@ -11,6 +11,7 @@ import "./globals.css";
 
 const META_PIXEL_ID = "1232285451938211";
 const GA4_ID = "G-CV0JM0KPN9";
+const CLARITY_ID = "xchju8gu8g";
 
 function HeaderFallback() {
   return (
@@ -56,6 +57,14 @@ export default function RootLayout({
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', '${GA4_ID}');
+        `}</Script>
+        {/* Microsoft Clarity */}
+        <Script id="ms-clarity" strategy="afterInteractive">{`
+          (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "${CLARITY_ID}");
         `}</Script>
         {/* 流入元（UTM・参照元）を初回訪問時に記録 */}
         <AttributionTracker />
