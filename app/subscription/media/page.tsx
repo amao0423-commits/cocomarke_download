@@ -117,6 +117,16 @@ export default function MediaPage() {
                   >
                     掲載ページを見る →
                   </a>
+                  {m.siteUrl && (
+                    <a
+                      href={m.siteUrl}
+                      target="_blank"
+                      rel="noopener"
+                      className="text-slate-500 underline underline-offset-4 hover:text-slate-700"
+                    >
+                      {m.media}のサイト →
+                    </a>
+                  )}
                 </div>
               </li>
             ))}
@@ -124,7 +134,7 @@ export default function MediaPage() {
 
           {/* ── CTA ───────────────────────────────────── */}
           <section className="mt-16 overflow-hidden rounded-3xl bg-[#2D7A4F] px-7 py-12 text-center text-white">
-            <h2 className="text-2xl font-bold">サブスク型インスタ運用で必要な機能だけ。</h2>
+            <h2 className="text-2xl font-bold text-white">サブスク型インスタ運用で必要な機能だけ。</h2>
             <p className="mx-auto mt-4 max-w-md leading-loose text-[#E8F5ED]">
               月額固定・契約縛りなしで、Instagram運用をまるごと代行します。まずはお気軽にご相談ください。
             </p>

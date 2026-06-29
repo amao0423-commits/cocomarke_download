@@ -13,20 +13,23 @@ export function JemiaHeader() {
   return (
     <header className={styles.siteHeader}>
       <div className={styles.headerInner}>
-        <Link href="/subscription" className={styles.headerLogo}>
-          JEM<span style={{ color: C }}>I</span>A
-        </Link>
-        <nav style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Link href="/subscription/blog" style={{ fontSize: 13, fontWeight: 700, color: "#555555", textDecoration: "none", whiteSpace: "nowrap" }}>お役立ち記事</Link>
-          <Link href="/subscription/corporate" className={styles.hideSmall} style={{ fontSize: 13, fontWeight: 700, color: "#555555", textDecoration: "none", whiteSpace: "nowrap" }}>法人</Link>
-          <Link
-            href="/subscription#plans"
-            className={styles.headerCta}
-            style={{ display: "inline-block", textDecoration: "none" }}
-          >
-            料金・相談
-          </Link>
+        <Link href="/subscription" className={styles.headerLogo}>JEM<span style={{ color: C }}>I</span>A</Link>
+        <nav className={styles.headerNav}>
+          <Link href="/subscription#features">特徴</Link>
+          <Link href="/subscription#plans">料金</Link>
+          <Link href="/subscription#voices">実績</Link>
+          <Link href="/subscription#faq">FAQ</Link>
+          <Link href="/subscription/blog">お役立ち記事</Link>
         </nav>
+        <div className={styles.headerActions}>
+          <Link href="/subscription/blog" className={styles.navLinkMobile}>お役立ち記事</Link>
+          <Link href="/subscription/corporate" className={styles.headerCorp}>
+            <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
+          </Link>
+          <Link href="/subscription#contact" className={styles.headerCta} style={{ display: "inline-block", textDecoration: "none" }}>
+            <span className={styles.labelFull}>🎧 マーケティング相談</span><span className={styles.labelShort}>🎧 相談</span>
+          </Link>
+        </div>
       </div>
     </header>
   );

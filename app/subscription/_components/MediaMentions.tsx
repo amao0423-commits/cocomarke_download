@@ -80,6 +80,16 @@ export default function MediaMentions() {
               >
                 掲載ページを見る →
               </a>
+              {m.siteUrl && (
+                <a
+                  href={m.siteUrl}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-slate-500 underline underline-offset-4 hover:text-slate-700"
+                >
+                  {m.media}のサイト →
+                </a>
+              )}
             </div>
           </li>
         ))}
