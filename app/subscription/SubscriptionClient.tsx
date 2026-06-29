@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import styles from "./subscription.module.css";
 import { getAttribution } from "@/lib/attribution";
+import MediaMentions from "./_components/MediaMentions";
+import ResultsBeforeAfter from "./_components/ResultsBeforeAfter";
 
 /* ── brand tokens ── */
 const G   = "#2D7A4F";
@@ -22,8 +23,8 @@ const plans = [
   {
     name: "発見表示ブーストプラン",
     price: "19,800",
-    desc: "投稿の初速エンゲージメントを高め、発見タブへの掲載確率を劇的に向上。新規リーチを最大化。",
-    features: ["投稿直後の集中ブースト","ハッシュタグ最適化提案","投稿タイミング分析・提案","発見タブ掲載レポート","LINE相談サポート（優先）"],
+    desc: "投稿の初速エンゲージメントを高め、おすすめ・発見タブへの掲載確率を劇的に向上。新規リーチを最大化。",
+    features: ["投稿直後の集中ブースト","ハッシュタグ最適化提案","投稿タイミング分析・提案","おすすめ・発見タブ掲載レポート","LINE相談サポート（優先）"],
   },
   {
     name: "いいね代行プラン",
@@ -54,7 +55,7 @@ const plans = [
 
 const faqs = [
   { q:"いつでも解約できますか？", a:"はい、月単位での契約ですので翌月分から解約が可能です。違約金や解約手数料は一切かかりません。" },
-  { q:"効果が出るまでどれくらいかかりますか？", a:"多くのお客様で1〜2ヶ月以内に数値の改善が見られます。特に発見タブへの掲載は早いケースで2〜3週間で効果が出始めます。" },
+  { q:"効果が出るまでどれくらいかかりますか？", a:"多くのお客様で1〜2ヶ月以内に数値の改善が見られます。特におすすめ・発見タブへの掲載は早いケースで2〜3週間で効果が出始めます。" },
   { q:"アカウントが凍結されるリスクはありませんか？", a:"Instagramのガイドラインに準拠した安全な手法のみを使用しています。過去3000件以上の導入で凍結事例はゼロです。" },
   { q:"支払い方法は何に対応していますか？", a:"クレジットカード（VISA・Mastercard・JCB）・銀行振込・PayPayに対応しています。" },
   { q:"個人アカウントでも利用できますか？", a:"はい、個人・法人を問わずご利用いただけます。ビジネスアカウントへの切り替えを推奨しています（無料でサポートします）。" },
@@ -64,7 +65,7 @@ const faqs = [
 const voices = [
   { stars:5, text:"「新宿 居酒屋」での検索で表示される機会が増え、インスタ経由でのご予約が入るようになりました。以前は認知してもらう手段がなかったので助かっています。", name:"都内・飲食店店長様", biz:"導入3ヶ月", color:"#E8734A" },
   { stars:5, text:"投稿後のブーストを使い始めてから、リールの再生数が安定して伸びるようになってきました。まだ成長途中ですが手ごたえを感じています。", name:"フリーランス・クリエイター様", biz:"導入4ヶ月", color:"#5B73DE" },
-  { stars:4, text:"フォロワー以外の方からの保存やコメントが増えてきた実感があります。発見タブからの流入が増えているのをインサイトで確認できています。", name:"個人ブランディング中のお客様", biz:"導入2ヶ月", color:"#7B5EA7" },
+  { stars:4, text:"フォロワー以外の方からの保存やコメントが増えてきた実感があります。おすすめ・発見タブからの流入が増えているのをインサイトで確認できています。", name:"個人ブランディング中のお客様", biz:"導入2ヶ月", color:"#7B5EA7" },
   { stars:5, text:"いいね代行でターゲット層との接点が増え、プロフィールへの訪問数が上がりました。サイトへの流入も少し改善されています。", name:"ECサイト運営担当者様", biz:"リピーター継続中", color:"#3D9BD4" },
   { stars:5, text:"地域キーワードでの表示機会が増え、初めてのお客様からの問い合わせが来るようになりました。", name:"ネイルサロン経営者様", biz:"導入3ヶ月", color:"#C45BAA" },
   { stars:4, text:"投稿への保存数が以前より増えています。劇的な変化というわけではないですが、数値が改善されているのは実感できます。", name:"美容サロン経営者様", biz:"導入3ヶ月", color:"#4CAF75" },
@@ -188,8 +189,8 @@ export default function SubscriptionClient() {
             <Link href="/subscription/corporate" className={styles.headerCorp}>
               <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
             </Link>
-            <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：無料で相談する")}>
-              <span className={styles.labelFull}>無料で相談する</span><span className={styles.labelShort}>無料相談</span>
+            <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：マーケティング相談")}>
+              <span className={styles.labelFull}>🎧 マーケティング相談</span><span className={styles.labelShort}>🎧 相談</span>
             </button>
           </div>
         </div>
@@ -202,7 +203,7 @@ export default function SubscriptionClient() {
           <div className={styles.fadeUp}>
             <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:CL, color:C, fontSize:12, fontWeight:700, letterSpacing:".06em", padding:"6px 14px", borderRadius:100, marginBottom:20 }}>
               <span className={styles.pulseDot} style={{ width:6, height:6, background:C, borderRadius:"50%", display:"inline-block" }} />
-              インスタ運用サブスク
+              サブスク型インスタ運用代行
             </div>
             <h1 style={{ fontSize:"clamp(26px,3.5vw,44px)", fontWeight:700, lineHeight:1.25, letterSpacing:"-.03em", marginBottom:20, color:TXT }}>
               インスタ運用を<br />
@@ -210,7 +211,7 @@ export default function SubscriptionClient() {
             </h1>
             <p style={{ fontSize:15, color:TM, marginBottom:32, lineHeight:1.8 }}>
               月額固定でインスタ運用をまるごとお任せ。<br />
-              いいね代行・発見タブ最適化・LINE相談まで。
+              いいね代行・おすすめ・発見タブ最適化・LINE相談まで。
             </p>
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:36 }}>
               <button style={btnPrimary} onClick={()=>openModal("consult","ヒーロー：無料で相談する")}>無料で相談する →</button>
@@ -276,7 +277,7 @@ export default function SubscriptionClient() {
           <div className={styles.grid3}>
             {[
               ["12,400","導入アカウント フォロワー増加","平均 3ヶ月後の実績",false],
-              ["340%","発見タブ リーチ増加率","先月比 平均値",true],
+              ["340%","おすすめ・発見タブ リーチ増加率","先月比 平均値",true],
               ["4.9","顧客満足度","/ 5点満点（20件）",false],
             ].map(([n,l,d,coral])=>(
               <div key={l as string} className={styles.statCell} style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
@@ -293,13 +294,13 @@ export default function SubscriptionClient() {
       <section id="features" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Features</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスクが選ばれる3つの理由</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行が選ばれる3つの理由</h2>
           <p style={{ fontSize:15, color:TM, margin:"0 0 16px", lineHeight:1.8 }}>インスタ集客・SNS運用をプロにまるごとお任せ。月額サブスクだから続けやすく、成果につながります。</p>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, margin:"0 0 40px" }} />
           <div className={styles.grid3} style={{ gap:24 }}>
             {[
               { icon:"📅", title:"月額固定・解約自由", desc:"契約縛りなし。月々定額で予算が読める。いつでも解約OK。成果が出なければ継続しなくていい。" },
-              { icon:"🎛️", title:"自由な組み合わせ",   desc:"いいね代行・発見タブ・リスト上位・セットプランなど、目的に合わせてプランを選択・変更できる。" },
+              { icon:"🎛️", title:"自由な組み合わせ",   desc:"いいね代行・おすすめ・発見タブ・リスト上位・セットプランなど、目的に合わせてプランを選択・変更できる。" },
               { icon:"💬", title:"LINE直接相談",         desc:"専任担当がLINEで対応。投稿アドバイス・分析レポート・戦略相談まで気軽に聞ける。" },
             ].map((f)=>(
               <div key={f.title} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:"32px 28px", position:"relative", overflow:"hidden", transition:"box-shadow .2s,transform .2s" }}>
@@ -313,33 +314,11 @@ export default function SubscriptionClient() {
         </div>
       </section>
 
-      {/* ── BA Section ── */}
-      <section style={{ padding:"80px 24px", background:OW }}>
-        <div style={{ maxWidth:1100, margin:"0 auto" }}>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Results</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行の導入で変わるフォロワーと発見タブ流入</h2>
-          <p style={{ fontSize:15, color:TM, margin:"0 0 8px", lineHeight:1.8 }}>発見タブ流入を増やし、フォロワーを増やすまでの変化を導入前後で比較します。</p>
-          <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
-          <div className={styles.grid2} style={{ gap:24, marginBottom:40 }}>
-            {[
-              { badge:"導入前 — Before", badgeBg:"#f0f0f0", badgeColor:"#888", title:"よくある状況", img:"/jemia/grapefruit-ade.png", caption:"フォロワーにしか届かない投稿イメージ", items:["フォロワーが増えない","投稿しても反応がない","発見タブに載らない","何をすれば良いかわからない","リソースがなく更新が止まる"], dotColor:"#ccc" },
-              { badge:"導入後 — After",  badgeBg:GL,       badgeColor:G,     title:"JEMIAを使った結果", img:"/jemia/search-result-top.png", caption:"発見タブに掲載された後の検索結果イメージ", items:["3ヶ月でフォロワー3倍以上","エンゲージメント率 8〜12%","発見タブ流入が劇的に増加","専任担当が戦略をサポート","オーナーはコアに集中できる"], dotColor:G },
-            ].map((card)=>(
-              <div key={card.title} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:32 }}>
-                <span style={{ background:card.badgeBg, color:card.badgeColor, fontSize:11, fontWeight:700, padding:"4px 12px", borderRadius:100, display:"inline-block", marginBottom:16 }}>{card.badge}</span>
-                <h4 style={{ fontSize:15, fontWeight:700, marginBottom:12, color:TXT }}>{card.title}</h4>
-                <Image src={card.img} alt={card.caption} width={400} height={180} style={{ width:"100%", height:180, objectFit:"contain", borderRadius:10, marginBottom:8, background:GL }} />
-                <p style={{ fontSize:11, color:TL, marginBottom:16, textAlign:"center" }}>{card.caption}</p>
-                {card.items.map((item)=>(
-                  <div key={item} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 0", borderBottom:`1px solid ${BD}`, fontSize:14, color:TXT }}>
-                    <span style={{ width:8, height:8, borderRadius:"50%", background:card.dotColor, flexShrink:0, display:"inline-block" }} />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          {/* stats */}
+      {/* ── Results（導入前後 Before/After + フロー） ── */}
+      <section style={{ background:OW }}>
+        <ResultsBeforeAfter />
+        {/* stats */}
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 24px 72px" }}>
           <div className={styles.grid4} style={{ gap:20 }}>
             {[["3x","平均フォロワー増加率"],["3000+","累計導入アカウント"],["4.9","顧客満足度（5点満点）"],["92%","3ヶ月継続率"]].map(([n,l])=>(
               <div key={l} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:12, padding:"24px 20px", textAlign:"center" }}>
@@ -355,7 +334,7 @@ export default function SubscriptionClient() {
       <section style={{ background:G, padding:"64px 0", overflow:"hidden" }}>
         <div style={{ padding:"0 24px", maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.6)", textTransform:"uppercase", marginBottom:12 }}>Keywords</div>
-          <h2 style={{ fontSize:"clamp(20px,3vw,32px)", fontWeight:700, color:"#fff", marginBottom:32, letterSpacing:"-.02em" }}>発見タブ・検索上位の独占キーワード実績</h2>
+          <h2 style={{ fontSize:"clamp(20px,3vw,32px)", fontWeight:700, color:"#fff", marginBottom:32, letterSpacing:"-.02em" }}>おすすめ・発見タブ・検索上位の独占キーワード実績</h2>
         </div>
         {[kw1, kw2, kw3].map((row, ri)=>{
           const cls = ri===1 ? styles.marqueeTrack2 : ri===2 ? styles.marqueeTrack3 : styles.marqueeTrack;
@@ -387,7 +366,7 @@ export default function SubscriptionClient() {
       <section id="plans" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Plans & Pricing</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスクの料金プラン（月額固定・5プラン）</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行の料金プラン（月額固定・5プラン）</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:12 }} />
           <p style={{ fontSize:15, color:TM, marginBottom:36, lineHeight:1.8 }}>目的に合わせて選べる5プラン。すべて月額固定・解約自由。</p>
           {/* tabs */}
@@ -457,7 +436,7 @@ export default function SubscriptionClient() {
       <section id="voices" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Reviews</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>インスタ運用サブスク利用者の口コミ・評判</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行利用者の口コミ・評判</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
           <div className={styles.grid3} style={{ gap:20 }}>
             {visibleVoices.map((v)=>(
@@ -486,6 +465,9 @@ export default function SubscriptionClient() {
         </div>
       </section>
 
+      {/* ── メディア掲載実績（Reviews の直後・FAQ の前） ── */}
+      <MediaMentions />
+
       {/* ── FAQ ── */}
       <section id="faq" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:720, margin:"0 auto" }}>
@@ -506,10 +488,10 @@ export default function SubscriptionClient() {
       {/* ── Final CTA ── */}
       <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px", scrollMarginTop:64 }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
-        <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>まずは無料で相談してみませんか？</h2>
+        <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>その他、マーケティングに関するご相談はこちら</h2>
         <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：無料で相談する")}>無料で相談する →</button>
+          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：マーケティング相談")}>🎧 マーケティング相談はこちら</button>
           <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
         </div>
       </section>

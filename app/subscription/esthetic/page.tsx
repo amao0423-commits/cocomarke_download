@@ -11,14 +11,14 @@ import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 export const metadata: Metadata = {
   title: "エステ・ネイルサロンのインスタ集客を月額固定で代行｜新規客を増やすSNS運用｜JEMIA",
   description:
-    "エステ・ネイルサロン専門のインスタ運用代行サブスク。発見タブ最適化とエリア×メニューのハッシュタグ攻略で、新規のお客様に見つけてもらい来店につなげます。月額固定・解約自由。ブライダルエステ・小顔矯正・アートメイク・ネイルの集客実績多数。無料相談受付中。",
+    "エステ・ネイルサロン専門のインスタ運用代行サブスク。おすすめ・発見タブ最適化とエリア×メニューのハッシュタグ攻略で、新規のお客様に見つけてもらい来店につなげます。月額固定・解約自由。ブライダルエステ・小顔矯正・アートメイク・ネイルの集客実績多数。無料相談受付中。",
   alternates: {
     canonical: "https://www.cocomake-guide.com/subscription/esthetic",
   },
   openGraph: {
     title: "エステ・ネイルサロンのインスタ集客を月額固定で代行｜JEMIA",
     description:
-      "発見タブ最適化とメニュー別ハッシュタグ攻略で、サロンを探しているお客様に見つけてもらえるサロンへ。月額固定・解約自由。",
+      "おすすめ・発見タブ最適化とメニュー別ハッシュタグ攻略で、サロンを探しているお客様に見つけてもらえるサロンへ。月額固定・解約自由。",
     url: "https://www.cocomake-guide.com/subscription/esthetic",
     type: "website",
   },
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 const faqItems = [
   {
     q: "本当に新規のお客様につながりますか？",
-    a: "発見タブやエリア×メニューのハッシュタグ経由で、これまで届かなかった見込み客にサロンを見せられるようになります。プロフィールに予約導線（ホットペッパービューティー・公式LINE・電話など）を整えることで、認知から来店予約への流れを設計します。",
+    a: "おすすめ・発見タブやエリア×メニューのハッシュタグ経由で、これまで届かなかった見込み客にサロンを見せられるようになります。プロフィールに予約導線（ホットペッパービューティー・公式LINE・電話など）を整えることで、認知から来店予約への流れを設計します。",
   },
   {
     q: "得意メニューの強みは打ち出せますか？",
@@ -35,7 +35,7 @@ const faqItems = [
   },
   {
     q: "ビフォーアフターの投稿も活かせますか？",
-    a: "はい。施術前後の写真やリールは発見タブで反応を得やすい強力な素材です。見せ方や投稿のタイミングを最適化し、保存・シェアにつながる運用でリーチを伸ばします。",
+    a: "はい。施術前後の写真やリールはおすすめ・発見タブで反応を得やすい強力な素材です。見せ方や投稿のタイミングを最適化し、保存・シェアにつながる運用でリーチを伸ばします。",
   },
   {
     q: "エステ・ネイルサロンでもアカウント凍結のリスクはありませんか？",
@@ -79,7 +79,7 @@ const jsonLd = {
         {
           "@type": "ListItem",
           position: 2,
-          name: "インスタ運用サブスク",
+          name: "サブスク型インスタ運用代行",
           item: "https://www.cocomake-guide.com/subscription",
         },
         {
@@ -106,12 +106,12 @@ export default function EstheticSubscriptionPage() {
       <main className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         {/* Hero */}
         <section className="text-center">
-          <p className="text-sm font-medium text-emerald-700">エステ・ネイル向け｜インスタ運用サブスク</p>
+          <p className="text-sm font-medium text-emerald-700">エステ・ネイル向け｜サブスク型インスタ運用代行</p>
           <h1 className="mt-3 text-3xl font-bold leading-snug sm:text-4xl">
             エステ・ネイルサロンのインスタ集客を、月額固定でまるごと代行
           </h1>
           <p className="mt-5 text-base leading-relaxed text-gray-600">
-            「ビフォーアフターを載せても新規予約につながらない」を、JEMIAが変えます。発見タブ最適化とメニュー別ハッシュタグ攻略で、サロンを探しているお客様に見つけてもらえるサロンへ。
+            「ビフォーアフターを載せても新規予約につながらない」を、JEMIAが変えます。おすすめ・発見タブ最適化とメニュー別ハッシュタグ攻略で、サロンを探しているお客様に見つけてもらえるサロンへ。
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a href="/subscription#contact" className="rounded-lg bg-emerald-600 px-6 py-3 text-white">
@@ -143,9 +143,9 @@ export default function EstheticSubscriptionPage() {
           <h2 className="text-2xl font-bold">JEMIAがエステ・ネイルサロンの集客を変える3つの理由</h2>
           <div className="mt-8 space-y-8">
             <div>
-              <h3 className="text-lg font-semibold">発見タブで「新しいお客様」に見つけてもらう</h3>
+              <h3 className="text-lg font-semibold">おすすめ・発見タブで「新しいお客様」に見つけてもらう</h3>
               <p className="mt-2 leading-relaxed text-gray-600">
-                Instagramの発見タブは、まだフォロワーではない見込み客にサロンを届ける最大の入口です。JEMIAは投稿のエンゲージメントを高めて発見タブ掲載を狙い、来店につながる新規層へのリーチを増やします。
+                Instagramのおすすめ・発見タブは、まだフォロワーではない見込み客にサロンを届ける最大の入口です。JEMIAは投稿のエンゲージメントを高めておすすめ・発見タブ掲載を狙い、来店につながる新規層へのリーチを増やします。
               </p>
             </div>
             <div>
@@ -185,7 +185,7 @@ export default function EstheticSubscriptionPage() {
             </div>
             <div className="rounded-lg bg-gray-50 p-5 text-center">
               <p className="text-2xl font-bold">340%</p>
-              <p className="mt-1 text-sm text-gray-600">発見タブ リーチ増加率</p>
+              <p className="mt-1 text-sm text-gray-600">おすすめ・発見タブ リーチ増加率</p>
             </div>
             <div className="rounded-lg bg-gray-50 p-5 text-center">
               <p className="text-2xl font-bold">4.9 / 5</p>
@@ -197,7 +197,7 @@ export default function EstheticSubscriptionPage() {
           <blockquote className="mt-8 border-l-4 border-emerald-400 pl-4 text-gray-700">
             <p className="text-amber-500">★★★★★</p>
             <p className="mt-2 leading-relaxed">
-              フォロワー以外の方からの保存やコメントが増えてきた実感があります。発見タブからの流入が増えているのをインサイトで確認できています。
+              フォロワー以外の方からの保存やコメントが増えてきた実感があります。おすすめ・発見タブからの流入が増えているのをインサイトで確認できています。
             </p>
             <footer className="mt-2 text-sm text-gray-500">——個人ブランディング中のお客様（導入2ヶ月）</footer>
           </blockquote>

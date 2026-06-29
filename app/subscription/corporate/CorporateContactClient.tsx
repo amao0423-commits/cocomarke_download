@@ -127,7 +127,7 @@ export default function CorporateContactClient() {
               ))}
             </ul>
             <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-              {["いいね代行","発見タブ最適化","リスト上位表示","複数アカウント","専任担当","インボイス対応"].map((c)=>(
+              {["いいね代行","おすすめ・発見タブ最適化","リスト上位表示","複数アカウント","専任担当","インボイス対応"].map((c)=>(
                 <span key={c} style={{ background:"#fff", color:G, border:`1px solid ${BD}`, fontSize:12, fontWeight:700, padding:"6px 12px", borderRadius:100 }}>{c}</span>
               ))}
             </div>

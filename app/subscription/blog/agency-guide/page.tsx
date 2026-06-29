@@ -53,7 +53,7 @@ const priceRows = [
 const checkpoints = [
   { title: "目的に合うサービス範囲か", body: "「投稿だけ」なのか「戦略から分析まで」なのかで料金も成果も大きく変わります。自店が何を任せたいかを先に決めましょう。" },
   { title: "同業種・近い規模の実績があるか", body: "飲食店、美容室など、自店と近い業種での実績は再現性の目安になります。具体的な事例を見せてもらいましょう。" },
-  { title: "成果指標（KPI）が明確か", body: "フォロワー数だけでなく、保存・発見タブ流入・来店や問い合わせなど、何を成果とするかを事前にすり合わせます。" },
+  { title: "成果指標（KPI）が明確か", body: "フォロワー数だけでなく、保存・おすすめ・発見タブ流入・来店や問い合わせなど、何を成果とするかを事前にすり合わせます。" },
   { title: "契約期間と解約条件", body: "長期契約の縛りがあると、成果が出なくても続けざるを得ません。解約条件は必ず確認しましょう。" },
   { title: "レポートと連絡体制", body: "毎月の成果レポートがあるか、相談しやすい連絡手段（LINE等）があるかは、運用の質に直結します。" },
   { title: "アカウントの安全性への配慮", body: "過度な自動ツールの使用は凍結リスクを高めます。安全な運用方針を取っているか確認します。" },
@@ -279,14 +279,14 @@ export default function AgencyGuideArticle() {
               <div className="overflow-hidden rounded-3xl bg-cyan-700 px-7 py-10 text-white">
                 <h2 className="text-xl font-bold">JEMIAという選択肢</h2>
                 <p className="mt-4 leading-loose text-cyan-50">
-                  JEMIAのインスタ運用サブスクは、月額固定・解約自由で続けやすいのが特徴です。発見タブ最適化・いいね代行・分析改善まで専任担当が対応し、契約の縛りがないため、成果を見ながら無理なく続けられます。
+                  JEMIAのサブスク型インスタ運用代行は、月額固定・解約自由で続けやすいのが特徴です。おすすめ・発見タブ最適化・いいね代行・分析改善まで専任担当が対応し、契約の縛りがないため、成果を見ながら無理なく続けられます。
                 </p>
                 <p className="mt-3 leading-loose text-cyan-50">
                   「高額な長期契約はハードルが高い」という店舗・サロンにこそ向いています。まずは無料相談で、自店に合うプランを確認してみてください。
                 </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                   <a href="/subscription" className="rounded-xl bg-white px-6 py-3 text-center font-bold text-cyan-700 transition hover:bg-cyan-50">
-                    インスタ運用サブスクを見る →
+                    サブスク型インスタ運用代行を見る →
                   </a>
                   <a href="/subscription#contact" className="rounded-xl border border-cyan-300/60 px-6 py-3 text-center font-bold text-white transition hover:bg-cyan-600">
                     無料で相談する →
@@ -321,12 +321,12 @@ export default function AgencyGuideArticle() {
               </li>
               <li>
                 <a href="/subscription/blog/instagram-explore-tab" className="text-cyan-700 underline-offset-4 hover:underline">
-                  インスタの発見タブに載る方法｜仕組みと最適化のコツ →
+                  インスタのおすすめ・発見タブに載る方法｜仕組みと最適化のコツ →
                 </a>
               </li>
               <li>
                 <a href="/subscription" className="text-cyan-700 underline-offset-4 hover:underline">
-                  インスタ運用サブスクの料金・プランを見る →
+                  サブスク型インスタ運用代行の料金・プランを見る →
                 </a>
               </li>
             </ul>

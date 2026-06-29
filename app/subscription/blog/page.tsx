@@ -21,7 +21,7 @@ import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 // icon         : 右下に薄く置く装飾アイコン（Tabler。globals で読み込み済み想定）
 const CATEGORY_META = {
   algorithm: {
-    label: "発見タブ・アルゴリズム",
+    label: "おすすめ・発見タブ・アルゴリズム",
     no: "01",
     thumb: "bg-emerald-700",
     accentBorder: "border-emerald-300/50",
@@ -73,9 +73,9 @@ const POSTS: Post[] = [
     slug: "instagram-explore-tab",
     href: "/subscription/blog/instagram-explore-tab",
     category: "algorithm",
-    title: "インスタの発見タブに載る方法｜仕組みと最適化の7つのコツ",
+    title: "インスタのおすすめ・発見タブに載る方法｜仕組みと最適化の7つのコツ",
     excerpt:
-      "発見タブは、フォロワー以外の見込み客に投稿を届ける最大の入口。表示される投稿の条件から、載るための具体的な7つのコツまで解説します。",
+      "おすすめ・発見タブは、フォロワー以外の見込み客に投稿を届ける最大の入口。表示される投稿の条件から、載るための具体的な7つのコツまで解説します。",
     dateModified: "2026.06.19",
     readingTime: "約7分",
     featured: true,
@@ -158,7 +158,7 @@ export default function BlogIndexPage() {
             Instagram運用お役立ち記事
           </h1>
           <p className="mt-4 max-w-xl leading-loose text-slate-600">
-            発見タブ・アルゴリズム・集客のノウハウを、店舗やサロンの運用に役立つ形で発信しています。インスタ集客のヒントにどうぞ。
+            おすすめ・発見タブ・アルゴリズム・集客のノウハウを、店舗やサロンの運用に役立つ形で発信しています。インスタ集客のヒントにどうぞ。
           </p>
         </div>
       </header>
@@ -252,14 +252,14 @@ export default function BlogIndexPage() {
         <section className="mt-16 rounded-3xl border-2 border-emerald-200 bg-white px-7 py-10 text-center">
           <h2 className="text-xl font-bold text-emerald-800">インスタ運用を、プロにまかせませんか？</h2>
           <p className="mx-auto mt-4 max-w-lg leading-loose text-slate-600">
-            発見タブ最適化からフォロワー増加まで、専任担当が月額固定で代行。記事を読む時間がないほど忙しい方こそ、まずは無料相談からどうぞ。
+            おすすめ・発見タブ最適化からフォロワー増加まで、専任担当が月額固定で代行。記事を読む時間がないほど忙しい方こそ、まずは無料相談からどうぞ。
           </p>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <a
               href="/subscription"
               className="rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white transition hover:bg-emerald-700"
             >
-              インスタ運用サブスクを見る →
+              サブスク型インスタ運用代行を見る →
             </a>
             <a
               href="/subscription#contact"

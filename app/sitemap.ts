@@ -11,6 +11,7 @@ const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Si
   { path: "/subscription/restaurant", priority: 0.8, changeFrequency: "monthly" },
   { path: "/subscription/salon", priority: 0.8, changeFrequency: "monthly" },
   { path: "/subscription/esthetic", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/subscription/media", priority: 0.6, changeFrequency: "monthly" },
   { path: "/subscription/blog", priority: 0.7, changeFrequency: "weekly" },
   { path: "/subscription/blog/instagram-explore-tab", priority: 0.7, changeFrequency: "monthly" },
   { path: "/subscription/blog/increase-followers", priority: 0.7, changeFrequency: "monthly" },

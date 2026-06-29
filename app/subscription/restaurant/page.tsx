@@ -12,14 +12,14 @@ import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 export const metadata: Metadata = {
   title: "飲食店のインスタ集客を月額固定で代行｜来店につなげるSNS運用｜JEMIA",
   description:
-    "飲食店専門のインスタ運用代行サブスク。発見タブ最適化と地域ハッシュタグ攻略で「近くのお店」として見つけてもらい、来店予約につなげます。月額固定・解約自由。居酒屋・カフェ・レストランの集客実績多数。無料相談受付中。",
+    "飲食店専門のインスタ運用代行サブスク。おすすめ・発見タブ最適化と地域ハッシュタグ攻略で「近くのお店」として見つけてもらい、来店予約につなげます。月額固定・解約自由。居酒屋・カフェ・レストランの集客実績多数。無料相談受付中。",
   alternates: {
     canonical: "https://www.cocomake-guide.com/subscription/restaurant",
   },
   openGraph: {
     title: "飲食店のインスタ集客を月額固定で代行｜JEMIA",
     description:
-      "発見タブ最適化と地域ハッシュタグ攻略で、近くのお客様に見つけてもらえるお店へ。月額固定・解約自由。",
+      "おすすめ・発見タブ最適化と地域ハッシュタグ攻略で、近くのお客様に見つけてもらえるお店へ。月額固定・解約自由。",
     url: "https://www.cocomake-guide.com/subscription/restaurant",
     type: "website",
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 const faqItems = [
   {
     q: "本当に来店や予約につながりますか？",
-    a: "発見タブや地域ハッシュタグ経由で、これまで届かなかった近隣の見込み客にお店を見せられるようになります。プロフィールに予約導線（ホットペッパー・食べログ・電話・公式LINEなど）を整えることで、認知から来店への流れを設計します。",
+    a: "おすすめ・発見タブや地域ハッシュタグ経由で、これまで届かなかった近隣の見込み客にお店を見せられるようになります。プロフィールに予約導線（ホットペッパー・食べログ・電話・公式LINEなど）を整えることで、認知から来店への流れを設計します。",
   },
   {
     q: "飲食店でもアカウント凍結のリスクはありませんか？",
@@ -81,7 +81,7 @@ const jsonLd = {
         {
           "@type": "ListItem",
           position: 2,
-          name: "インスタ運用サブスク",
+          name: "サブスク型インスタ運用代行",
           item: "https://www.cocomake-guide.com/subscription",
         },
         {
@@ -108,12 +108,12 @@ export default function RestaurantSubscriptionPage() {
       <main className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
         {/* Hero */}
         <section className="text-center">
-          <p className="text-sm font-medium text-emerald-700">飲食店向け｜インスタ運用サブスク</p>
+          <p className="text-sm font-medium text-emerald-700">飲食店向け｜サブスク型インスタ運用代行</p>
           <h1 className="mt-3 text-3xl font-bold leading-snug sm:text-4xl">
             飲食店のインスタ集客を、月額固定でまるごと代行
           </h1>
           <p className="mt-5 text-base leading-relaxed text-gray-600">
-            「投稿しても予約につながらない」を、JEMIAが変えます。発見タブ最適化と地域ハッシュタグ攻略で、近くのお客様に見つけてもらえるお店へ。
+            「投稿しても予約につながらない」を、JEMIAが変えます。おすすめ・発見タブ最適化と地域ハッシュタグ攻略で、近くのお客様に見つけてもらえるお店へ。
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             {/* 差し替え: <CtaButtons /> もしくは既存のボタンコンポーネント */}
@@ -147,9 +147,9 @@ export default function RestaurantSubscriptionPage() {
 
           <div className="mt-8 space-y-8">
             <div>
-              <h3 className="text-lg font-semibold">発見タブで「近くのお店」として見つけてもらう</h3>
+              <h3 className="text-lg font-semibold">おすすめ・発見タブで「近くのお店」として見つけてもらう</h3>
               <p className="mt-2 leading-relaxed text-gray-600">
-                Instagramの発見タブは、フォロワー以外の見込み客にお店を届ける最大の入口です。JEMIAは投稿のエンゲージメントを高め、発見タブへの掲載を狙って、来店につながる新規層へのリーチを増やします。
+                Instagramのおすすめ・発見タブは、フォロワー以外の見込み客にお店を届ける最大の入口です。JEMIAは投稿のエンゲージメントを高め、おすすめ・発見タブへの掲載を狙って、来店につながる新規層へのリーチを増やします。
               </p>
             </div>
             <div>
@@ -189,7 +189,7 @@ export default function RestaurantSubscriptionPage() {
             </div>
             <div className="rounded-lg bg-gray-50 p-5 text-center">
               <p className="text-2xl font-bold">340%</p>
-              <p className="mt-1 text-sm text-gray-600">発見タブ リーチ増加率</p>
+              <p className="mt-1 text-sm text-gray-600">おすすめ・発見タブ リーチ増加率</p>
             </div>
             <div className="rounded-lg bg-gray-50 p-5 text-center">
               <p className="text-2xl font-bold">4.9 / 5</p>

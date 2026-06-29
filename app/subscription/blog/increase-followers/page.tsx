@@ -87,7 +87,7 @@ const faqItems = [
   },
   {
     q: "フォロワーが少なくても集客できますか？",
-    a: "はい。フォロワー数よりも、見込み客に届いているか・反応があるかが重要です。発見タブや保存を意識した運用で、少ないフォロワーでも来店や問い合わせにつなげることは可能です。",
+    a: "はい。フォロワー数よりも、見込み客に届いているか・反応があるかが重要です。おすすめ・発見タブや保存を意識した運用で、少ないフォロワーでも来店や問い合わせにつなげることは可能です。",
   },
 ];
 
@@ -250,14 +250,14 @@ export default function IncreaseFollowersArticle() {
               <div className="overflow-hidden rounded-3xl bg-cyan-700 px-7 py-10 text-white">
                 <h2 className="text-xl font-bold">プロに任せるという選択肢</h2>
                 <p className="mt-4 leading-loose text-cyan-50">
-                  JEMIAのインスタ運用サブスクなら、プロフィール設計から投稿戦略、発見タブ最適化、分析改善まで専任担当が代行します。土台づくりも日々の運用もまるごとお任せいただけます。
+                  JEMIAのサブスク型インスタ運用代行なら、プロフィール設計から投稿戦略、おすすめ・発見タブ最適化、分析改善まで専任担当が代行します。土台づくりも日々の運用もまるごとお任せいただけます。
                 </p>
                 <p className="mt-3 leading-loose text-cyan-50">
                   月額固定・解約自由で、成果が出なければいつでも解約できます。フォロワーを本気で増やしたい方は、まずは無料相談からどうぞ。
                 </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                   <a href="/subscription" className="rounded-xl bg-white px-6 py-3 text-center font-bold text-cyan-700 transition hover:bg-cyan-50">
-                    インスタ運用サブスクを見る →
+                    サブスク型インスタ運用代行を見る →
                   </a>
                   <a href="/subscription#contact" className="rounded-xl border border-cyan-300/60 px-6 py-3 text-center font-bold text-white transition hover:bg-cyan-600">
                     無料で相談する →
@@ -287,7 +287,7 @@ export default function IncreaseFollowersArticle() {
             <ul className="mt-3 space-y-2 text-sm">
               <li>
                 <a href="/subscription/blog/instagram-explore-tab" className="text-cyan-700 underline-offset-4 hover:underline">
-                  インスタの発見タブに載る方法｜仕組みと最適化のコツ →
+                  インスタのおすすめ・発見タブに載る方法｜仕組みと最適化のコツ →
                 </a>
               </li>
               <li>
@@ -297,7 +297,7 @@ export default function IncreaseFollowersArticle() {
               </li>
               <li>
                 <a href="/subscription" className="text-cyan-700 underline-offset-4 hover:underline">
-                  インスタ運用サブスクの料金・プランを見る →
+                  サブスク型インスタ運用代行の料金・プランを見る →
                 </a>
               </li>
             </ul>
