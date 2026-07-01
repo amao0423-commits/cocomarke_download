@@ -9,6 +9,14 @@
     {
       "source": "/subscription/:path*",
       "destination": "https://instagram-service-jemia.vercel.app/:path*"
+    },
+    {
+      "source": "/lp/instagram",
+      "destination": "https://instagram-service-jemia.vercel.app/lp/instagram/"
+    },
+    {
+      "source": "/lp/instagram/:path*",
+      "destination": "https://instagram-service-jemia.vercel.app/lp/instagram/:path*"
     }
   ]
 }
