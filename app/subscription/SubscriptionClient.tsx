@@ -190,11 +190,25 @@ export default function SubscriptionClient() {
               <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
             </Link>
             <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：マーケティング相談")}>
-              <span className={styles.labelFull}>🎧 マーケティング相談</span><span className={styles.labelShort}>🎧 相談</span>
+              <span className={styles.labelFull}>🎧 マーケティング相談はこちら</span><span className={styles.labelShort}>🎧 相談</span>
             </button>
           </div>
         </div>
       </header>
+
+      {/* ── 受付枠バー（ヘッダー直下） ── */}
+      <div style={{ background:"#1F1F1F", color:"#fff" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:16, flexWrap:"wrap" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, fontSize:14 }}>
+            <span className={styles.pulseDot} style={{ width:7, height:7, borderRadius:"50%", background:C, display:"inline-block", flexShrink:0 }} />
+            <span style={{ fontWeight:700 }}>今月の残り受付枠：</span>
+            <span style={{ color:C, fontWeight:900, fontSize:18 }}>3</span>
+            <span style={{ fontWeight:700 }}>件</span>
+            <span style={{ color:"rgba(255,255,255,.55)", fontSize:12, marginLeft:2 }}>受付中</span>
+          </div>
+          <button onClick={()=>openModal("plan_apply","受付枠バー：今すぐ申し込む")} style={{ background:C, color:"#fff", border:"none", padding:"8px 20px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>今すぐ申し込む</button>
+        </div>
+      </div>
 
       {/* ── Hero ── */}
       <section id="top" style={{ background:`linear-gradient(160deg,#fff 0%,${GL} 100%)`, padding:"72px 24px 64px", position:"relative", overflow:"hidden", scrollMarginTop:64 }}>
@@ -214,7 +228,7 @@ export default function SubscriptionClient() {
               いいね代行・おすすめ・発見タブ最適化・LINE相談まで。
             </p>
             <div style={{ display:"flex", gap:12, flexWrap:"wrap", marginBottom:36 }}>
-              <button style={btnPrimary} onClick={()=>openModal("consult","ヒーロー：無料で相談する")}>無料で相談する →</button>
+              <a href="/shindan.html" style={{ ...btnPrimary, display:"inline-block", textDecoration:"none" }}>アカウント診断 →</a>
               <a href="#plans" style={{ background:"transparent", color:G, border:`2px solid ${G}`, padding:"12px 24px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none", display:"inline-block" }}>料金を見る</a>
               <Link href="/subscription/diagnosis" style={{ display:"inline-flex", alignItems:"center", gap:6, color:C, fontSize:14, fontWeight:700, textDecoration:"none", padding:"12px 4px" }}>30秒でプラン診断 →</Link>
             </div>
@@ -488,7 +502,7 @@ export default function SubscriptionClient() {
       {/* ── Final CTA ── */}
       <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px", scrollMarginTop:64 }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
-        <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>その他、マーケティングに関するご相談はこちら</h2>
+        <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>マーケティングに関するご相談はこちら</h2>
         <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。</p>
         <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
           <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：マーケティング相談")}>🎧 マーケティング相談はこちら</button>
@@ -563,6 +577,11 @@ export default function SubscriptionClient() {
           ))}
           <Link href="/subscription/corporate" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>法人のお客様</Link>
           <Link href="/subscription/blog" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>お役立ち記事</Link>
+        </div>
+        <div style={{ marginBottom:16 }}>
+          <Link href="/terms" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>利用規約</Link>
+          <a href="https://www.cocomarke.com/privacy" target="_blank" rel="noreferrer" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>プライバシーポリシー</a>
+          <Link href="/confidentiality" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>秘密保持方針</Link>
         </div>
         <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>
           受付時間：平日 09:00 - 18:00（土日祝日は除く）<br />

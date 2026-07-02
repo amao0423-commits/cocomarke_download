@@ -27,7 +27,7 @@ export function JemiaHeader() {
             <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
           </Link>
           <Link href="/subscription#contact" className={styles.headerCta} style={{ display: "inline-block", textDecoration: "none" }}>
-            <span className={styles.labelFull}>🎧 マーケティング相談</span><span className={styles.labelShort}>🎧 相談</span>
+            <span className={styles.labelFull}>🎧 マーケティング相談はこちら</span><span className={styles.labelShort}>🎧 相談</span>
           </Link>
         </div>
       </div>
@@ -51,6 +51,11 @@ export function JemiaFooter() {
         <Link href="/subscription/blog" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>お役立ち記事</Link>
         <Link href="/subscription/corporate" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>法人のお客様</Link>
         <Link href="/subscription/diagnosis" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プラン診断</Link>
+      </div>
+      <div style={{ marginBottom: 16 }}>
+        <Link href="/terms" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>利用規約</Link>
+        <a href="https://www.cocomarke.com/privacy" target="_blank" rel="noreferrer" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プライバシーポリシー</a>
+        <Link href="/confidentiality" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>秘密保持方針</Link>
       </div>
       <div style={{ marginTop: 20, fontSize: 12, color: "rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</div>
     </footer>
