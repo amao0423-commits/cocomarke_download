@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 
 // ────────────────────────────────────────────────────────────────
 // 注意: 本ページは一般的な構成のひな形です。実際のサービス内容・料金・
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: "利用規約｜JEMIA（株式会社ホットセラー）",
   description:
     "サブスク型インスタ運用代行「JEMIA」の利用規約です。サービス内容、料金、解約方法、免責事項等を定めています。",
-  alternates: { canonical: "https://www.cocomake-guide.com/terms" },
+  alternates: { canonical: "https://www.cocomake-guide.com/subscription/terms" },
 };
 
 const COMPANY = {
@@ -92,11 +93,12 @@ const sections = [
 export default function TermsPage() {
   return (
     <>
+      <JemiaHeader />
       <div className="bg-white text-slate-800">
         <header className="bg-gradient-to-b from-[#E8F5ED] to-white">
           <div className="mx-auto max-w-3xl px-5 py-14 sm:py-16">
             <nav aria-label="パンくず" className="mb-6 text-xs text-slate-400">
-              <a href="/" className="hover:text-slate-600">ホーム</a>
+              <a href="/subscription" className="hover:text-slate-600">JEMIA</a>
               <span className="mx-1.5">/</span>
               <span className="text-slate-500">利用規約</span>
             </nav>
@@ -133,6 +135,7 @@ export default function TermsPage() {
           </div>
         </main>
       </div>
+      <JemiaFooter />
     </>
   );
 }

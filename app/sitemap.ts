@@ -21,8 +21,9 @@ const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Si
   { path: "/download", priority: 0.6, changeFrequency: "monthly" },
   { path: "/servicedocument", priority: 0.6, changeFrequency: "monthly" },
   { path: "/restaurant-diagnosis", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
-  { path: "/confidentiality", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/subscription/terms", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/subscription/privacy", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/subscription/confidentiality", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 
 // ────────────────────────────────────────────────────────────────
 // 注意: 本ページは一般的な構成のひな形です。実際の運用体制・委託先の
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: "秘密保持方針｜JEMIA（株式会社ホットセラー）",
   description:
     "サブスク型インスタ運用代行「JEMIA」を運営する株式会社ホットセラーの秘密保持方針です。お預かりするアカウント情報・素材・お客様情報の取り扱いについて定めています。",
-  alternates: { canonical: "https://www.cocomake-guide.com/confidentiality" },
+  alternates: { canonical: "https://www.cocomake-guide.com/subscription/confidentiality" },
 };
 
 const COMPANY = {
@@ -83,11 +84,12 @@ const sections = [
 export default function ConfidentialityPage() {
   return (
     <>
+      <JemiaHeader />
       <div className="bg-white text-slate-800">
         <header className="bg-gradient-to-b from-[#E8F5ED] to-white">
           <div className="mx-auto max-w-3xl px-5 py-14 sm:py-16">
             <nav aria-label="パンくず" className="mb-6 text-xs text-slate-400">
-              <a href="/" className="hover:text-slate-600">ホーム</a>
+              <a href="/subscription" className="hover:text-slate-600">JEMIA</a>
               <span className="mx-1.5">/</span>
               <span className="text-slate-500">秘密保持方針</span>
             </nav>
@@ -134,6 +136,7 @@ export default function ConfidentialityPage() {
           </div>
         </main>
       </div>
+      <JemiaFooter />
     </>
   );
 }

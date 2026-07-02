@@ -579,9 +579,9 @@ export default function SubscriptionClient() {
           <Link href="/subscription/blog" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>お役立ち記事</Link>
         </div>
         <div style={{ marginBottom:16 }}>
-          <Link href="/terms" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>利用規約</Link>
-          <a href="https://www.cocomarke.com/privacy" target="_blank" rel="noreferrer" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>プライバシーポリシー</a>
-          <Link href="/confidentiality" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>秘密保持方針</Link>
+          <Link href="/subscription/terms" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>利用規約</Link>
+          <Link href="/subscription/privacy" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>プライバシーポリシー</Link>
+          <Link href="/subscription/confidentiality" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>秘密保持方針</Link>
         </div>
         <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>
           受付時間：平日 09:00 - 18:00（土日祝日は除く）<br />

@@ -53,9 +53,9 @@ export function JemiaFooter() {
         <Link href="/subscription/diagnosis" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プラン診断</Link>
       </div>
       <div style={{ marginBottom: 16 }}>
-        <Link href="/terms" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>利用規約</Link>
-        <a href="https://www.cocomarke.com/privacy" target="_blank" rel="noreferrer" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プライバシーポリシー</a>
-        <Link href="/confidentiality" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>秘密保持方針</Link>
+        <Link href="/subscription/terms" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>利用規約</Link>
+        <Link href="/subscription/privacy" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>プライバシーポリシー</Link>
+        <Link href="/subscription/confidentiality" style={{ color: "rgba(255,255,255,0.6)", textDecoration: "none", margin: "0 12px", fontSize: 13 }}>秘密保持方針</Link>
       </div>
       <div style={{ marginTop: 20, fontSize: 12, color: "rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</div>
     </footer>
