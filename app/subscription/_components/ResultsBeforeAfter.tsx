@@ -33,7 +33,7 @@ const flowSteps = [
 
 export default function ResultsBeforeAfter() {
   return (
-    <section id="results" className="mx-auto max-w-5xl px-5 py-16 sm:py-20">
+    <section id="results" className="mx-auto max-w-5xl px-5 py-16 sm:py-20 [text-wrap:pretty]">
       {/* 見出し */}
       <div className="text-center">
         <p className="text-sm font-medium tracking-wide text-[#2D7A4F]">Results</p>
@@ -119,22 +119,26 @@ export default function ResultsBeforeAfter() {
         <p className="text-center text-sm font-bold text-slate-900">
           おすすめ・発見タブ掲載からフォロワー増加までの流れ
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-4">
+        {/* モバイルは縦一列（↓）、sm以上は横並び（›） */}
+        <div className="mt-6 flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
           {flowSteps.map((step, i) => (
-            <div key={step.label} className="flex items-center gap-x-3">
+            <div key={step.label} className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
               <div
                 className={
-                  "flex min-w-[104px] flex-col items-center gap-1 rounded-2xl px-4 py-3 text-center text-xs " +
+                  "flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm sm:w-auto sm:min-w-[104px] sm:flex-col sm:gap-1 sm:text-center sm:text-xs " +
                   (step.highlight
                     ? "bg-[#2D7A4F] font-bold text-white"
                     : "bg-white text-[#2D7A4F] shadow-sm")
                 }
               >
                 <span className="text-xl" aria-hidden>{step.icon}</span>
-                {step.label}
+                <span>{step.label}</span>
               </div>
               {i < flowSteps.length - 1 && (
-                <span aria-hidden className="text-[#4CAF75]">→</span>
+                <span aria-hidden className="text-lg leading-none text-[#4CAF75]">
+                  <span className="sm:hidden">↓</span>
+                  <span className="hidden sm:inline">›</span>
+                </span>
               )}
             </div>
           ))}

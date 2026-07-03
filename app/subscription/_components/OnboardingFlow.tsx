@@ -28,19 +28,14 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function toYMD(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
-// 土日を除いた n 営業日後
-function addBusinessDays(base: Date, n: number): Date {
-  const d = new Date(base);
-  let added = 0;
-  while (added < n) {
-    d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (day !== 0 && day !== 6) added++;
-  }
-  return d;
-}
+// 土日を含めて3日後。ただし土日に当たる場合は翌月曜（例: 金曜→次の月曜）
 function minStartDate(): string {
-  return toYMD(addBusinessDays(new Date(), 3));
+  const d = new Date();
+  d.setDate(d.getDate() + 3);
+  const day = d.getDay();
+  if (day === 6) d.setDate(d.getDate() + 2);      // 土 → 月
+  else if (day === 0) d.setDate(d.getDate() + 1); // 日 → 月
+  return toYMD(d);
 }
 function isWeekendStr(s: string): boolean {
   if (!s) return false;
@@ -119,7 +114,7 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-slate-50 text-slate-800 [text-wrap:pretty]">
       <div className="mx-auto max-w-2xl px-5 py-8 sm:py-12">
         {/* ヘッダー */}
         <header className="relative text-center">
@@ -278,9 +273,9 @@ export default function OnboardingFlow() {
                   }
                 />
                 {startDateInvalid ? (
-                  <p className="mt-1.5 text-xs text-[#FF6633]">土日は選択できません。3営業日以降の平日をお選びください。</p>
+                  <p className="mt-1.5 text-xs text-[#FF6633]">土日は選択できません。最短で {minStart}（3日後）以降の平日をお選びください。</p>
                 ) : (
-                  <p className="mt-1.5 text-xs text-slate-400">土日は選択できません。3営業日以降（{minStart}）以降の平日をお選びください。</p>
+                  <p className="mt-1.5 text-xs text-slate-400">最短で {minStart}（3日後）から。土日は選択できません。</p>
                 )}
               </div>
 
@@ -459,20 +454,28 @@ export default function OnboardingFlow() {
               </p>
 
               <div className="mt-8">
-                <div className="flex items-stretch justify-between gap-1 sm:gap-2">
+                {/* モバイルは縦一列（↓・アイコン＋文言を横並びで読みやすく）、sm以上は横4列（›） */}
+                <div className="flex flex-col gap-2 text-left sm:flex-row sm:items-stretch sm:justify-between sm:gap-1 sm:text-center">
                   {[
                     { icon: "📋", title: "内容確認", desc: "担当者が申込内容を確認", tone: "bg-[#2D7A4F]" },
                     { icon: "✉️", title: "支払方法の送付", desc: "お支払い方法をメール送付", tone: "bg-[#4CAF75]" },
                     { icon: "💳", title: "お入金の確認", desc: "お入金を確認", tone: "bg-[#4CAF75]" },
                     { icon: "🚀", title: "運用開始", desc: "運用スタート", tone: "bg-[#FF6633]" },
                   ].map((s, i, arr) => (
-                    <div key={s.title} className="flex flex-1 items-center">
-                      <div className="flex flex-1 flex-col items-center">
-                        <div className={`flex h-14 w-14 items-center justify-center rounded-2xl text-2xl text-white ${s.tone}`}>{s.icon}</div>
-                        <p className="mt-2 text-xs font-bold text-slate-800">{s.title}</p>
-                        <p className="mt-0.5 text-[10px] leading-tight text-slate-500">{s.desc}</p>
+                    <div key={s.title} className="flex flex-col items-center sm:flex-1 sm:flex-row">
+                      <div className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 shadow-sm sm:w-auto sm:flex-1 sm:flex-col sm:items-center sm:bg-transparent sm:p-0 sm:shadow-none">
+                        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl text-white sm:h-14 sm:w-14 ${s.tone}`}>{s.icon}</div>
+                        <div className="min-w-0 sm:mt-2">
+                          <p className="text-sm font-bold text-slate-800 sm:text-xs">{s.title}</p>
+                          <p className="text-xs leading-tight text-slate-500 sm:mt-0.5 sm:text-[10px]">{s.desc}</p>
+                        </div>
                       </div>
-                      {i < arr.length - 1 && <span aria-hidden className="mb-8 shrink-0 text-lg text-[#4CAF75]">›</span>}
+                      {i < arr.length - 1 && (
+                        <span aria-hidden className="my-1 text-lg text-[#4CAF75] sm:my-0 sm:mb-8 sm:shrink-0">
+                          <span className="sm:hidden">↓</span>
+                          <span className="hidden sm:inline">›</span>
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -525,7 +528,7 @@ function PrimaryButton({ children, onClick, disabled }: { children: React.ReactN
     <button
       onClick={onClick}
       disabled={disabled}
-      className="mt-6 w-full rounded-xl bg-[#2D7A4F] px-6 py-3 font-bold text-white transition hover:bg-[#1A5C37] disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-6 w-full whitespace-nowrap rounded-xl bg-[#2D7A4F] px-5 py-3 font-bold text-white transition hover:bg-[#1A5C37] disabled:cursor-not-allowed disabled:opacity-50"
     >
       {children}
     </button>
@@ -534,7 +537,7 @@ function PrimaryButton({ children, onClick, disabled }: { children: React.ReactN
 
 function SecondaryButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="w-full rounded-xl border border-slate-300 px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-50">
+    <button onClick={onClick} className="w-full whitespace-nowrap rounded-xl border border-slate-300 px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-50">
       {children}
     </button>
   );

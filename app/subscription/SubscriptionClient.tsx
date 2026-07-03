@@ -187,7 +187,7 @@ export default function SubscriptionClient() {
   const btnPrimary: React.CSSProperties = { background:C, color:"#fff", border:"none", padding:"14px 28px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:`0 4px 20px rgba(255,102,51,.3)` };
 
   return (
-    <>
+    <div className="[text-wrap:pretty]">
       {/* ── JEMIA Header ── */}
       <header className={styles.siteHeader}>
         <div className={styles.headerInner}>
@@ -616,6 +616,6 @@ export default function SubscriptionClient() {
         </div>
         <div style={{ marginTop:20, fontSize:12, color:"rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</div>
       </footer>
-    </>
+    </div>
   );
 }
