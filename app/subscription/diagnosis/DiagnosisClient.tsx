@@ -19,9 +19,9 @@ type PlanKey = "like" | "boost" | "set" | "rank" | "premium";
 
 const PLAN_INFO: Record<PlanKey, { name: string; price: string; desc: string; popular?: boolean }> = {
   like:    { name: "いいね代行プラン",       price: "9,800",  desc: "ターゲット層への自動いいねで認知を拡大。まず「知ってもらう」第一歩に最適です。" },
-  boost:   { name: "発見表示ブーストプラン", price: "19,800", desc: "投稿の初速エンゲージメントを高め、おすすめ・発見タブ掲載を狙う。反応・リーチを伸ばしたい方へ。" },
+  boost:   { name: "人気・おすすめ投稿表示プラン", price: "19,800", desc: "投稿の初速エンゲージメントを高め、おすすめ・発見タブ掲載を狙う。反応・リーチを伸ばしたい方へ。" },
   set:     { name: "セットプラン",           price: "24,800", desc: "いいね代行＋発見ブーストの相乗効果で成果を最大化。最もコスパが良い人気No.1プラン。", popular: true },
-  rank:    { name: "リスト上位表示プラン",   price: "29,800", desc: "狙ったキーワード検索で上位表示。地域×業種で「検索から見つけてもらう」を実現。" },
+  rank:    { name: "アカウント上位表示プラン",   price: "29,800", desc: "狙ったキーワード検索で上位表示。地域×業種で「検索から見つけてもらう」を実現。" },
   premium: { name: "プレミアムプラン",       price: "49,800", desc: "専任コンサル＋投稿代行で運用をまるごとお任せ。最短で最大の成果を狙う方へ。" },
 };
 

@@ -83,6 +83,34 @@ export async function POST(request: NextRequest) {
       html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${rows}</pre>`,
     });
 
+    // お問い合わせ者への自動受付返信（送信失敗しても本処理は成功扱い）
+    const autoReply = [
+      `${name} 様`,
+      '',
+      'この度はJEMIAへお問い合わせいただき、誠にありがとうございます。',
+      '以下の内容で受け付けいたしました。担当者より3日以内に、ご入力いただいたメールアドレス宛にご連絡いたします。',
+      '',
+      '──────────────',
+      inquiryType ? `ご希望・ご相談プラン: ${inquiryType}` : null,
+      'お問い合わせ内容:',
+      message || '（記載なし）',
+      '──────────────',
+      '',
+      '※本メールは送信専用アドレスからの自動返信です。ご返信いただいてもお答えできない場合がございます。',
+      'お急ぎの場合は info@cocomake-guide.com までご連絡ください。',
+      '',
+      'JEMIA（株式会社ホットセラー）',
+    ].filter((l) => l !== null).join('\n');
+    try {
+      await sendBrevoTransactionalEmail({
+        to:      email,
+        subject: '【JEMIA】お問い合わせを受け付けました',
+        html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${autoReply}</pre>`,
+      });
+    } catch (e) {
+      console.error('[subscription-contact] 自動返信の送信に失敗', e);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[subscription-contact]', err);

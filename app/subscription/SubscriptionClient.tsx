@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./subscription.module.css";
 import { getAttribution } from "@/lib/attribution";
+import { useRouter } from "next/navigation";
 import MediaMentions from "./_components/MediaMentions";
 import ResultsBeforeAfter from "./_components/ResultsBeforeAfter";
+import ContactForm from "./_components/ContactForm";
 
 /* ── brand tokens ── */
 const G   = "#2D7A4F";
@@ -21,10 +23,10 @@ const TXT = "#1A1A1A";
 
 const plans = [
   {
-    name: "発見表示ブーストプラン",
+    name: "人気・おすすめ投稿表示プラン",
     price: "19,800",
     desc: "投稿の初速エンゲージメントを高め、おすすめ・発見タブへの掲載確率を劇的に向上。新規リーチを最大化。",
-    features: ["投稿直後の集中ブースト","ハッシュタグ最適化提案","投稿タイミング分析・提案","おすすめ・発見タブ掲載レポート","LINE相談サポート（優先）"],
+    features: ["投稿直後の集中ブースト","ハッシュタグ最適化提案","投稿タイミング分析・提案","おすすめ・発見タブ掲載レポート","LINE・メール相談サポート（優先）"],
   },
   {
     name: "いいね代行プラン",
@@ -34,21 +36,21 @@ const plans = [
   },
   {
     name: "セットプラン",
-    price: "24,800",
+    price: "24,980",
     popular: true,
-    desc: "最もコスパが良い組み合わせ。いいね代行と発見ブーストを同時運用し、相乗効果で成果を最大化。",
-    features: ["いいね代行プランの全機能","発見表示ブーストの全機能","単独契約より5,000円お得","詳細分析レポート"],
+    desc: "「いいね代行プラン」と「人気・おすすめ投稿表示プラン」のセット。両方を同時運用し、相乗効果で成果を最大化。",
+    features: ["いいね代行プランの全機能","人気・おすすめ投稿表示プランの全機能","単独契約より2,000円お得","詳細分析レポート"],
   },
   {
-    name: "リスト上位表示プラン",
+    name: "アカウント上位表示プラン",
     price: "29,800",
     desc: "狙ったキーワード検索でアカウントが上位表示されるよう最適化。特定キーワードの独占を目指す。",
-    features: ["キーワード分析・選定（最大20個）","プロフィール最適化サポート","検索順位モニタリング","月次ランキングレポート"],
+    features: ["上位キーワード分析・選定","プロフィール最適化サポート","検索順位モニタリング","月次ランキングレポート"],
   },
   {
     name: "プレミアムプラン",
     price: "49,800",
-    desc: "全プランの機能に加え、専任コンサルタントが戦略立案から実行まで伴走。最短で最大の成果を狙う。",
+    desc: "ご要望や他SNSへのエンゲージメント増加など、ご相談内容に応じて、あなたに合ったプランをご提案・セレクトします。",
     features: ["全プランの全機能","専任コンサルタント担当","投稿代行（月8本まで）","分析レポート"],
   },
 ];
@@ -72,6 +74,7 @@ const voices = [
 ];
 
 export default function SubscriptionClient() {
+  const router = useRouter();
   const [tab, setTab]           = useState(0);
   const [modal, setModal]       = useState(false);
   const [thanks, setThanks]     = useState(false);
@@ -83,6 +86,8 @@ export default function SubscriptionClient() {
   const [formCta, setFormCta]       = useState("");
   // モーダルの「ご希望のプラン」初期値（プラン申込ボタンから開いたとき自動選択）
   const [formPlan, setFormPlan]     = useState("");
+  // 右下追従のチャット相談ボタン
+  const [chatOpen, setChatOpen]     = useState(false);
   const simRef = useRef<HTMLSpanElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -120,6 +125,15 @@ export default function SubscriptionClient() {
     setModal(true); setThanks(false); document.body.style.overflow="hidden";
   };
   const closeModal = () => { setModal(false); document.body.style.overflow=""; };
+
+  // 申し込み導線：プレミアムは「マーケティング相談」フォーム、他は申し込み手続きページへ
+  const startApply = (plan: { name:string }) => {
+    if (plan.name === "プレミアムプラン") {
+      openModal("consult", `料金表：${plan.name}`, plan.name);
+      return;
+    }
+    router.push(`/subscription/apply?plan=${encodeURIComponent(plan.name)}`);
+  };
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -206,7 +220,7 @@ export default function SubscriptionClient() {
             <span style={{ fontWeight:700 }}>件</span>
             <span style={{ color:"rgba(255,255,255,.55)", fontSize:12, marginLeft:2 }}>受付中</span>
           </div>
-          <button onClick={()=>openModal("plan_apply","受付枠バー：今すぐ申し込む")} style={{ background:C, color:"#fff", border:"none", padding:"8px 20px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>今すぐ申し込む</button>
+          <button onClick={()=>router.push("/subscription/apply")} style={{ background:C, color:"#fff", border:"none", padding:"8px 20px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>今すぐ申し込む</button>
         </div>
       </div>
 
@@ -409,7 +423,7 @@ export default function SubscriptionClient() {
                 <span style={{ fontSize:14, color:TL }}>円 / 月（税込）〜</span>
               </div>
               <p style={{ fontSize:14, color:TM, marginBottom:24, lineHeight:1.8 }}>{plans[tab].desc}</p>
-              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>openModal("plan_apply",`料金表：${plans[tab].name}で申し込む`,plans[tab].name)}>このプランで申し込む →</button>
+              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>startApply(plans[tab])}>このプランで申し込む →</button>
             </div>
             <ul style={{ listStyle:"none" }}>
               {plans[tab].features.map((f)=>(
@@ -562,6 +576,19 @@ export default function SubscriptionClient() {
           </div>
         </div>
       )}
+
+      {/* ── 右下追従のチャット相談ボタン（チャットボット風） ── */}
+      {!chatOpen && (
+        <button
+          onClick={()=>setChatOpen(true)}
+          aria-label="お気軽にご相談ください"
+          style={{ position:"fixed", right:16, bottom:16, zIndex:150, display:"flex", alignItems:"center", gap:8, background:G, color:"#fff", border:"none", borderRadius:100, padding:"10px 18px 10px 12px", boxShadow:"0 8px 24px rgba(45,122,79,.38)", cursor:"pointer", fontFamily:"inherit", fontSize:14, fontWeight:700 }}
+        >
+          <span style={{ width:30, height:30, borderRadius:"50%", background:"#fff", color:G, display:"inline-flex", alignItems:"center", justifyContent:"center", fontSize:17, flexShrink:0 }}>💬</span>
+          <span>お気軽にご相談</span>
+        </button>
+      )}
+      {chatOpen && <ContactForm variant="modal" onClose={()=>setChatOpen(false)} />}
 
       {/* ── JEMIA Footer ── */}
       <footer className={styles.siteFooter}>
