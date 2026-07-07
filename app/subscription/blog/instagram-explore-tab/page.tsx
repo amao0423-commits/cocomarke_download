@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
+import ArticleDiagnosisBanners from "../../_components/ArticleDiagnosisBanners";
+import { AuthorBox } from "../../_components/AuthorBox";
 
 // ────────────────────────────────────────────────────────────────
 // ⚠️ 差し替え必須: 既存サイトの共通コンポーネントのパスに合わせてください。
@@ -16,7 +18,7 @@ const ARTICLE = {
     "インスタのおすすめ・発見タブに載る方法を、仕組みから具体策まで解説。表示される投稿の条件、載らない原因、エンゲージメントを高める7つのコツを紹介します。フォロワー以外の見込み客にリーチしたい店舗・サロン運用者は必見。",
   datePublished: "2026-06-19",
   dateModified: "2026-06-19",
-  author: "JEMIA編集部",
+  author: "早川 葵（JEMIA運営局）",
   readingTime: "約7分",
 };
 
@@ -101,7 +103,7 @@ const jsonLd = {
       description: ARTICLE.description,
       datePublished: ARTICLE.datePublished,
       dateModified: ARTICLE.dateModified,
-      author: { "@type": "Organization", name: ARTICLE.author },
+      author: { "@type": "Person", name: ARTICLE.author },
       publisher: {
         "@type": "Organization",
         name: "JEMIA",
@@ -364,6 +366,14 @@ export default function InstagramExploreTabArticle() {
           </aside>
         </div>
       </article>
+
+      <div className="mx-auto max-w-2xl px-5">
+        <AuthorBox />
+      </div>
+
+      <div className="mx-auto max-w-2xl px-5 pb-16">
+        <ArticleDiagnosisBanners campaign="explore" />
+      </div>
 
       <JemiaFooter />
     </>

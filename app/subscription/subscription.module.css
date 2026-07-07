@@ -22,6 +22,10 @@
 .marqueeTrack  { animation: marquee    18s linear infinite; }
 .marqueeTrack2 { animation: marqueeRev 22s linear infinite; }
 .marqueeTrack3 { animation: marquee    20s linear infinite; }
+/* お役立ち記事カードの自動横スクロール（ホバーで一時停止） */
+.blogMarquee { animation: marquee 34s linear infinite; }
+.blogMarquee:hover { animation-play-state: paused; }
+
 /* 左右端で単語をハードに切らず、自然にフェードさせる */
 .marqueeMask {
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);

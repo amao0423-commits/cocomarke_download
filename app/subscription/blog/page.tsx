@@ -88,6 +88,36 @@ const POSTS: Post[] = [
     readingTime: "約6分",
   },
   {
+    slug: "instagram-algorithm-2026",
+    href: "/subscription/blog/instagram-algorithm-2026",
+    category: "algorithm",
+    title: "【2026年最新】Instagramアルゴリズムの変化｜いま伸ばすべき5つの指標",
+    excerpt:
+      "保存から送信（シェア）へ、そしてAIによるコンテンツ理解へ。2026年のアルゴリズム変化と、おすすめ・発見タブに載るためにいま見るべき5つの指標を整理します。",
+    dateModified: "2026.07.07",
+    readingTime: "約7分",
+  },
+  {
+    slug: "followers-vs-engagement",
+    href: "/subscription/blog/followers-vs-engagement",
+    category: "growth",
+    title: "フォロワー1万人でも売れない？「数」より「反応」で伸ばすInstagram運用",
+    excerpt:
+      "フォロワー数より大切な「エンゲージメント（反応）」の考え方と、来店・売上につながる運用の順番を解説します。",
+    dateModified: "2026.07.07",
+    readingTime: "約6分",
+  },
+  {
+    slug: "restaurant-instagram-guide",
+    href: "/subscription/blog/restaurant-instagram-guide",
+    category: "industry",
+    title: "飲食店のインスタ集客｜週2投稿で予約につながる「来店導線」の作り方",
+    excerpt:
+      "毎日投稿しなくても、来店・予約につながる導線を整えれば集客できます。プロフィール最適化からリール活用まで実践的に解説します。",
+    dateModified: "2026.07.07",
+    readingTime: "約8分",
+  },
+  {
     slug: "instagram-explore-tab",
     href: "/subscription/blog/instagram-explore-tab",
     category: "algorithm",

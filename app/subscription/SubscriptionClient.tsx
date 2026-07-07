@@ -73,6 +73,13 @@ const voices = [
   { stars:4, text:"投稿への保存数が以前より増えています。劇的な変化というわけではないですが、数値が改善されているのは実感できます。", name:"美容サロン経営者様", biz:"導入3ヶ月", color:"#4CAF75" },
 ];
 
+// TOPに表示する最新のお役立ち記事（自動横スクロール）
+const latestPosts = [
+  { href: "/subscription/blog/jemia-interview", tag: "INTERVIEW", title: "「頑張っても伸びない」を終わらせたい｜運営責任者インタビュー", grad: ["#2D7A4F", "#1A5C37"] },
+  { href: "/subscription/blog/instagram-algorithm-2026", tag: "アルゴリズム", title: "【2026年最新】Instagramアルゴリズムの変化と5つの指標", grad: ["#0D9488", "#0F766E"] },
+  { href: "/subscription/blog/restaurant-instagram-guide", tag: "業種別ノウハウ", title: "飲食店のインスタ集客｜週2投稿で予約につながる導線の作り方", grad: ["#B45309", "#92400E"] },
+];
+
 export default function SubscriptionClient() {
   const router = useRouter();
   const [tab, setTab]           = useState(0);
@@ -496,16 +503,30 @@ export default function SubscriptionClient() {
       {/* ── メディア掲載実績（Reviews の直後・FAQ の前） ── */}
       <MediaMentions />
 
-      {/* ── 運営者インタビューへの導線 ── */}
-      <section style={{ padding:"8px 24px 32px", background:"#fff" }}>
-        <Link href="/subscription/blog/jemia-interview" style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap", background:`linear-gradient(135deg,${GL},#fff)`, border:`1.5px solid ${BD}`, borderRadius:16, padding:"22px 26px", textDecoration:"none" }}>
-          <div>
-            <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, marginBottom:6 }}>INTERVIEW</div>
-            <div style={{ fontSize:16, fontWeight:700, color:TXT, marginBottom:4 }}>「頑張っても伸びない」を終わらせたい</div>
-            <div style={{ fontSize:13, color:TM }}>JEMIA運営責任者インタビュー｜サービスに込めた想いと、成果を出すアカウントの共通点</div>
+      {/* ── お役立ち記事（自動横スクロール） ── */}
+      <section style={{ padding:"48px 0 44px", background:"#fff", overflow:"hidden" }}>
+        <div style={{ padding:"0 24px", maxWidth:1100, margin:"0 auto", marginBottom:24 }}>
+          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:8 }}>Blog</div>
+          <h2 style={{ fontSize:"clamp(20px,3vw,30px)", fontWeight:700, color:TXT, letterSpacing:"-.02em" }}>お役立ち記事</h2>
+          <p style={{ fontSize:14, color:TM, marginTop:6, lineHeight:1.8 }}>インスタ運用のヒントを発信しています。</p>
+        </div>
+        <div className={styles.marqueeMask} style={{ overflow:"hidden" }}>
+          <div className={styles.blogMarquee} style={{ display:"flex", width:"max-content" }}>
+            {[...latestPosts, ...latestPosts].map((a, i)=>(
+              <Link key={i} href={a.href} style={{ flexShrink:0, width:290, marginRight:16, background:"#fff", border:`1px solid ${BD}`, borderRadius:16, overflow:"hidden", textDecoration:"none", boxShadow:"0 2px 14px rgba(0,0,0,.05)" }}>
+                <div style={{ height:150, background:`linear-gradient(135deg,${a.grad[0]},${a.grad[1]})`, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 20px" }}>
+                  <span style={{ color:"#fff", fontSize:15, fontWeight:700, textAlign:"center", lineHeight:1.5, letterSpacing:".02em" }}>{a.tag}</span>
+                </div>
+                <div style={{ padding:"16px 16px 18px" }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:TXT, lineHeight:1.55, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{a.title}</div>
+                </div>
+              </Link>
+            ))}
           </div>
-          <span style={{ background:G, color:"#fff", padding:"12px 22px", borderRadius:10, fontSize:14, fontWeight:700, whiteSpace:"nowrap", boxShadow:"0 4px 20px rgba(45,122,79,.22)" }}>記事を読む →</span>
-        </Link>
+        </div>
+        <div style={{ textAlign:"center", marginTop:28 }}>
+          <Link href="/subscription/blog" style={{ display:"inline-block", color:G, fontSize:14, fontWeight:700, textDecoration:"none", border:`2px solid ${G}`, borderRadius:10, padding:"10px 24px" }}>記事一覧を見る →</Link>
+        </div>
       </section>
 
       {/* ── FAQ ── */}

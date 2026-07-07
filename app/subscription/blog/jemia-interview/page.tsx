@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
+import ArticleDiagnosisBanners from "../../_components/ArticleDiagnosisBanners";
 
 // ────────────────────────────────────────────────────────────────
 // 運営者インタビュー記事。/subscription/blog/jemia-interview
@@ -305,6 +306,8 @@ export default function JemiaInterviewPage() {
               JEMIA運営局の編集・コンテンツ担当。Instagramを中心としたSNS運用支援の現場に携わり、店舗・個人事業主のアカウント改善やおすすめ・発見タブ攻略の企画・分析を担当。「良いものが正しく見つけてもらえる」運用の考え方を、できるだけわかりやすく発信することを大切にしています。
             </p>
           </aside>
+
+          <ArticleDiagnosisBanners campaign="interview" />
 
           {/* 関連リンク（内部リンクでSEO回遊） */}
           <aside className="mt-10 border-t border-slate-200 pt-8">

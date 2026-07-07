@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
+import ArticleDiagnosisBanners from "../../_components/ArticleDiagnosisBanners";
+import { AuthorBox } from "../../_components/AuthorBox";
 
 // ────────────────────────────────────────────────────────────────
 // ⚠️ 差し替え必須: 既存サイトの共通コンポーネントのパスに合わせてください。
@@ -14,7 +16,7 @@ const ARTICLE = {
     "インスタのフォロワーを増やす方法を、小手先のテクニックではなく続く土台づくりの視点で解説。プロフィール設計・投稿の一貫性・ハッシュタグ・継続の仕組みまで、店舗やサロンが実践できる9ステップを紹介します。",
   datePublished: "2026-06-22",
   dateModified: "2026-06-22",
-  author: "JEMIA編集部",
+  author: "早川 葵（JEMIA運営局）",
   readingTime: "約8分",
 };
 
@@ -100,7 +102,7 @@ const jsonLd = {
       description: ARTICLE.description,
       datePublished: ARTICLE.datePublished,
       dateModified: ARTICLE.dateModified,
-      author: { "@type": "Organization", name: ARTICLE.author },
+      author: { "@type": "Person", name: ARTICLE.author },
       publisher: { "@type": "Organization", name: "JEMIA", url: "https://www.cocomake-guide.com/subscription" },
       mainEntityOfPage: { "@type": "WebPage", "@id": ARTICLE.url },
       inLanguage: "ja",
@@ -304,6 +306,14 @@ export default function IncreaseFollowersArticle() {
           </aside>
         </div>
       </article>
+
+      <div className="mx-auto max-w-2xl px-5">
+        <AuthorBox />
+      </div>
+
+      <div className="mx-auto max-w-2xl px-5 pb-16">
+        <ArticleDiagnosisBanners campaign="followers" />
+      </div>
 
       <JemiaFooter />
     </>
