@@ -44,6 +44,14 @@ const CATEGORY_META = {
     accentText: "text-amber-100",
     icon: "ti-building-store",
   },
+  interview: {
+    label: "運営者インタビュー",
+    no: "04",
+    thumb: "bg-[#2D7A4F]",
+    accentBorder: "border-[#9FD3B6]/50",
+    accentText: "text-[#E8F5ED]",
+    icon: "ti-microphone",
+  },
 } as const;
 
 type CategoryKey = keyof typeof CATEGORY_META;
@@ -69,6 +77,16 @@ type Post = {
 };
 
 const POSTS: Post[] = [
+  {
+    slug: "jemia-interview",
+    href: "/subscription/blog/jemia-interview",
+    category: "interview",
+    title: "「頑張っても伸びない」を終わらせたい｜JEMIA運営責任者インタビュー",
+    excerpt:
+      "おすすめ・発見タブ重視の運用にこだわる理由、成果を出すアカウントの共通点、JEMIAが向いている人。運営責任者に、サービスに込めた想いを聞きました。",
+    dateModified: "2026.07.07",
+    readingTime: "約6分",
+  },
   {
     slug: "instagram-explore-tab",
     href: "/subscription/blog/instagram-explore-tab",

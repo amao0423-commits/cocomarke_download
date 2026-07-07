@@ -496,6 +496,18 @@ export default function SubscriptionClient() {
       {/* ── メディア掲載実績（Reviews の直後・FAQ の前） ── */}
       <MediaMentions />
 
+      {/* ── 運営者インタビューへの導線 ── */}
+      <section style={{ padding:"8px 24px 32px", background:"#fff" }}>
+        <Link href="/subscription/blog/jemia-interview" style={{ maxWidth:1100, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap", background:`linear-gradient(135deg,${GL},#fff)`, border:`1.5px solid ${BD}`, borderRadius:16, padding:"22px 26px", textDecoration:"none" }}>
+          <div>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, marginBottom:6 }}>INTERVIEW</div>
+            <div style={{ fontSize:16, fontWeight:700, color:TXT, marginBottom:4 }}>「頑張っても伸びない」を終わらせたい</div>
+            <div style={{ fontSize:13, color:TM }}>JEMIA運営責任者インタビュー｜サービスに込めた想いと、成果を出すアカウントの共通点</div>
+          </div>
+          <span style={{ background:G, color:"#fff", padding:"12px 22px", borderRadius:10, fontSize:14, fontWeight:700, whiteSpace:"nowrap", boxShadow:"0 4px 20px rgba(45,122,79,.22)" }}>記事を読む →</span>
+        </Link>
+      </section>
+
       {/* ── FAQ ── */}
       <section id="faq" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:720, margin:"0 auto" }}>
