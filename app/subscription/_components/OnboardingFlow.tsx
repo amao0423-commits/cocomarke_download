@@ -96,8 +96,9 @@ export default function OnboardingFlow() {
     .map((id) => APPLY_OPTIONS.find((o) => o.id === id)?.name)
     .filter((n): n is string => Boolean(n));
 
+  // Instagramのユーザーネームで使える文字（英数字・ピリオド・アンダースコア）のみ許可
   const updateAccount = (i: number, value: string) =>
-    setAccounts((prev) => prev.map((a, idx) => (idx === i ? value : a)));
+    setAccounts((prev) => prev.map((a, idx) => (idx === i ? value.replace(/[^A-Za-z0-9._]/g, "") : a)));
   const addAccount = () => setAccounts((prev) => [...prev, ""]);
   const removeAccount = (i: number) => setAccounts((prev) => prev.filter((_, idx) => idx !== i));
 

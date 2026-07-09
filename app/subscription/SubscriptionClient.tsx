@@ -366,17 +366,6 @@ export default function SubscriptionClient() {
       {/* ── Results（導入前後 Before/After + フロー） ── */}
       <section style={{ background:OW }}>
         <ResultsBeforeAfter />
-        {/* stats */}
-        <div style={{ maxWidth:1100, margin:"0 auto", padding:"0 24px 72px" }}>
-          <div className={styles.grid4} style={{ gap:20 }}>
-            {[["3x","平均フォロワー増加率"],["3000+","累計導入アカウント"],["4.9","顧客満足度（5点満点）"],["92%","3ヶ月継続率"]].map(([n,l])=>(
-              <div key={l} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:12, padding:"24px 20px", textAlign:"center" }}>
-                <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:32, fontWeight:900, color:G, lineHeight:1 }}>{n}</div>
-                <div style={{ fontSize:12, color:TL, marginTop:6 }}>{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* ── Keywords Marquee ── */}

@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
           ━━━━━━━━━━━━━━━<br>
           JEMIA（インスタ運用サブスク）<br>
           株式会社ホットセラー／JEMIAマーケティング事業部<br>
-          東京都中央区晴海1-8-16 晴海トリトンスクエアX棟<br>
+          東京都中央区晴海1-8-<span>&#8203;</span>16 晴海トリトンスクエアX棟<br>
           info@cocomake-guide.com<br>
           <a href="${BASE}/subscription" style="color:#94a3b8;">https://www.cocomake-guide.com/subscription</a><br>
           ━━━━━━━━━━━━━━━

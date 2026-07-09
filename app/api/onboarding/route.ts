@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         '━━━━━━━━━━━━━━━',
         'JEMIA（インスタ運用サブスク）',
         '株式会社ホットセラー／JEMIAマーケティング事業部',
-        '東京都中央区晴海1-8-16 晴海トリトンスクエアX棟',
+        '東京都中央区晴海1-8-​16 晴海トリトンスクエアX棟',
         'info@cocomake-guide.com',
         'https://www.cocomake-guide.com/subscription',
         '━━━━━━━━━━━━━━━',

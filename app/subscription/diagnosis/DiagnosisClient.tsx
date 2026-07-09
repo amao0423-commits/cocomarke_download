@@ -273,7 +273,7 @@ export default function DiagnosisClient() {
 
                   <label className="flex items-start gap-2.5 text-sm text-slate-600">
                     <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#2D7A4F] focus:ring-[#2D7A4F]" />
-                    <span>診断目的での連絡・資料送付に同意します（しつこい営業はありません）。</span>
+                    <span>診断目的での連絡・資料送付に同意します。</span>
                   </label>
                   {errors.consent && <p className="-mt-2 text-xs text-rose-600">同意にチェックを入れてください。</p>}
                 </div>
