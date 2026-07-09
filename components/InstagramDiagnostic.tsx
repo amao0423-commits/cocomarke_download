@@ -1316,7 +1316,7 @@ export default function InstagramDiagnostic({
             name="instagramId"
             type="text"
             value={instagramId}
-            onChange={(e) => setInstagramId(e.target.value)}
+            onChange={(e) => setInstagramId(e.target.value.replace(/[^A-Za-z0-9._]/g, ""))}
             placeholder="@your_account"
             disabled={isAnalyzing}
             autoComplete="username"

@@ -336,7 +336,9 @@ export function RestaurantDiagnosisClient() {
   };
 
   const setTextField = (field: "storeName" | "instagram" | "consultation" | "email", value: string) => {
-    setAnswers((prev) => ({ ...prev, [field]: value }));
+    // Instagramアカウントは使用可能な文字（英数字・.・_）のみに制限
+    const v = field === "instagram" ? value.replace(/[^A-Za-z0-9._]/g, "") : value;
+    setAnswers((prev) => ({ ...prev, [field]: v }));
   };
 
   const handleSubmit = async (e: FormEvent) => {

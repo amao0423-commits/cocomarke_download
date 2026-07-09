@@ -663,7 +663,7 @@ export default function SubscriptionClient() {
                   ].map((f)=>(
                     <div key={f.name} style={{ marginBottom:16 }}>
                       <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>{f.label}{f.required && <span style={{ fontSize:10, color:C, background:CL, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>必須</span>}</label>
-                      <input name={f.name} type={f.type} placeholder={f.placeholder} required={f.required} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none" }} />
+                      <input name={f.name} type={f.type} placeholder={f.placeholder} required={f.required} onInput={f.name === "instagram_id" ? (e)=>{ e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z0-9._]/g, ""); } : undefined} style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none" }} />
                     </div>
                   ))}
                   <div style={{ marginBottom:16 }}>

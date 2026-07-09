@@ -162,7 +162,7 @@ export default function CorporateContactClient() {
               </div>
               <div style={{ marginBottom:18 }}>
                 <label style={label}>運用予定のInstagramアカウント（@）{opt}</label>
-                <input name="account" type="text" placeholder="@your_account" style={input} />
+                <input name="account" type="text" placeholder="your_account" onInput={(e)=>{ e.currentTarget.value = e.currentTarget.value.replace(/[^A-Za-z0-9._]/g, ""); }} style={input} />
               </div>
               <div style={{ marginBottom:18 }}>
                 <label style={label}>運用予定のアカウント数{req}</label>

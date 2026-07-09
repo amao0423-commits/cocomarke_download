@@ -266,7 +266,7 @@ export default function DiagnosisClient() {
                     <label htmlFor="pl-acc" className="block text-sm font-medium text-slate-700">InstagramアカウントID（＝ ユーザーネーム）<span className="text-slate-400">任意</span></label>
                     <div className="mt-1.5 flex items-center rounded-lg border border-slate-300 px-3 focus-within:border-[#2D7A4F] focus-within:ring-1 focus-within:ring-[#2D7A4F]">
                       <span className="text-slate-400">@</span>
-                      <input id="pl-acc" type="text" value={accId} onChange={(e) => setAccId(e.target.value)} placeholder="your_account" className="w-full px-2 py-2.5 text-sm focus:outline-none" />
+                      <input id="pl-acc" type="text" value={accId} onChange={(e) => setAccId(e.target.value.replace(/[^A-Za-z0-9._]/g, ""))} placeholder="your_account" className="w-full px-2 py-2.5 text-sm focus:outline-none" />
                     </div>
                     <p className="mt-1.5 text-xs text-slate-400">ご記入いただくと、より具体的なご提案が可能です。</p>
                   </div>
