@@ -1,11 +1,36 @@
 import type { Metadata } from "next";
 import SubscriptionClient from "./SubscriptionClient";
 
+const OG_TITLE = "サブスク型インスタ運用代行｜月額固定で代行・フォロワー増・おすすめ・発見タブ最適化｜JEMIA";
+const OG_DESC = "インスタ運用をプロにまるごとお任せできる月額サブスク。いいね代行・おすすめ・発見タブ最適化・LINE相談まで対応。契約縛りなし・解約自由で、平均3倍のフォロワー増加。導入3000アカウント突破。無料相談受付中。";
+
 export const metadata: Metadata = {
-  title: "サブスク型インスタ運用代行｜月額固定で代行・フォロワー増・おすすめ・発見タブ最適化｜JEMIA",
-  description: "インスタ運用をプロにまるごとお任せできる月額サブスク。いいね代行・おすすめ・発見タブ最適化・LINE相談まで対応。契約縛りなし・解約自由で、平均3倍のフォロワー増加。導入3000アカウント突破。無料相談受付中。",
+  title: OG_TITLE,
+  description: OG_DESC,
   alternates: {
     canonical: "https://www.cocomake-guide.com/subscription",
+  },
+  openGraph: {
+    title: OG_TITLE,
+    description: OG_DESC,
+    url: "https://www.cocomake-guide.com/subscription",
+    siteName: "JEMIA",
+    type: "website",
+    locale: "ja_JP",
+    images: [
+      {
+        url: "/subscription-og.png",
+        width: 1200,
+        height: 630,
+        alt: "JEMIA｜インスタ運用をサブスクで。サブスク型インスタ運用代行",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: OG_TITLE,
+    description: OG_DESC,
+    images: ["/subscription-og.png"],
   },
 };
 
