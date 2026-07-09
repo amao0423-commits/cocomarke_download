@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const plans = Array.isArray(body.plans) ? body.plans.map(s).filter(Boolean) : [];
+    const options = Array.isArray(body.options) ? body.options.map(s).filter(Boolean) : [];
     const total = s(body.total);
     const startDate = s(body.startDate);
     const payment = s(body.payment);
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest) {
 
     const lines = [
       `プラン: ${plans.length ? plans.join('、') : '—'}`,
+      options.length ? `オプション: ${options.join('、')}` : null,
       `合計月額: ${total ? `${total} 円（税込）` : '—'}`,
       `運用開始日（希望）: ${startDate || '—'}`,
       `お支払い方法: ${payment || '—'}`,
@@ -85,7 +87,13 @@ export async function POST(request: NextRequest) {
         '※運用開始日はあくまでご希望日です。状況や営業日により前後する場合があります。',
         '※本メールは送信専用アドレスからの自動返信です。お急ぎの場合は info@cocomake-guide.com までご連絡ください。',
         '',
-        'JEMIA（株式会社ホットセラー）',
+        '━━━━━━━━━━━━━━━',
+        'JEMIA（インスタ運用サブスク）',
+        '株式会社ホットセラー／JEMIAマーケティング事業部',
+        '東京都中央区晴海1-8-16 晴海トリトンスクエアX棟',
+        'info@cocomake-guide.com',
+        'https://www.cocomake-guide.com/subscription',
+        '━━━━━━━━━━━━━━━',
       ].join('\n');
       try {
         await sendBrevoTransactionalEmail({

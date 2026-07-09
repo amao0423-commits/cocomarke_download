@@ -39,7 +39,7 @@ const plans = [
     price: "24,980",
     popular: true,
     desc: "「いいね代行プラン」と「人気・おすすめ投稿表示プラン」のセット。両方を同時運用し、相乗効果で成果を最大化。",
-    features: ["いいね代行プランの全機能","人気・おすすめ投稿表示プランの全機能","単独契約より2,000円お得","詳細分析レポート"],
+    features: ["いいね代行プランの全機能","人気・おすすめ投稿表示プランの全機能","単独契約より4,620円お得","詳細分析レポート"],
   },
   {
     name: "アカウント上位表示プラン",
@@ -73,11 +73,15 @@ const voices = [
   { stars:4, text:"投稿への保存数が以前より増えています。劇的な変化というわけではないですが、数値が改善されているのは実感できます。", name:"美容サロン経営者様", biz:"導入3ヶ月", color:"#4CAF75" },
 ];
 
-// TOPに表示する最新のお役立ち記事（自動横スクロール）
-const latestPosts = [
-  { href: "/subscription/blog/jemia-interview", tag: "INTERVIEW", title: "「頑張っても伸びない」を終わらせたい｜運営責任者インタビュー", grad: ["#2D7A4F", "#1A5C37"] },
-  { href: "/subscription/blog/instagram-algorithm-2026", tag: "アルゴリズム", title: "【2026年最新】Instagramアルゴリズムの変化と5つの指標", grad: ["#0D9488", "#0F766E"] },
-  { href: "/subscription/blog/restaurant-instagram-guide", tag: "業種別ノウハウ", title: "飲食店のインスタ集客｜週2投稿で予約につながる導線の作り方", grad: ["#B45309", "#92400E"] },
+// TOPに表示する最新のお役立ち記事（自動横スクロール）。色はお役立ち記事一覧のカテゴリ色に合わせる。
+const latestPosts: { href: string; tag: string; title: string; color: string; featured?: boolean }[] = [
+  { href: "/subscription/blog/jemia-interview", tag: "INTERVIEW", title: "「頑張っても伸びない」を終わらせたい｜運営責任者インタビュー", color: "#2D7A4F", featured: true },
+  { href: "/subscription/blog/instagram-algorithm-2026", tag: "アルゴリズム", title: "【2026年最新】Instagramアルゴリズムの変化と5つの指標", color: "#047857" },
+  { href: "/subscription/blog/followers-vs-engagement", tag: "集客・運用", title: "フォロワー1万人でも売れない？「数」より「反応」の運用術", color: "#155E75" },
+  { href: "/subscription/blog/restaurant-instagram-guide", tag: "業種別ノウハウ", title: "飲食店のインスタ集客｜週2投稿で予約につながる導線の作り方", color: "#B45309" },
+  { href: "/subscription/blog/instagram-explore-tab", tag: "アルゴリズム", title: "インスタのおすすめ・発見タブに載る方法｜7つのコツ", color: "#047857" },
+  { href: "/subscription/blog/increase-followers", tag: "集客・運用", title: "インスタのフォロワーを増やす方法｜土台から作る9つのステップ", color: "#155E75" },
+  { href: "/subscription/blog/agency-guide", tag: "集客・運用", title: "インスタ運用代行の選び方｜料金相場と失敗しない比較ポイント", color: "#155E75" },
 ];
 
 export default function SubscriptionClient() {
@@ -132,6 +136,16 @@ export default function SubscriptionClient() {
     setModal(true); setThanks(false); document.body.style.overflow="hidden";
   };
   const closeModal = () => { setModal(false); document.body.style.overflow=""; };
+
+  // メール等の「マーケティング相談」リンク（?consult=1 / #contact）で相談フォームを自動で開く
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    if (p.get("consult") === "1" || window.location.hash === "#contact") {
+      openModal("consult", "メール：マーケティング相談");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 申し込み導線：プレミアムは「マーケティング相談」フォーム、他は申し込み手続きページへ
   const startApply = (plan: { name:string }) => {
@@ -207,8 +221,8 @@ export default function SubscriptionClient() {
           </nav>
           <div className={styles.headerActions}>
             <Link href="/subscription/blog" className={styles.navLinkMobile}>お役立ち記事</Link>
-            <Link href="/subscription/corporate" className={styles.headerCorp}>
-              <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
+            <Link href="/subscription/diagnosis" className={styles.headerCorp}>
+              <span className={styles.labelFull}>📄 資料ダウンロード</span><span className={styles.labelShort}>📄 資料</span>
             </Link>
             <button className={styles.headerCta} onClick={()=>openModal("consult","ヘッダー：マーケティング相談")}>
               <span className={styles.labelFull}>🎧 マーケティング相談はこちら</span><span className={styles.labelShort}>🎧 相談</span>
@@ -386,6 +400,55 @@ export default function SubscriptionClient() {
         })}
       </section>
 
+      {/* ── 導入でこう変わる ── */}
+      <section style={{ padding:"80px 24px", background:"#fff" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:52 }}>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it improves</div>
+            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>導入でアカウントはこう変わる</h2>
+            <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>プランごとの導入イメージを、実際の画面とともにご紹介します。</p>
+          </div>
+          {[
+            { badge:"いいね代行プラン", img:"/images/intro/intro-like.webp", alt:"いいね代行の導入イメージ：フォロワー・非フォロワーとの交流",
+              title:"フォロワー外との接点が生まれ、認知が広がる",
+              points:[
+                ["認知の入口が広がる","これまで届かなかったフォロワー外のユーザーに、アカウントの存在を知ってもらえます。"],
+                ["自然な認知拡大に繋がる","ユーザーへの反応を積み重ねることで、アクティブな状態になりアカウントの評価が向上します。"],
+                ["手間なく自動で","ターゲット設定はおまかせ。運用の手間をかけずに認知拡大が進みます。"],
+              ] },
+            { badge:"アカウント上位表示プラン", img:"/images/intro/intro-rank.webp", alt:"アカウント上位表示の導入イメージ：検索結果の上位に表示される",
+              title:"検索で「見つけられる」アカウントへ",
+              points:[
+                ["検索で見つけられる","「エリア×業種」などのキーワードで検索したユーザーに、上位表示で見つけてもらえます。"],
+                ["安定した流入をつくる","一時的なバズに頼らず、検索からの継続的な流入基盤を築きます。"],
+                ["プロフィール流入が増加","アカウントリストへ表示されるため、プロフィールからの流入・認知拡大に繋がります。"],
+              ] },
+          ].map((r, ri, arr)=>(
+            <div key={r.badge} className={styles.grid2} style={{ gap:48, alignItems:"center", marginBottom: ri < arr.length-1 ? 56 : 0 }}>
+              <div style={{ background:OW, border:`1px solid ${BD}`, borderRadius:20, padding:18 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={r.img} alt={r.alt} loading="lazy" style={{ display:"block", width:"100%", height:"auto", borderRadius:12 }} />
+              </div>
+              <div>
+                <span style={{ display:"inline-block", background:GL, color:G, fontSize:12, fontWeight:700, padding:"5px 12px", borderRadius:100, marginBottom:14 }}>{r.badge}</span>
+                <h3 style={{ fontSize:"clamp(18px,2.2vw,24px)", fontWeight:700, color:TXT, lineHeight:1.5, marginBottom:20 }}>{r.title}</h3>
+                <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+                  {r.points.map(([h,d],pi)=>(
+                    <div key={h} style={{ display:"flex", gap:12 }}>
+                      <span style={{ flexShrink:0, width:28, height:28, borderRadius:"50%", background:G, color:"#fff", fontSize:13, fontWeight:700, display:"flex", alignItems:"center", justifyContent:"center" }}>{pi+1}</span>
+                      <div>
+                        <div style={{ fontSize:15, fontWeight:700, color:TXT }}>{h}</div>
+                        <p style={{ fontSize:13.5, color:TM, lineHeight:1.8, marginTop:2 }}>{d}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── Plans ── */}
       {/* ── プラン診断への導線バナー ── */}
       <section style={{ padding:"56px 24px 0", background:"#fff" }}>
@@ -441,6 +504,32 @@ export default function SubscriptionClient() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* ── Options ── */}
+      <section style={{ padding:"72px 24px", background:GL }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:40 }}>
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Options</div>
+            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>プランに追加できるオプション</h2>
+            <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>目的に合わせて、必要な施策だけを追加できます。すべてのプランに組み合わせOK。</p>
+          </div>
+          <div className={styles.grid3} style={{ gap:20 }}>
+            {[
+              { icon:"📝", title:"投稿制作オプション", price:"月4本 +9,800円 / 月8本 +18,000円", desc:"プロによる投稿制作（文字入れ・構成・ハッシュタグ）。撮影した写真を送るだけでOK。" },
+              { icon:"🚀", title:"人気・おすすめ投稿表示", price:"+19,800円 / 月", desc:"おすすめ・発見タブへの露出を強化するオプション。新規リーチをさらに伸ばしたいときに追加できます。" },
+              { icon:"👥", title:"複数アカウント割", price:"2つ目以降 5%OFF", desc:"複数店舗・系列店・ブランド別アカウントなど、2つ目以降を割引価格でご利用いただけます。" },
+            ].map((o)=>(
+              <div key={o.title} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:"28px 24px", textAlign:"center" }}>
+                <div style={{ fontSize:32 }} aria-hidden>{o.icon}</div>
+                <div style={{ marginTop:12, fontSize:16, fontWeight:700, color:TXT }}>{o.title}</div>
+                <div style={{ marginTop:6, fontSize:14, fontWeight:700, color:G }}>{o.price}</div>
+                <p style={{ marginTop:12, fontSize:13, color:TM, lineHeight:1.8, textAlign:"left" }}>{o.desc}</p>
+              </div>
+            ))}
+          </div>
+          <p style={{ marginTop:20, textAlign:"center", fontSize:12, color:TL }}>※ プレミアムプランは投稿代行（月8本まで）を標準で含みます。オプションはお申し込み時・運用開始後どちらでも追加できます。</p>
         </div>
       </section>
 
@@ -513,8 +602,11 @@ export default function SubscriptionClient() {
         <div className={styles.marqueeMask} style={{ overflow:"hidden" }}>
           <div className={styles.blogMarquee} style={{ display:"flex", width:"max-content" }}>
             {[...latestPosts, ...latestPosts].map((a, i)=>(
-              <Link key={i} href={a.href} style={{ flexShrink:0, width:290, marginRight:16, background:"#fff", border:`1px solid ${BD}`, borderRadius:16, overflow:"hidden", textDecoration:"none", boxShadow:"0 2px 14px rgba(0,0,0,.05)" }}>
-                <div style={{ height:150, background:`linear-gradient(135deg,${a.grad[0]},${a.grad[1]})`, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 20px" }}>
+              <Link key={i} href={a.href} style={{ position:"relative", flexShrink:0, width:290, marginRight:16, background:"#fff", border: a.featured ? `2px solid ${C}` : `1px solid ${BD}`, borderRadius:16, overflow:"hidden", textDecoration:"none", boxShadow: a.featured ? "0 6px 22px rgba(255,102,51,.18)" : "0 2px 14px rgba(0,0,0,.05)" }}>
+                {a.featured && (
+                  <span style={{ position:"absolute", top:10, left:10, zIndex:2, background:C, color:"#fff", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:100, boxShadow:"0 2px 8px rgba(255,102,51,.3)" }}>★ 注目</span>
+                )}
+                <div style={{ height:150, background:a.color, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 20px" }}>
                   <span style={{ color:"#fff", fontSize:15, fontWeight:700, textAlign:"center", lineHeight:1.5, letterSpacing:".02em" }}>{a.tag}</span>
                 </div>
                 <div style={{ padding:"16px 16px 18px" }}>

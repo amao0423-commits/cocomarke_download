@@ -23,8 +23,8 @@ export function JemiaHeader() {
         </nav>
         <div className={styles.headerActions}>
           <Link href="/subscription/blog" className={styles.navLinkMobile}>お役立ち記事</Link>
-          <Link href="/subscription/corporate" className={styles.headerCorp}>
-            <span className={styles.labelFull}>法人のお客様</span><span className={styles.labelShort}>法人</span>
+          <Link href="/subscription/diagnosis" className={styles.headerCorp}>
+            <span className={styles.labelFull}>📄 資料ダウンロード</span><span className={styles.labelShort}>📄 資料</span>
           </Link>
           <Link href="/subscription#contact" className={styles.headerCta} style={{ display: "inline-block", textDecoration: "none" }}>
             <span className={styles.labelFull}>🎧 マーケティング相談はこちら</span><span className={styles.labelShort}>🎧 相談</span>

@@ -99,7 +99,13 @@ export async function POST(request: NextRequest) {
       '※本メールは送信専用アドレスからの自動返信です。ご返信いただいてもお答えできない場合がございます。',
       'お急ぎの場合は info@cocomake-guide.com までご連絡ください。',
       '',
-      'JEMIA（株式会社ホットセラー）',
+      '━━━━━━━━━━━━━━━',
+      'JEMIA（インスタ運用サブスク）',
+      '株式会社ホットセラー／JEMIAマーケティング事業部',
+      '東京都中央区晴海1-8-16 晴海トリトンスクエアX棟',
+      'info@cocomake-guide.com',
+      'https://www.cocomake-guide.com/subscription',
+      '━━━━━━━━━━━━━━━',
     ].filter((l) => l !== null).join('\n');
     try {
       await sendBrevoTransactionalEmail({

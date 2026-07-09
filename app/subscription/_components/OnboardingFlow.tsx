@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ContactForm from "./ContactForm";
-import { APPLY_PLANS, priceToNumber, numberToPrice } from "./plans";
+import { APPLY_PLANS, APPLY_OPTIONS, priceToNumber, numberToPrice } from "./plans";
 
 // ────────────────────────────────────────────────────────────────
 // JEMIA お申し込み（オンボーディング）。専用URL /subscription/apply に表示。
@@ -52,6 +52,7 @@ export default function OnboardingFlow() {
   const [selectedPlans, setSelectedPlans] = useState<string[]>(
     initialPlan && APPLY_PLANS.some((p) => p.name === initialPlan) ? [initialPlan] : []
   );
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [agreed, setAgreed] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [payment, setPayment] = useState<string>("");
@@ -67,18 +68,33 @@ export default function OnboardingFlow() {
   };
   const leave = () => router.push(HOME);
 
-  const totalNumber = useMemo(
-    () =>
-      selectedPlans.reduce((sum, name) => {
-        const p = APPLY_PLANS.find((x) => x.name === name);
-        return sum + (p ? priceToNumber(p.price) : 0);
-      }, 0),
-    [selectedPlans]
-  );
+  const totalNumber = useMemo(() => {
+    const plansSum = selectedPlans.reduce((sum, name) => {
+      const p = APPLY_PLANS.find((x) => x.name === name);
+      return sum + (p ? priceToNumber(p.price) : 0);
+    }, 0);
+    const optSum = selectedOptions.reduce((sum, id) => sum + (APPLY_OPTIONS.find((o) => o.id === id)?.price ?? 0), 0);
+    return plansSum + optSum;
+  }, [selectedPlans, selectedOptions]);
   const totalLabel = numberToPrice(totalNumber);
 
   const togglePlan = (name: string) =>
     setSelectedPlans((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
+
+  // 同じ group（例：投稿制作）は片方だけ選択にする
+  const toggleOption = (id: string) => {
+    const opt = APPLY_OPTIONS.find((o) => o.id === id);
+    setSelectedOptions((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      const base = opt?.group
+        ? prev.filter((x) => APPLY_OPTIONS.find((o) => o.id === x)?.group !== opt.group)
+        : prev;
+      return [...base, id];
+    });
+  };
+  const selectedOptionNames = selectedOptions
+    .map((id) => APPLY_OPTIONS.find((o) => o.id === id)?.name)
+    .filter((n): n is string => Boolean(n));
 
   const updateAccount = (i: number, value: string) =>
     setAccounts((prev) => prev.map((a, idx) => (idx === i ? value : a)));
@@ -97,6 +113,7 @@ export default function OnboardingFlow() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plans: selectedPlans,
+          options: selectedOptionNames,
           total: totalLabel,
           startDate,
           payment: PAYMENTS.find((p) => p.id === payment)?.label || payment,
@@ -193,6 +210,33 @@ export default function OnboardingFlow() {
                   );
                 })}
               </div>
+
+              {/* オプション（任意） */}
+              <div className="mt-5">
+                <p className="text-sm font-medium text-slate-700">オプション（任意）</p>
+                <div className="mt-2 space-y-2">
+                  {APPLY_OPTIONS.map((o) => {
+                    const checked = selectedOptions.includes(o.id);
+                    return (
+                      <label
+                        key={o.id}
+                        className={
+                          "flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-4 text-sm " +
+                          (checked ? "border-[#2D7A4F] bg-[#E8F5ED]" : "border-slate-200 hover:border-slate-300")
+                        }
+                      >
+                        <span className="flex items-center gap-3">
+                          <input type="checkbox" checked={checked} onChange={() => toggleOption(o.id)} className="h-4 w-4 shrink-0 rounded border-slate-300 text-[#2D7A4F] focus:ring-[#2D7A4F]" />
+                          <span className="font-medium text-slate-800">{o.name}</span>
+                        </span>
+                        <span className="shrink-0 font-bold text-slate-700">{o.priceLabel}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-xs text-slate-400">※「複数アカウント割」は2つ目以降のアカウントに適用されます（上の合計には反映していません）。</p>
+              </div>
+
               <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 px-5 py-3 text-sm">
                 <span className="text-slate-500">合計月額（税込）</span>
                 <span className="text-base font-bold text-[#2D7A4F]">{totalLabel} 円</span>
@@ -419,6 +463,12 @@ export default function OnboardingFlow() {
                     <dt className="text-slate-600">プラン</dt>
                     <dd className="text-right font-medium">{selectedPlans.join("／") || "—"}</dd>
                   </div>
+                  {selectedOptionNames.length > 0 && (
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-slate-600">オプション</dt>
+                      <dd className="text-right font-medium">{selectedOptionNames.join("／")}</dd>
+                    </div>
+                  )}
                   <div className="flex justify-between"><dt className="text-slate-600">運用開始日（希望）</dt><dd className="font-medium">{startDate || "—"}</dd></div>
                   <div className="flex justify-between"><dt className="text-slate-600">お支払い方法</dt><dd className="font-medium">{PAYMENTS.find((p) => p.id === payment)?.label || "—"}</dd></div>
                   <div className="mt-2 flex justify-between border-t border-[#4CAF75] pt-2 text-base">

@@ -14,6 +14,9 @@ const DownloadRequestsTab = dynamic(() =>
 const RestaurantDiagnosisTab = dynamic(() =>
   import('@/components/admin/RestaurantDiagnosisTab').then((m) => ({ default: m.RestaurantDiagnosisTab }))
 );
+const PlanningRequestsTab = dynamic(() =>
+  import('@/components/admin/PlanningRequestsTab').then((m) => ({ default: m.PlanningRequestsTab }))
+);
 const DocumentsTab = dynamic(() =>
   import('@/components/admin/DocumentsTab').then((m) => ({ default: m.DocumentsTab }))
 );
@@ -40,6 +43,7 @@ type ActiveTab =
   | 'diagnostics'
   | 'download'
   | 'restaurantDiagnosis'
+  | 'planning'
   | 'documents'
   | 'broadcast'
   | 'images';
@@ -190,6 +194,7 @@ export default function AdminPage() {
             <div className={ADMIN_TAB_WRAP}>
               {tabBtn('download', '📥 資料ダウンロード一覧')}
               {tabBtn('restaurantDiagnosis', '🍽️ 飲食店無料診断')}
+              {tabBtn('planning', '🧭 プランニング履歴')}
               {tabBtn('diagnostics', '📈 診断統計')}
             </div>
           </div>
@@ -212,6 +217,7 @@ export default function AdminPage() {
           {activeTab === 'diagnostics' && <DiagnosticsStatsTab secretKey={secretKey} />}
           {activeTab === 'download' && <DownloadRequestsTab secretKey={secretKey} />}
           {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
+          {activeTab === 'planning' && <PlanningRequestsTab secretKey={secretKey} />}
           {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
           {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
           {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
