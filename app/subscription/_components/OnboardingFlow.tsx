@@ -510,7 +510,7 @@ export default function OnboardingFlow() {
                   {[
                     { icon: "📋", title: "内容確認", desc: "担当者が申込内容を確認", tone: "bg-[#2D7A4F]" },
                     { icon: "✉️", title: "支払方法の送付", desc: "お支払い方法をメール送付", tone: "bg-[#4CAF75]" },
-                    { icon: "💳", title: "お入金の確認", desc: "お入金を確認", tone: "bg-[#4CAF75]" },
+                    { icon: "💳", title: "ご入金の確認", desc: "ご入金を確認", tone: "bg-[#4CAF75]" },
                     { icon: "🚀", title: "運用開始", desc: "運用スタート", tone: "bg-[#FF6633]" },
                   ].map((s, i, arr) => (
                     <div key={s.title} className="flex flex-col items-center sm:flex-1 sm:flex-row">
