@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import type { HomeDocument } from '@/lib/homeDocuments';
+import { canOptimizeImage } from '@/lib/imageOptimization';
 
 /** 出典ロゴ（COCOマーケ アイコン: app/icon.png → /icon.png 配信） */
 const LOGO_URL = '/icon.png';
@@ -33,13 +35,23 @@ export function DocumentCard({ document: doc, href, description }: Props) {
 
           <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
             {doc.thumbnailUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={doc.thumbnailUrl}
-                alt=""
-                className="absolute inset-0 h-full w-full object-contain"
-                loading="lazy"
-              />
+              canOptimizeImage(doc.thumbnailUrl) ? (
+                <Image
+                  src={doc.thumbnailUrl}
+                  alt=""
+                  fill
+                  sizes="150px"
+                  className="object-contain"
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={doc.thumbnailUrl}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-contain"
+                  loading="lazy"
+                />
+              )
             ) : null}
           </div>
         </div>
