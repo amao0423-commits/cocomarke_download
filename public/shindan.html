@@ -280,14 +280,14 @@ footer a{color:var(--muted)}
     <h2>診断結果を表示します 🎉</h2>
     <p class="sub">解析が完了しました。結果の閲覧と、無料の「おすすめ掲載可能性レポート」の送付先を入力してください。</p>
     <div class="field">
-      <label for="accId">Instagram IDまたはURL</label>
+      <label for="accId">Instagram IDまたはURL<span style="color:#999;font-weight:400">（任意）</span></label>
       <input type="text" id="accId" placeholder="@your_account または プロフィールURL" autocomplete="off">
-      <div class="hint">@ユーザーネーム・プロフィールURLのどちらでもOK。診断・解析にのみ使用します。</div>
+      <div class="hint">@ユーザーネーム・プロフィールURLのどちらでもOK（未入力でも送信できます）。診断・解析にのみ使用します。</div>
       <div class="err" id="errAcc">Instagram IDまたはURLを入力してください。</div>
     </div>
     <div class="field">
       <label for="email">メールアドレス</label>
-      <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+      <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false">
       <div class="hint">詳細レポートとおすすめプランをお送りします。</div>
       <div class="err" id="errMail">正しいメールアドレスを入力してください。</div>
     </div>
@@ -745,7 +745,7 @@ function submitForm(){
   const consent=document.getElementById('consent').checked;
   let ok=true;
   const mailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
-  document.getElementById('errAcc').classList.toggle('show',!acc); if(!acc)ok=false;
+  document.getElementById('errAcc').classList.remove('show'); /* Instagram IDは任意 */
   document.getElementById('errMail').classList.toggle('show',!mailOk); if(!mailOk)ok=false;
   document.getElementById('errConsent').classList.toggle('show',!consent); if(!consent)ok=false;
   if(!ok)return;
@@ -759,13 +759,13 @@ function submitForm(){
     fetch('/api/subscription-contact',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        name: acc,
+        name: acc || mail,
         email: mail,
         inquiry_type: 'インスタ運用診断',
         instagram_id: acc.replace(/^@/,''),
         message:[
           '【インスタ運用診断 完了】',
-          'アカウントID: '+acc,
+          'アカウントID: '+(acc||'（未入力）'),
           '診断タイプ: '+ty.name+'（'+ty.lvl+'）',
           'おすすめプラン: '+pl.name,
         ].join('\n')
