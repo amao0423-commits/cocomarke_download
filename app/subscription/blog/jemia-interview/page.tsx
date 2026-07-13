@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
 import ArticleDiagnosisBanners from "../../_components/ArticleDiagnosisBanners";
 
@@ -93,8 +94,14 @@ function QA({ q, children }: { q: string; children: React.ReactNode }) {
 function Figure({ src, alt, caption }: { src: string; alt: string; caption: string }) {
   return (
     <figure className="my-10">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} loading="lazy" className="w-full rounded-2xl border border-slate-100" />
+      <Image
+        src={src}
+        alt={alt}
+        width={1448}
+        height={1086}
+        sizes="(max-width: 768px) 100vw, 768px"
+        className="h-auto w-full rounded-2xl border border-slate-100"
+      />
       <figcaption className="mt-2 text-center text-xs text-slate-400">{caption}</figcaption>
     </figure>
   );

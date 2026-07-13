@@ -10,6 +10,8 @@
 //   例: public/images/results/before-profile.png, public/images/results/after-explore.png
 // ────────────────────────────────────────────────────────────────
 
+import Image from "next/image";
+
 const beforeStats = [
   { label: "いいね", value: "15" },
   { label: "保存", value: "0" },
@@ -56,11 +58,13 @@ export default function ResultsBeforeAfter() {
 
           {/* 画像（泰然プロフィール画面） */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-slate-50">
-            <img
+            <Image
               src="/images/results/before-profile.png"
               alt="導入前：フォロワーにしか届いていないInstagramプロフィール画面"
+              width={520}
+              height={520}
+              sizes="260px"
               className="mx-auto h-auto w-full max-w-[260px] object-contain"
-              loading="lazy"
             />
           </div>
           <p className="mt-2 text-center text-xs text-slate-400">投稿はフォロワーのみに表示</p>
@@ -89,11 +93,13 @@ export default function ResultsBeforeAfter() {
 
           {/* 画像（おすすめ・発見タブ掲載画面） */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-[#E8F5ED]">
-            <img
+            <Image
               src="/images/results/after-explore.png"
               alt="導入後：おすすめ・発見タブに掲載され新規ユーザーに表示されている画面"
+              width={520}
+              height={520}
+              sizes="260px"
               className="mx-auto h-auto w-full max-w-[260px] object-contain"
-              loading="lazy"
             />
           </div>
           <p className="mt-2 text-center text-xs text-slate-400">おすすめ・発見タブ「六本木グルメ」で上位表示</p>
