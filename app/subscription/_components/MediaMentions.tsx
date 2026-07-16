@@ -21,6 +21,16 @@ type MediaItem = {
 
 const mediaItems: MediaItem[] = [
   {
+    media: "Growth Marketing ブログ",
+    date: "2026.07.16",
+    dateISO: "2026-07-16",
+    title:
+      "インスタのフォロワーを増やす方法｜運用サブスクで伸ばす手順と失敗しないやり方【2026年】",
+    url: "https://www.nishinippon-adv.jp/blog/instagram-followers-subscription.html",
+    siteUrl: "https://www.nishinippon-adv.jp",
+    note: "Webメディア「Growth Marketing ブログ」で、月額固定・契約縛りなしのInstagram運用サブスクとして紹介されました。",
+  },
+  {
     media: "PRESSNOW（プレスナウ）",
     date: "2026.06.27",
     dateISO: "2026-06-27",
