@@ -52,6 +52,14 @@ const CATEGORY_META = {
     accentText: "text-[#E8F5ED]",
     icon: "ti-microphone",
   },
+  agency: {
+    label: "運用代行の選び方",
+    no: "05",
+    thumb: "bg-slate-700",
+    accentBorder: "border-slate-300/50",
+    accentText: "text-slate-200",
+    icon: "ti-scale",
+  },
 } as const;
 
 type CategoryKey = keyof typeof CATEGORY_META;
@@ -78,6 +86,47 @@ type Post = {
 
 const POSTS: Post[] = [
   {
+    slug: "instagram-algorithm-guide",
+    href: "/subscription/blog/instagram-algorithm-guide",
+    category: "algorithm",
+    title: "【2026年版】Instagramアルゴリズムの仕組みを完全解説｜公式発言から読み解く伸びる投稿の条件",
+    excerpt:
+      "Instagramに単一のアルゴリズムは存在しません。フィード・ストーリーズ・リール・発見タブそれぞれの評価軸を、公式発言など一次情報だけで整理。2026年に伸びる投稿の条件を解説します。",
+    dateModified: "2026.07.15",
+    readingTime: "約12分",
+    featured: true,
+  },
+  {
+    slug: "subscription-vs-traditional",
+    href: "/subscription/blog/subscription-vs-traditional",
+    category: "agency",
+    title: "【比較】Instagram運用代行の「サブスク型」と「従来型」どっちが得？費用相場を検証",
+    excerpt:
+      "運用代行の費用相場「月20〜30万円」は誰が言っている数字なのか。各社の公表値を出典つきで並べ、サブスク型と従来型の違いを整理。自社にどちらが向くか判断できます。",
+    dateModified: "2026.07.15",
+    readingTime: "約10分",
+  },
+  {
+    slug: "is-agency-worth-it",
+    href: "/subscription/blog/is-agency-worth-it",
+    category: "agency",
+    title: "Instagram運用代行は意味ない？「成果が出なかった」と言われる本当の理由",
+    excerpt:
+      "「運用代行は意味ない」と言われる理由を、代行会社側の7つの失敗パターンと依頼側の4つの原因の両面から解説。成果の出る条件と契約前チェックリストを示します。",
+    dateModified: "2026.07.15",
+    readingTime: "約10分",
+  },
+  {
+    slug: "in-house-vs-outsourcing",
+    href: "/subscription/blog/in-house-vs-outsourcing",
+    category: "agency",
+    title: "Instagram運用を内製 vs 外注、コストを本気で比較してみた",
+    excerpt:
+      "内製した場合の工数を積み上げて試算。月約76時間＝実質20万円前後の人件費に加え、機会費用・学習コスト・属人化リスクまで含めて外注と比較します。",
+    dateModified: "2026.07.15",
+    readingTime: "約9分",
+  },
+  {
     slug: "jemia-interview",
     href: "/subscription/blog/jemia-interview",
     category: "interview",
@@ -93,60 +142,60 @@ const POSTS: Post[] = [
     category: "algorithm",
     title: "【2026年最新】Instagramアルゴリズムの変化｜いま伸ばすべき5つの指標",
     excerpt:
-      "保存から送信（シェア）へ、そしてAIによるコンテンツ理解へ。2026年のアルゴリズム変化と、おすすめ・発見タブに載るためにいま見るべき5つの指標を整理します。",
-    dateModified: "2026.07.07",
-    readingTime: "約7分",
+      "Instagramは面ごとに別のランキング系統を持つ。評価が「いいね」から「保存・送信（シェア）」へ移るなか、発見タブ・リールで伸ばすためにいま追うべき5指標を公式出典つきで整理。",
+    dateModified: "2026.07.16",
+    readingTime: "約11分",
   },
   {
     slug: "followers-vs-engagement",
     href: "/subscription/blog/followers-vs-engagement",
     category: "growth",
-    title: "フォロワー1万人でも売れない？「数」より「反応」で伸ばすInstagram運用",
+    title: "フォロワー1万人でも売れない？「数」より「反応」で伸ばすInstagram運用【2026年】",
     excerpt:
-      "フォロワー数より大切な「エンゲージメント（反応）」の考え方と、来店・売上につながる運用の順番を解説します。",
-    dateModified: "2026.07.07",
-    readingTime: "約6分",
+      "Instagramは投稿をフォロワー数ではなく反応（保存・シェア・視聴時間）で評価します。公式の主要シグナルを踏まえ、追うべきKPIと反応の増やし方を出典つきで解説。",
+    dateModified: "2026.07.16",
+    readingTime: "約10分",
   },
   {
     slug: "restaurant-instagram-guide",
     href: "/subscription/blog/restaurant-instagram-guide",
     category: "industry",
-    title: "飲食店のインスタ集客｜週2投稿で予約につながる「来店導線」の作り方",
+    title: "飲食店のInstagram集客｜週2投稿で予約につなげる「来店導線」の作り方【2026年】",
     excerpt:
-      "毎日投稿しなくても、来店・予約につながる導線を整えれば集客できます。プロフィール最適化からリール活用まで実践的に解説します。",
-    dateModified: "2026.07.07",
-    readingTime: "約8分",
+      "若年層の飲食店探しはInstagramが1位（Z世代38.9%・大学生63.5%）。発見される投稿・プロフィール導線・位置情報の3点で、週2投稿でも来店につなげる方法を出典つきで解説。",
+    dateModified: "2026.07.16",
+    readingTime: "約11分",
   },
   {
     slug: "instagram-explore-tab",
     href: "/subscription/blog/instagram-explore-tab",
     category: "algorithm",
-    title: "インスタのおすすめ・発見タブに載る方法｜仕組みと最適化の7つのコツ",
+    title: "インスタのおすすめ・発見タブに載る方法｜仕組みと最適化の7つのコツ【2026年】",
     excerpt:
-      "おすすめ・発見タブは、フォロワー以外の見込み客に投稿を届ける最大の入口。表示される投稿の条件から、載るための具体的な7つのコツまで解説します。",
-    dateModified: "2026.06.19",
-    readingTime: "約7分",
+      "発見タブはフォロワー以外の見込み客に届く最大の入口。フィードとは別のランキングで動く仕組みと、載るための具体的な7つのコツを公式出典つきで解説します。",
+    dateModified: "2026.07.16",
+    readingTime: "約10分",
     featured: true,
   },
   {
     slug: "increase-followers",
     href: "/subscription/blog/increase-followers",
     category: "growth",
-    title: "インスタのフォロワーを増やす方法｜土台から作る9つのステップ",
+    title: "インスタのフォロワーを増やす方法｜土台から作る9つのステップ【2026年】",
     excerpt:
-      "小手先のテクニックではなく、フォロワーが自然に増え続ける土台づくりを9ステップで解説。プロフィール設計から継続の仕組みまでまとめました。",
-    dateModified: "2026.06.22",
-    readingTime: "約8分",
+      "フォロワーは「集める」のではなく「増える流れ」を作るもの。反応される投稿→新規に届く→プロフィール来訪→フォローの土台を9ステップで整える方法を公式出典つきで解説。",
+    dateModified: "2026.07.16",
+    readingTime: "約11分",
   },
   {
     slug: "agency-guide",
     href: "/subscription/blog/agency-guide",
-    category: "growth",
-    title: "インスタ運用代行の選び方｜料金相場と失敗しない比較ポイント",
+    category: "agency",
+    title: "Instagram運用代行の選び方｜費用相場・失敗しない比較ポイント【2026年】",
     excerpt:
-      "運用代行の料金相場、自分で運用する場合との比較、失敗しない選び方のチェックポイントを整理。依頼前の判断材料にどうぞ。",
-    dateModified: "2026.06.22",
-    readingTime: "約7分",
+      "運用代行の費用相場（各社の公表値）、依頼できる業務、代理店・フリーランス・サブスク型の違い、失敗しない選び方チェックリストを整理。自社が代行すべきか判断できます。",
+    dateModified: "2026.07.15",
+    readingTime: "約11分",
   },
 ];
 
