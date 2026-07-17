@@ -12,7 +12,8 @@
 import { buildImprovementMessage } from './buildImprovement';
 
 const ENDPOINT = 'https://models.github.ai/inference/chat/completions';
-const MODEL = 'openai/gpt-4o-mini';
+// モデルは環境変数 GITHUB_MODELS_MODEL で差し替え可能（例: openai/gpt-4.1-mini など）。
+const MODEL = process.env.GITHUB_MODELS_MODEL ?? 'openai/gpt-4o-mini';
 const TIMEOUT_MS = 12000;
 
 const SYSTEM_PROMPT = `あなたはInstagram運用支援の専門アドバイザーです。与えられたアカウントの実数値と、下記「公式ファクト（最新）」だけに基づき、日本語で「今後の運用への改善点」を作成します。
