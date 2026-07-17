@@ -27,7 +27,12 @@ export async function GET(request: NextRequest) {
 
   try {
     const upstream = await fetch(target.toString(), {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        Referer: 'https://www.instagram.com/',
+        Accept: 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+      },
       cache: 'no-store',
     });
     if (!upstream.ok) {

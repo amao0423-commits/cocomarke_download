@@ -14,6 +14,8 @@ import {
   ADMIN_CARD_TABLE_WRAP,
   ADMIN_FOCUS_RING,
 } from '@/components/admin/adminPastel';
+import { buildImprovementFromMetrics } from '@/lib/improvementFromMetrics';
+import type { MetricsInput } from '@/lib/feedbackFromMetrics';
 
 function enteredIdStatusSelectClass(status: EnteredIdStatus | undefined): string {
   const s = status ?? '未対応';
@@ -96,11 +98,6 @@ function gradeBadgeClasses(grade: string): { dot: string; pill: string } {
 const IG_TITLE_GRADIENT_CLASS =
   'bg-gradient-to-r from-[#E1306C] to-[#F77737] bg-clip-text text-transparent';
 
-/** IG CDN画像はCORSでPNG化時に欠落するため、同一オリジンのプロキシ経由にする */
-function proxiedImageUrl(url: unknown): string | null {
-  if (typeof url !== 'string' || url.trim() === '') return null;
-  return `/api/admin/image-proxy?url=${encodeURIComponent(url)}`;
-}
 
 function getInstagramUsername(id: string): string {
   const trimmed = id.trim();
@@ -153,6 +150,9 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
   const selectAllRef = useRef<HTMLInputElement>(null);
   const resultCardRef = useRef<HTMLDivElement>(null);
   const [pngExporting, setPngExporting] = useState(false);
+  // プロフィール画像は IG CDN 直リンクだと PNG化時にCORSで欠落するため、
+  // プロキシ経由で取得して dataURL 化しておく（取得失敗時は直リンクへフォールバック）。
+  const [avatarDataUrl, setAvatarDataUrl] = useState<string | null>(null);
 
   const loadEntries = useCallback(async () => {
     setIsLoading(true);
@@ -217,6 +217,34 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
     setResultError(null);
   }, []);
 
+  // snapshot が変わるたびにプロフィール画像をプロキシ経由で dataURL 化
+  useEffect(() => {
+    setAvatarDataUrl(null);
+    const url = snapshot?.profile_image_url;
+    if (typeof url !== 'string' || url.trim() === '') return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/admin/image-proxy?url=${encodeURIComponent(url)}`);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const dataUrl = await new Promise<string | null>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () =>
+            resolve(typeof reader.result === 'string' ? reader.result : null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        });
+        if (!cancelled && dataUrl) setAvatarDataUrl(dataUrl);
+      } catch {
+        /* プロキシ失敗時は直リンク表示にフォールバック */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshot]);
+
   const handleDownloadPng = useCallback(async () => {
     const node = resultCardRef.current;
     if (!node) return;
@@ -227,6 +255,8 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
         pixelRatio: 2,
         cacheBust: true,
         backgroundColor: '#ffffff',
+        // 外部フォントCSSの取得失敗で生成ごと落ちるのを防ぐ（システムフォントで描画）
+        skipFonts: true,
       });
       const link = document.createElement('a');
       link.download = `${selectedEntry?.id ?? 'account'}_診断.png`;
@@ -672,9 +702,18 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                     ['平均いいね', snapshot.average_like_count],
                   ] as const
                 ).filter(([, v]) => v != null);
-                const avatarSrc = proxiedImageUrl(snapshot.profile_image_url);
+                const directAvatar =
+                  typeof snapshot.profile_image_url === 'string' ? snapshot.profile_image_url : null;
+                // dataURL（プロキシ取得成功）を優先し、失敗時は直リンクで表示
+                const avatarSrc = avatarDataUrl ?? directAvatar;
                 const feedback = (snapshot.feedback_message as string[] | undefined) ?? [];
-                const improvements = (snapshot.improvement_message as string[] | undefined) ?? [];
+                // 保存済みsnapshotは旧テキストのことがあるため、メトリクスから最新の詳細版を再計算。
+                // 再計算が空なら保存値にフォールバック。
+                const recomputed = buildImprovementFromMetrics(snapshot as unknown as MetricsInput);
+                const improvements =
+                  recomputed.length > 0
+                    ? recomputed
+                    : (snapshot.improvement_message as string[] | undefined) ?? [];
                 return (
                   <>
                     {/* PNG出力対象：公開ページと同じ配色・様式の結果カード（全件表示） */}
@@ -689,7 +728,7 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                           <img
                             src={avatarSrc}
                             alt=""
-                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
                             className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                           />
                         )}
