@@ -248,22 +248,38 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
     const node = resultCardRef.current;
     if (!node) return;
     setPngExporting(true);
+    // 1x1 透明PNG。CORS等で画像取得に失敗しても生成ごと落ちないためのプレースホルダ。
+    const TRANSPARENT_PX =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
     try {
       const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(node, {
+      const opts = {
         pixelRatio: 2,
         cacheBust: true,
         backgroundColor: '#ffffff',
         // 外部フォントCSSの取得失敗で生成ごと落ちるのを防ぐ（システムフォントで描画）
         skipFonts: true,
-      });
+        // CORS等で読めない画像はプレースホルダに差し替え、生成を止めない
+        imagePlaceholder: TRANSPARENT_PX,
+      } as const;
+      let dataUrl = '';
+      try {
+        dataUrl = await toPng(node, opts);
+      } catch {
+        // 1回目失敗時は画像を全てプレースホルダ化して再試行（アバター等が原因の場合の保険）
+        dataUrl = await toPng(node, {
+          ...opts,
+          filter: (el: HTMLElement) => !(el instanceof HTMLImageElement),
+        });
+      }
       const link = document.createElement('a');
       link.download = `${selectedEntry?.id ?? 'account'}_診断.png`;
       link.href = dataUrl;
       link.click();
     } catch (e) {
       console.error('PNG export failed', e);
-      alert('PNGの生成に失敗しました。時間をおいて再度お試しください。');
+      const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      alert(`PNGの生成に失敗しました。\n\n${msg}\n\nこのエラー文言を開発担当にお伝えください。`);
     } finally {
       setPngExporting(false);
     }
