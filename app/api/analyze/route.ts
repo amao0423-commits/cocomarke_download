@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { saveEnteredIdWithResult } from '@/lib/saveEnteredId';
 import { buildFeedbackFromMetrics, type MetricsInput } from '@/lib/feedbackFromMetrics';
 import { buildImprovementFromMetrics } from '@/lib/improvementFromMetrics';
+import { buildImprovementFromApi } from '@/lib/improvementFromApi';
 import { getClientIp, checkRateLimit, recordRateLimitUsage } from '@/lib/rateLimiter';
 import { toJapaneseError } from '@/lib/errorMessages';
 
@@ -149,7 +150,10 @@ export async function GET(request: NextRequest) {
 
     const result = rawResult as Record<string, unknown>;
     result.feedback_message = buildFeedbackFromMetrics(result as MetricsInput);
-    result.improvement_message = buildImprovementFromMetrics(result as MetricsInput);
+    // 改善点は分析APIが返すアカウント個別の分析（analytics_message /
+    // recommend_service_message）を優先し、無い場合のみルールベースにフォールバック
+    result.improvement_message =
+      buildImprovementFromApi(result) ?? buildImprovementFromMetrics(result as MetricsInput);
 
     // 診断成功時のみ、その時の表示内容を保存（管理者が後から確認できるようにする）
     await saveEnteredIdWithResult(id, result);
