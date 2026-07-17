@@ -113,8 +113,22 @@ function parsePoints(content: string): string[] {
 export async function generateImprovementLLM(
   result: Record<string, unknown>
 ): Promise<string[]> {
-  const token = process.env.GITHUB_MODELS_TOKEN ?? process.env.GITHUB_TOKEN;
-  if (!token) return buildImprovementMessage(result);
+  const token =
+    process.env.GITHUB_MODELS_TOKEN ??
+    process.env.GITHUB_TOKEN ??
+    process.env.GH_MODELS_TOKEN ??
+    process.env.GH_TOKEN ??
+    process.env.MODELS_TOKEN;
+  if (!token) {
+    console.warn('[improvementLLM] フォールバック: トークン未設定', {
+      GITHUB_MODELS_TOKEN: !!process.env.GITHUB_MODELS_TOKEN,
+      GITHUB_TOKEN: !!process.env.GITHUB_TOKEN,
+      GH_MODELS_TOKEN: !!process.env.GH_MODELS_TOKEN,
+      GH_TOKEN: !!process.env.GH_TOKEN,
+      MODELS_TOKEN: !!process.env.MODELS_TOKEN,
+    });
+    return buildImprovementMessage(result);
+  }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -138,17 +152,35 @@ export async function generateImprovementLLM(
       }),
       signal: controller.signal,
     });
-    if (!res.ok) return buildImprovementMessage(result);
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      console.warn('[improvementLLM] フォールバック: LLM応答NG', {
+        status: res.status,
+        body: body.slice(0, 300),
+      });
+      return buildImprovementMessage(result);
+    }
     const data = (await res.json()) as {
       choices?: { message?: { content?: string } }[];
     };
     const content = data?.choices?.[0]?.message?.content;
     if (typeof content !== 'string' || content.trim() === '') {
+      console.warn('[improvementLLM] フォールバック: 応答が空');
       return buildImprovementMessage(result);
     }
     const points = parsePoints(content);
-    return points.length > 0 ? points : buildImprovementMessage(result);
-  } catch {
+    if (points.length === 0) {
+      console.warn('[improvementLLM] フォールバック: パース結果0件', {
+        sample: content.slice(0, 200),
+      });
+      return buildImprovementMessage(result);
+    }
+    console.info('[improvementLLM] LLM生成成功', { points: points.length });
+    return points;
+  } catch (e) {
+    console.error('[improvementLLM] フォールバック: 例外', {
+      message: e instanceof Error ? e.message : String(e),
+    });
     return buildImprovementMessage(result);
   } finally {
     clearTimeout(timer);
