@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveEnteredIdWithResult } from '@/lib/saveEnteredId';
 import { buildFeedbackFromMetrics, type MetricsInput } from '@/lib/feedbackFromMetrics';
-import { buildImprovementMessage } from '@/lib/buildImprovement';
+import { generateImprovementLLM } from '@/lib/improvementLLM';
 import { getClientIp, checkRateLimit, recordRateLimitUsage } from '@/lib/rateLimiter';
 import { toJapaneseError } from '@/lib/errorMessages';
 
@@ -149,9 +149,10 @@ export async function GET(request: NextRequest) {
 
     const result = rawResult as Record<string, unknown>;
     result.feedback_message = buildFeedbackFromMetrics(result as MetricsInput);
-    // 改善点は共通ビルダーで生成（公開ページと管理画面で同一内容にするため）。
-    // 分析APIの analytics_message ＋ メトリクス由来の詳細アドバイスで構成。
-    result.improvement_message = buildImprovementMessage(result);
+    // 改善点はLLM(GitHub Models)でアカウント固有に生成。トークン未設定や失敗時は
+    // 内部でルールベースへフォールバックする。生成結果はsnapshotに保存され、
+    // 公開ページ・管理画面の双方が同じ内容（保存値）を参照する。
+    result.improvement_message = await generateImprovementLLM(result);
 
     // 診断成功時のみ、その時の表示内容を保存（管理者が後から確認できるようにする）
     await saveEnteredIdWithResult(id, result);

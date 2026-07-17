@@ -706,9 +706,13 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                 // dataURL（プロキシ取得成功）を優先し、失敗時は直リンクで表示
                 const avatarSrc = avatarDataUrl ?? directAvatar;
                 const feedback = (snapshot.feedback_message as string[] | undefined) ?? [];
-                // 改善点は公開ページと同一の共通ビルダーで生成（同じ内容を保証）。
-                // 旧snapshotのメトリクス/analytics_messageからも同様に構成できるため再診断不要。
-                const improvements = buildImprovementMessage(snapshot as Record<string, unknown>);
+                // 改善点は診断時にLLMで生成しsnapshotへ保存済みの値を表示（公開ページと同一）。
+                // LLM導入前の旧snapshotで未保存の場合のみルールベースにフォールバック。
+                const savedImprovement = snapshot.improvement_message as string[] | undefined;
+                const improvements =
+                  savedImprovement && savedImprovement.length > 0
+                    ? savedImprovement
+                    : buildImprovementMessage(snapshot as Record<string, unknown>);
                 return (
                   <>
                     {/* PNG出力対象：公開ページと同じ配色・様式の結果カード（全件表示） */}
