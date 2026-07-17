@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, Trash2, X } from 'lucide-react';
+import { ChevronDown, Download, Trash2, X } from 'lucide-react';
 import {
   ENTERED_ID_STATUSES,
   type EnteredIdStatus,
@@ -64,11 +64,42 @@ type DiagnosisSnapshot = Record<string, unknown> & {
   improvement_message?: string[];
 };
 
-function normalizeGrade(raw: string | undefined): string {
+// ── 公開ページ（InstagramDiagnostic）と同じグレード表記・配色 ──
+function normalizeGradeToLetter(raw: unknown): string {
   if (raw == null || String(raw).trim() === '') return '—';
-  const s = String(raw).trim().toUpperCase();
-  if (['S', 'A', 'B', 'C', 'D'].includes(s)) return s;
-  return s;
+  const s = String(raw).trim();
+  const u = s.toUpperCase();
+  if (u === 'S' || u === 'A' || u === 'B' || u === 'C' || u === 'D') return u;
+  if (s === '不足' || s === '低' || s === '悪' || u === 'LOW' || u === 'POOR') return 'D';
+  if (s === '良好' || s === '高' || u === 'HIGH' || u === 'GOOD') return 'A';
+  return 'B';
+}
+
+function gradeBadgeClasses(grade: string): { dot: string; pill: string } {
+  const g = grade;
+  const dot =
+    g === 'S' || g === 'A' ? 'bg-[#2E7D32]'
+      : g === 'B' ? 'bg-[#2E7D32]'
+        : g === 'C' ? 'bg-[#F57F17]'
+          : g === 'D' ? 'bg-[#E65100]'
+            : 'bg-[#D580A0]';
+  const pill =
+    g === 'S' || g === 'A' ? 'bg-[#C8E6C9] text-[#1B5E20] border border-[#81C784]/40'
+      : g === 'B' ? 'bg-[#C8E6C9] text-[#2E7D32] border border-[#81C784]/40'
+        : g === 'C' ? 'bg-[#FFF9C4] text-[#F57F17] border border-[#FFE082]/50'
+          : g === 'D' ? 'bg-[#FFE0B2] text-[#E65100] border border-[#FFCC80]/50'
+            : 'bg-[#FCE4EC] text-[#D580A0] border border-[#F8BBD0]/50';
+  return { dot, pill };
+}
+
+/** 公開ページ（InstagramDiagnostic）のIGブランド見出しグラデーション */
+const IG_TITLE_GRADIENT_CLASS =
+  'bg-gradient-to-r from-[#E1306C] to-[#F77737] bg-clip-text text-transparent';
+
+/** IG CDN画像はCORSでPNG化時に欠落するため、同一オリジンのプロキシ経由にする */
+function proxiedImageUrl(url: unknown): string | null {
+  if (typeof url !== 'string' || url.trim() === '') return null;
+  return `/api/admin/image-proxy?url=${encodeURIComponent(url)}`;
 }
 
 function getInstagramUsername(id: string): string {
@@ -120,6 +151,8 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const selectAllRef = useRef<HTMLInputElement>(null);
+  const resultCardRef = useRef<HTMLDivElement>(null);
+  const [pngExporting, setPngExporting] = useState(false);
 
   const loadEntries = useCallback(async () => {
     setIsLoading(true);
@@ -183,6 +216,29 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
     setSnapshot(null);
     setResultError(null);
   }, []);
+
+  const handleDownloadPng = useCallback(async () => {
+    const node = resultCardRef.current;
+    if (!node) return;
+    setPngExporting(true);
+    try {
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+      });
+      const link = document.createElement('a');
+      link.download = `${selectedEntry?.id ?? 'account'}_診断.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      console.error('PNG export failed', e);
+      alert('PNGの生成に失敗しました。時間をおいて再度お試しください。');
+    } finally {
+      setPngExporting(false);
+    }
+  }, [selectedEntry]);
 
   const updateStatus = useCallback(
     async (entry: EnteredIdEntry, newStatus: EnteredIdStatus) => {
@@ -598,87 +654,143 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
               {!resultLoading && resultError && (
                 <p className="py-6 text-center text-red-600">{resultError}</p>
               )}
-              {!resultLoading && !resultError && snapshot && (
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    {snapshot.profile_image_url && (
-                      <img src={snapshot.profile_image_url} alt="" className="w-16 h-16 rounded-full object-cover" />
-                    )}
-                    <div className="min-w-0">
-                      {snapshot.full_name && <p className="font-semibold text-gray-900">{snapshot.full_name}</p>}
-                      {snapshot.username && <p className="text-gray-600 text-sm">@{snapshot.username}</p>}
-                      {snapshot.biography && (
-                        <p className="text-gray-600 text-sm mt-2 whitespace-pre-wrap">{String(snapshot.biography)}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">主要数値</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-                      {snapshot.follower_count != null && (
-                        <div className="bg-gray-50 rounded-lg px-3 py-2">
-                          <span className="text-gray-500">フォロワー</span>
-                          <p className="font-semibold text-gray-900">{Number(snapshot.follower_count).toLocaleString()}</p>
+              {!resultLoading && !resultError && snapshot && (() => {
+                const gradeItems = (
+                  [
+                    ['フォロワー', 'follower_grade'],
+                    ['投稿数', 'post_count_grade'],
+                    ['活動性', 'activity_grade'],
+                    ['総合', 'total_grade'],
+                  ] as const
+                ).map(([label, key]) => ({ label, grade: normalizeGradeToLetter(snapshot[key]) }));
+                const hasGrades = gradeItems.some((g) => g.grade !== '—');
+                const metrics = (
+                  [
+                    ['フォロワー', snapshot.follower_count],
+                    ['フォロー', snapshot.follow_count],
+                    ['投稿数', snapshot.post_count],
+                    ['平均いいね', snapshot.average_like_count],
+                  ] as const
+                ).filter(([, v]) => v != null);
+                const avatarSrc = proxiedImageUrl(snapshot.profile_image_url);
+                const feedback = (snapshot.feedback_message as string[] | undefined) ?? [];
+                const improvements = (snapshot.improvement_message as string[] | undefined) ?? [];
+                return (
+                  <>
+                    {/* PNG出力対象：公開ページと同じ配色・様式の結果カード（全件表示） */}
+                    <div ref={resultCardRef} className="bg-white p-5 space-y-5">
+                      <p className={`text-[13px] font-bold tracking-wide ${IG_TITLE_GRADIENT_CLASS}`}>
+                        アカウント診断結果
+                      </p>
+                      {/* プロフィール */}
+                      <div className="flex gap-4">
+                        {avatarSrc && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={avatarSrc}
+                            alt=""
+                            crossOrigin="anonymous"
+                            className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                          />
+                        )}
+                        <div className="min-w-0">
+                          {snapshot.full_name != null && (
+                            <p className="text-base font-semibold text-gray-900 leading-tight">
+                              {String(snapshot.full_name)}
+                            </p>
+                          )}
+                          {snapshot.username != null && (
+                            <p className="text-[#C13584] font-medium text-sm">@{String(snapshot.username)}</p>
+                          )}
+                          {snapshot.biography != null && (
+                            <p className="text-gray-600 text-sm mt-1 whitespace-pre-wrap leading-relaxed">
+                              {String(snapshot.biography)}
+                            </p>
+                          )}
                         </div>
-                      )}
-                      {snapshot.follow_count != null && (
-                        <div className="bg-gray-50 rounded-lg px-3 py-2">
-                          <span className="text-gray-500">フォロー</span>
-                          <p className="font-semibold text-gray-900">{Number(snapshot.follow_count).toLocaleString()}</p>
-                        </div>
-                      )}
-                      {snapshot.post_count != null && (
-                        <div className="bg-gray-50 rounded-lg px-3 py-2">
-                          <span className="text-gray-500">投稿数</span>
-                          <p className="font-semibold text-gray-900">{Number(snapshot.post_count).toLocaleString()}</p>
-                        </div>
-                      )}
-                      {snapshot.average_like_count != null && (
-                        <div className="bg-gray-50 rounded-lg px-3 py-2">
-                          <span className="text-gray-500">平均いいね</span>
-                          <p className="font-semibold text-gray-900">{Number(snapshot.average_like_count).toLocaleString()}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-2">評価</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {(['フォロワー', '投稿数', '活動性', '総合'] as const).map((label, i) => {
-                        const key = (['follower_grade', 'post_count_grade', 'activity_grade', 'total_grade'] as const)[i];
-                        const g = normalizeGrade(snapshot[key]);
-                        if (g === '—') return null;
-                        return (
-                          <span key={label} className="inline-flex items-center gap-1.5 bg-gray-100 rounded-md px-2 py-1 text-sm">
-                            <span className="text-gray-600">{label}</span>
-                            <span className="font-medium text-gray-900">{g}</span>
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  {snapshot.feedback_message && snapshot.feedback_message.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">フィードバック</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
-                        {(snapshot.feedback_message as string[]).map((msg, i) => (
-                          <li key={i}>{msg}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {snapshot.improvement_message && snapshot.improvement_message.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">改善点</h4>
-                      <div className="text-sm text-gray-700 space-y-2">
-                        {(snapshot.improvement_message as string[]).map((msg, i) => (
-                          <p key={i}>{msg}</p>
-                        ))}
                       </div>
+                      {/* 評価 */}
+                      {hasGrades && (
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">評価</h4>
+                          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+                            <div className="grid grid-cols-2 gap-3">
+                              {gradeItems.map(({ label, grade }) => {
+                                if (grade === '—') return null;
+                                const { dot, pill } = gradeBadgeClasses(grade);
+                                return (
+                                  <div
+                                    key={label}
+                                    className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#FDF8FB]/90"
+                                  >
+                                    <span className="text-sm text-[#B5658C]">{label}</span>
+                                    <span className="flex items-center gap-2">
+                                      <span className={`h-2 w-2 rounded-full flex-shrink-0 ${dot}`} aria-hidden />
+                                      <span className={`rounded-md px-2 py-0.5 text-sm font-medium ${pill}`}>{grade}</span>
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {/* 主要数値 */}
+                      {metrics.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">主要数値</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            {metrics.map(([label, value]) => (
+                              <div key={label} className="rounded-lg bg-[#FDF8FB]/90 px-3 py-2">
+                                <span className="text-xs text-[#B5658C]">{label}</span>
+                                <p className="font-semibold text-gray-900">{Number(value).toLocaleString()}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {/* フィードバック（全件） */}
+                      {feedback.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">現状のアカウントに関するフィードバック</h4>
+                          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+                            <ul className="list-disc list-inside space-y-1.5 text-sm text-gray-700 [&_li]:marker:text-neutral-600">
+                              {feedback.map((msg, i) => (
+                                <li key={i}>{msg}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                      {/* 改善点（全件・截断なし） */}
+                      {improvements.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">今後の運用への改善点</h4>
+                          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+                            <div className="text-sm text-gray-700 leading-relaxed space-y-2">
+                              {improvements.map((p, i) => (
+                                <p key={i}>{p}</p>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
+                    {/* アクション（PNG非対象） */}
+                    <div className="mt-5 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={handleDownloadPng}
+                        disabled={pngExporting}
+                        className={`inline-flex items-center gap-2 ${ADMIN_BTN_PINK} disabled:opacity-60`}
+                      >
+                        <Download className="w-4 h-4" aria-hidden />
+                        {pngExporting ? '生成中…' : 'PNGで保存'}
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </motion.div>
         </div>
