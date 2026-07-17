@@ -15,7 +15,7 @@ import {
   ADMIN_FOCUS_RING,
 } from '@/components/admin/adminPastel';
 import { buildImprovementFromMetrics } from '@/lib/improvementFromMetrics';
-import { buildImprovementFromApi } from '@/lib/improvementFromApi';
+import { buildImprovementFromApi, getRecommendServiceMessages } from '@/lib/improvementFromApi';
 import type { MetricsInput } from '@/lib/feedbackFromMetrics';
 
 function enteredIdStatusSelectClass(status: EnteredIdStatus | undefined): string {
@@ -716,6 +716,8 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                   ((snapshot.improvement_message as string[] | undefined)?.length
                     ? (snapshot.improvement_message as string[])
                     : buildImprovementFromMetrics(snapshot as unknown as MetricsInput));
+                // おすすめサービスは別枠で表示（改善点には混ぜない）
+                const recommends = getRecommendServiceMessages(snapshot as Record<string, unknown>);
                 return (
                   <>
                     {/* PNG出力対象：公開ページと同じ配色・様式の結果カード（全件表示） */}
@@ -810,6 +812,21 @@ export function AnalysisTab({ secretKey }: { secretKey: string }) {
                           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
                             <div className="text-sm text-gray-700 leading-relaxed space-y-2">
                               {improvements.map((p, i) => (
+                                <p key={i} className="whitespace-pre-line">
+                                  {p}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {/* おすすめサービス（別枠） */}
+                      {recommends.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">おすすめサービス</h4>
+                          <div className="rounded-lg border border-[#F8BBD0]/60 bg-[#FDF8FB]/90 p-4">
+                            <div className="text-sm text-gray-700 leading-relaxed space-y-3">
+                              {recommends.map((p, i) => (
                                 <p key={i} className="whitespace-pre-line">
                                   {p}
                                 </p>
