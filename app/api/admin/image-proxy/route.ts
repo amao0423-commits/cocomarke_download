@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Instagram/Facebook CDN の画像を同一オリジン経由で返すプロキシ。
- * html-to-image で診断結果カードをPNG化する際、CORS制約で外部CDN画像が
+ * プロフィール画像を同一オリジン経由で返すプロキシ。
+ * html-to-image で診断結果カードをPNG化する際、CORS制約で外部画像が
  * canvas に描画できず欠落するのを防ぐために使用する。
- * SSRF対策として許可ホストを IG/FB CDN のみに限定する。
+ * SSRF対策として許可ホストを、Instagram/Facebook CDN と
+ * 分析API(GrowthCore)のプロフィール画像用S3バケットに限定する。
  */
 const ALLOWED_HOST = /(?:^|\.)(?:cdninstagram\.com|fbcdn\.net)$/i;
+// GrowthCore のプロフィール画像S3（例: growthcore-resource-bucket.s3.ap-northeast-2.amazonaws.com）
+const ALLOWED_S3 = /^growthcore-resource-bucket\.s3[.-][a-z0-9-]+\.amazonaws\.com$/i;
+
+function isAllowedHost(hostname: string): boolean {
+  return ALLOWED_HOST.test(hostname) || ALLOWED_S3.test(hostname);
+}
 
 export async function GET(request: NextRequest) {
   const raw = request.nextUrl.searchParams.get('url');
@@ -21,7 +28,7 @@ export async function GET(request: NextRequest) {
     return new NextResponse('invalid url', { status: 400 });
   }
 
-  if (target.protocol !== 'https:' || !ALLOWED_HOST.test(target.hostname)) {
+  if (target.protocol !== 'https:' || !isAllowedHost(target.hostname)) {
     return new NextResponse('forbidden host', { status: 403 });
   }
 
