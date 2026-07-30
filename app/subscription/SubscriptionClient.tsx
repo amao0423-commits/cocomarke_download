@@ -86,7 +86,6 @@ const latestPosts: { href: string; tag: string; title: string; color: string; fe
 
 export default function SubscriptionClient() {
   const router = useRouter();
-  const [tab, setTab]           = useState(0);
   const [modal, setModal]       = useState(false);
   const [thanks, setThanks]     = useState(false);
   const [sending, setSending]   = useState(false);
@@ -456,42 +455,33 @@ export default function SubscriptionClient() {
           <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行の料金プラン（月額固定・5プラン）</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:12 }} />
           <p style={{ fontSize:15, color:TM, marginBottom:36, lineHeight:1.8 }}>目的に合わせて選べる5プラン。すべて月額固定・解約自由。</p>
-          {/* tabs */}
-          <div className={styles.swipeHint}><span>←</span><span>横にスライドできます</span><span>→</span></div>
-          <div style={{ display:"flex", borderBottom:`2px solid ${BD}`, marginBottom:32, overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
-            {plans.map((p,i)=>(
-              <div key={p.name} style={{ position:"relative", display:"inline-flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-end" }}>
-                {p.popular && <span style={{ background:C, color:"#fff", fontSize:9, fontWeight:700, padding:"2px 8px", borderRadius:100, marginBottom:4, whiteSpace:"nowrap" }}>人気 No.1</span>}
-                <button onClick={()=>setTab(i)} style={{ padding:"12px 18px", fontSize:13, fontWeight:700, background:"none", border:"none", cursor:"pointer", color:tab===i?G:TL, whiteSpace:"nowrap", borderBottom:tab===i?`3px solid ${G}`:"3px solid transparent", marginBottom:-2, fontFamily:"inherit", transition:"all .2s" }}>{p.name}</button>
-              </div>
-            ))}
-          </div>
-          {/* panel */}
-          <div className={styles.grid2} style={{ gap:40, alignItems:"start" }}>
-            <div>
-              {plans[tab].popular && (
-                <div style={{ display:"flex", alignItems:"center", gap:8, background:CL, border:`1px solid rgba(255,102,51,.25)`, borderRadius:8, padding:"8px 14px", marginBottom:16 }}>
-                  <span style={{ fontSize:16 }}>🏆</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:C }}>最も選ばれているプランです</span>
-                  <span style={{ fontSize:11, color:TL, marginLeft:"auto" }}>全お申し込みの42%</span>
+          {/* 5プラン カード一覧 */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))", gap:16, alignItems:"stretch" }}>
+            {plans.map((p)=>{
+              const isPop = !!p.popular;
+              return (
+                <div key={p.name} style={{ position:"relative", background:"#fff", border:isPop?`2px solid ${C}`:`1px solid ${BD}`, borderRadius:16, padding:"26px 20px 22px", display:"flex", flexDirection:"column", boxShadow:isPop?"0 12px 34px rgba(255,102,51,.18)":"0 6px 24px rgba(20,40,60,.06)" }}>
+                  {isPop && <span style={{ position:"absolute", top:-11, left:"50%", transform:"translateX(-50%)", background:C, color:"#fff", fontSize:11, fontWeight:800, padding:"4px 12px", borderRadius:100, whiteSpace:"nowrap", letterSpacing:".04em" }}>人気 No.1</span>}
+                  <h3 style={{ fontSize:17, fontWeight:800, margin:"4px 0 6px", color:TXT }}>{p.name}</h3>
+                  <p style={{ fontSize:12.5, color:TM, minHeight:56, margin:"0 0 12px", lineHeight:1.7 }}>{p.desc}</p>
+                  <div style={{ display:"flex", alignItems:"baseline", gap:3 }}>
+                    <span style={{ fontFamily:"Montserrat,sans-serif", fontSize:27, fontWeight:900, color:G, lineHeight:1 }}>{p.price}</span>
+                    <span style={{ fontSize:13, fontWeight:700, color:G }}>円</span>
+                    <span style={{ fontSize:12, color:TL, fontWeight:600 }}>/月（税込）〜</span>
+                  </div>
+                  <div style={{ height:1, background:BD, margin:"16px 0" }} />
+                  <ul style={{ listStyle:"none", padding:0, margin:"0 0 18px", flex:1 }}>
+                    {p.features.map((f)=>(
+                      <li key={f} style={{ fontSize:12.5, padding:"6px 0 6px 22px", position:"relative", color:"#374150", lineHeight:1.6 }}>
+                        <span style={{ position:"absolute", left:0, top:5, color:G, fontWeight:800 }}>✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <button onClick={()=>startApply(p)} style={{ width:"100%", textAlign:"center", fontWeight:800, fontSize:13.5, padding:13, borderRadius:10, cursor:"pointer", fontFamily:"inherit", transition:"all .15s", ...(isPop ? { background:C, color:"#fff", border:`1.5px solid ${C}` } : { background:"#fff", color:"#1A5C37", border:`1.5px solid ${G}` }) }}>{p.name==="プレミアム"?"相談する":"申し込む"} →</button>
                 </div>
-              )}
-              <h3 style={{ fontSize:22, fontWeight:700, marginBottom:8, color:TXT }}>{plans[tab].name}</h3>
-              <div style={{ margin:"18px 0", display:"flex", alignItems:"baseline", gap:6 }}>
-                <span style={{ fontFamily:"Montserrat,sans-serif", fontSize:44, fontWeight:900, color:G }}>{plans[tab].price}</span>
-                <span style={{ fontSize:14, color:TL }}>円 / 月（税込）〜</span>
-              </div>
-              <p style={{ fontSize:14, color:TM, marginBottom:24, lineHeight:1.8 }}>{plans[tab].desc}</p>
-              <button style={{ ...btnPrimary, width:"100%", padding:16, fontSize:15, boxShadow:`0 4px 20px rgba(255,102,51,.25)` }} onClick={()=>startApply(plans[tab])}>このプランで申し込む →</button>
-            </div>
-            <ul style={{ listStyle:"none" }}>
-              {plans[tab].features.map((f)=>(
-                <li key={f} style={{ padding:"10px 0", borderBottom:`1px solid ${BD}`, fontSize:14, display:"flex", alignItems:"flex-start", gap:10, color:TXT }}>
-                  <span style={{ width:20, height:20, borderRadius:"50%", background:GL, color:G, fontSize:11, fontWeight:700, display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
+              );
+            })}
           </div>
         </div>
       </section>
