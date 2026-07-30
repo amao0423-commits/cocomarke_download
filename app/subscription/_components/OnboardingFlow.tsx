@@ -243,7 +243,7 @@ export default function OnboardingFlow() {
                 <span className="text-base font-bold text-[#2D7A4F]">{totalLabel} 円</span>
               </div>
               <p className="mt-4 text-sm text-slate-500">
-                プレミアムプランをご希望の場合は{" "}
+                プレミアムをご希望の場合は{" "}
                 <button type="button" onClick={() => setContactOpen(true)} className="font-medium text-[#2D7A4F] underline underline-offset-4">こちらからご相談</button>
                 ください。
               </p>
