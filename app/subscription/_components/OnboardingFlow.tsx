@@ -43,7 +43,7 @@ function isWeekendStr(s: string): boolean {
   return day === 0 || day === 6;
 }
 
-export default function OnboardingFlow() {
+export default function OnboardingFlow({ sourceLabel }: { sourceLabel?: string } = {}) {
   const router = useRouter();
   const params = useSearchParams();
   const initialPlan = params.get("plan");
@@ -56,6 +56,8 @@ export default function OnboardingFlow() {
   const [agreed, setAgreed] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [payment, setPayment] = useState<string>("");
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [accountStatus, setAccountStatus] = useState<"has" | "none" | "planning">("has");
   const [accounts, setAccounts] = useState<string[]>([""]);
@@ -104,7 +106,11 @@ export default function OnboardingFlow() {
 
   const minStart = useMemo(() => minStartDate(), []);
   const startDateInvalid = startDate !== "" && (isWeekendStr(startDate) || startDate < minStart);
-  const step4Ok = EMAIL_RE.test(email) && (accountStatus !== "has" || accounts.some((a) => a.trim()));
+  const step4Ok =
+    lastName.trim() !== "" &&
+    firstName.trim() !== "" &&
+    EMAIL_RE.test(email) &&
+    (accountStatus !== "has" || accounts.some((a) => a.trim()));
 
   async function handleApply() {
     setSubmitting(true);
@@ -113,6 +119,9 @@ export default function OnboardingFlow() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name: `${lastName.trim()} ${firstName.trim()}`.trim(),
+          lastName: lastName.trim(),
+          firstName: firstName.trim(),
           plans: selectedPlans,
           options: selectedOptionNames,
           total: totalLabel,
@@ -121,6 +130,7 @@ export default function OnboardingFlow() {
           email,
           accountStatus,
           accounts: accounts.filter((a) => a.trim()),
+          source: sourceLabel,
         }),
       });
     } catch {
@@ -363,9 +373,36 @@ export default function OnboardingFlow() {
           {step === 4 && (
             <section>
               <StepTitle no="STEP 4 / 5">ご連絡先と運用アカウント</StepTitle>
-              <p className="mt-3 leading-relaxed text-slate-600">ご連絡用のメールアドレスと、運用するInstagramアカウントの状況をお知らせください。</p>
+              <p className="mt-3 leading-relaxed text-slate-600">お名前・ご連絡用のメールアドレスと、運用するInstagramアカウントの状況をお知らせください。</p>
 
-              <div className="mt-5">
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="ob-last" className="block text-sm font-medium text-slate-700">姓 <span className="text-[#FF6633]">*</span></label>
+                  <input
+                    id="ob-last"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="山田"
+                    autoComplete="family-name"
+                    className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#2D7A4F] focus:outline-none focus:ring-1 focus:ring-[#2D7A4F]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="ob-first" className="block text-sm font-medium text-slate-700">名 <span className="text-[#FF6633]">*</span></label>
+                  <input
+                    id="ob-first"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="太郎"
+                    autoComplete="given-name"
+                    className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#2D7A4F] focus:outline-none focus:ring-1 focus:ring-[#2D7A4F]"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4">
                 <label htmlFor="ob-email" className="block text-sm font-medium text-slate-700">メールアドレス <span className="text-[#FF6633]">*</span></label>
                 <input
                   id="ob-email"

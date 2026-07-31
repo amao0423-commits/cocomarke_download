@@ -158,10 +158,12 @@ export default function SubscriptionClient() {
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const name    = (fd.get("name") as string).trim();
+    const lastName  = ((fd.get("last_name") as string) || "").trim();
+    const firstName = ((fd.get("first_name") as string) || "").trim();
+    const name    = `${lastName} ${firstName}`.trim();
     const email   = (fd.get("email") as string).trim();
     const message = (fd.get("message") as string).trim();
-    if (!name || !email) { alert("お名前・メールアドレスは必須です。"); return; }
+    if (!lastName || !firstName || !email) { alert("姓・名・メールアドレスは必須です。"); return; }
     if (formSource === "consult" && !message) { alert("ご質問事項をご入力ください。"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("メールアドレスの形式が正しくありません。"); return; }
     setSending(true);
@@ -175,7 +177,7 @@ export default function SubscriptionClient() {
       const res = await fetch("/api/subscription-contact", {
         method:"POST", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({
-          name, email,
+          name, last_name: lastName, first_name: firstName, email,
           inquiry_type: fd.get("inquiry_type"),
           instagram_id: fd.get("instagram_id"),
           message,
@@ -646,8 +648,17 @@ export default function SubscriptionClient() {
                 <p style={{ fontSize:13, color:TL, marginBottom:28 }}>3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します</p>
                 <form ref={formRef} onSubmit={submitForm}>
                   <input type="text" name="website" style={{ display:"none" }} tabIndex={-1} autoComplete="off" />
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:16 }}>
+                    <div>
+                      <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>姓<span style={{ fontSize:10, color:C, background:CL, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>必須</span></label>
+                      <input name="last_name" type="text" placeholder="山田" required autoComplete="family-name" style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none" }} />
+                    </div>
+                    <div>
+                      <label style={{ display:"block", fontSize:13, fontWeight:700, marginBottom:6, color:TXT }}>名<span style={{ fontSize:10, color:C, background:CL, padding:"1px 6px", borderRadius:4, marginLeft:6 }}>必須</span></label>
+                      <input name="first_name" type="text" placeholder="太郎" required autoComplete="given-name" style={{ width:"100%", padding:"11px 14px", border:`1px solid ${BD}`, borderRadius:8, fontSize:14, fontFamily:"inherit", color:TXT, outline:"none" }} />
+                    </div>
+                  </div>
                   {[
-                    { label:"お名前", name:"name", type:"text", placeholder:"例：山田 太郎", required:true },
                     { label:"メールアドレス", name:"email", type:"email", placeholder:"example@email.com", required:true },
                     { label:"Instagram ID（@）", name:"instagram_id", type:"text", placeholder:"@your_account", required:false },
                   ].map((f)=>(

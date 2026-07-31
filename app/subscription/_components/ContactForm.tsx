@@ -24,12 +24,14 @@ export default function ContactForm({ onClose }: { variant?: "modal"; onClose: (
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const name = String(fd.get("name") ?? "").trim();
+    const lastName = String(fd.get("last_name") ?? "").trim();
+    const firstName = String(fd.get("first_name") ?? "").trim();
+    const name = `${lastName} ${firstName}`.trim();
     const email = String(fd.get("email") ?? "").trim();
     const topic = String(fd.get("topic") ?? "").trim();
     const message = String(fd.get("message") ?? "").trim();
-    if (!name || !email || !topic || !message) {
-      alert("お名前・メールアドレス・ご相談内容・詳細は必須です。");
+    if (!lastName || !firstName || !email || !topic || !message) {
+      alert("姓・名・メールアドレス・ご相談内容・詳細は必須です。");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -43,6 +45,8 @@ export default function ContactForm({ onClose }: { variant?: "modal"; onClose: (
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
+          last_name: lastName,
+          first_name: firstName,
           email,
           inquiry_type: topic,
           message,
@@ -92,9 +96,15 @@ export default function ContactForm({ onClose }: { variant?: "modal"; onClose: (
               ご相談内容をお選びのうえ、必要に応じて詳細をご記入ください。担当者よりご連絡します。
             </p>
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-              <div>
-                <label htmlFor="cf-name" className="block text-sm font-medium text-slate-700">お名前 <span className="text-[#FF6633]">*</span></label>
-                <input id="cf-name" name="name" type="text" required className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#2D7A4F] focus:outline-none focus:ring-1 focus:ring-[#2D7A4F]" />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="cf-last" className="block text-sm font-medium text-slate-700">姓 <span className="text-[#FF6633]">*</span></label>
+                  <input id="cf-last" name="last_name" type="text" autoComplete="family-name" placeholder="山田" required className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#2D7A4F] focus:outline-none focus:ring-1 focus:ring-[#2D7A4F]" />
+                </div>
+                <div>
+                  <label htmlFor="cf-first" className="block text-sm font-medium text-slate-700">名 <span className="text-[#FF6633]">*</span></label>
+                  <input id="cf-first" name="first_name" type="text" autoComplete="given-name" placeholder="太郎" required className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#2D7A4F] focus:outline-none focus:ring-1 focus:ring-[#2D7A4F]" />
+                </div>
               </div>
               <div>
                 <label htmlFor="cf-email" className="block text-sm font-medium text-slate-700">メールアドレス <span className="text-[#FF6633]">*</span></label>

@@ -17,6 +17,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    const name = s(body.name);
+    const source = s(body.source);
     const plans = Array.isArray(body.plans) ? body.plans.map(s).filter(Boolean) : [];
     const options = Array.isArray(body.options) ? body.options.map(s).filter(Boolean) : [];
     const total = s(body.total);
@@ -27,6 +29,8 @@ export async function POST(request: NextRequest) {
     const accounts = Array.isArray(body.accounts) ? body.accounts.map(s).filter(Boolean) : [];
 
     const lines = [
+      `お名前: ${name || '—'}`,
+      source ? `流入: ${source}` : null,
       `プラン: ${plans.length ? plans.join('、') : '—'}`,
       options.length ? `オプション: ${options.join('、')}` : null,
       `合計月額: ${total ? `${total} 円（税込）` : '—'}`,
@@ -67,7 +71,7 @@ export async function POST(request: NextRequest) {
     try {
       await sendBrevoTransactionalEmail({
         to: NOTIFY_TO,
-        subject: `【JEMIA お申し込み】${plans.join('、') || 'プラン未選択'}`,
+        subject: `【JEMIA お申し込み${source ? `・${source}` : ''}】${name ? `${name}様 / ` : ''}${plans.join('、') || 'プラン未選択'}`,
         html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${bodyText}</pre>`,
       });
     } catch (e) {
@@ -77,6 +81,8 @@ export async function POST(request: NextRequest) {
     // 3) お客様へ受付確認メール（best-effort）
     if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       const reply = [
+        name ? `${name} 様` : 'お客様',
+        '',
         'この度はJEMIAへお申し込みいただき、誠にありがとうございます。',
         '以下の内容で受け付けいたしました。担当者による確認後、お支払い方法等について改めてご連絡いたします。',
         '',
