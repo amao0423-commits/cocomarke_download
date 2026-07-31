@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
 
     await sendBrevoTransactionalEmail({
       to: NOTIFY_TO,
-      subject: `【JEMIA／かんたんプランニング】${email}（${p.name}）`,
+      subject: `【プランニング】JEMIA｜おすすめ:${p.name}｜${email}`,
       html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${esc(adminBody)}</pre>`,
     });
 

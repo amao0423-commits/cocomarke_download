@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     try {
       await sendBrevoTransactionalEmail({
         to: NOTIFY_TO,
-        subject: `【JEMIA お申し込み${source ? `・${source}` : ''}】${name ? `${name}様 / ` : ''}${plans.join('、') || 'プラン未選択'}`,
+        subject: `【本申込${source ? `・${source}` : ''}】JEMIA｜${plans.join('、') || 'プラン未選択'}｜${name || '—'}`,
         html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${bodyText}</pre>`,
       });
     } catch (e) {

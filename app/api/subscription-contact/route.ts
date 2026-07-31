@@ -5,10 +5,10 @@ const NOTIFY_TO = 'info@cocomake-guide.com';
 
 // 流入経路 → 件名ラベル。フォーム側が送る source の値に対応。
 const SUBJECT_LABELS: Record<string, string> = {
-  consult:    'お問い合わせ',   // 「無料で相談する」系ボタン
-  plan_apply: '料金プラン',     // 料金表「このプランで申し込む」
+  consult:    'ご相談',         // 「無料で相談する」系ボタン
+  plan_apply: '仮申込',         // 料金表「このプランで申し込む」
   diagnosis:  'プラン診断',     // プラン診断ページ経由
-  corporate:  '法人',           // 法人お問い合わせフォーム
+  corporate:  '法人問合せ',     // 法人お問い合わせフォーム
 };
 
 function sanitize(v: unknown): string {
@@ -75,11 +75,11 @@ export async function POST(request: NextRequest) {
       landing      ? `ランディングURL: ${landing}`     : null,
     ].filter((l) => l !== null).join('\n');
 
-    const subjectLabel = SUBJECT_LABELS[source] ?? 'お問い合わせ';
+    const subjectLabel = SUBJECT_LABELS[source] ?? 'ご相談';
 
     await sendBrevoTransactionalEmail({
       to:      NOTIFY_TO,
-      subject: `【JEMIA／${subjectLabel}】${name} 様（${inquiryType || '—'}）`,
+      subject: `【${subjectLabel}】JEMIA｜${name} 様${inquiryType ? `（${inquiryType}）` : ''}`,
       html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${rows}</pre>`,
     });
 

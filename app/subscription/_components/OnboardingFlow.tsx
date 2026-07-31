@@ -146,14 +146,16 @@ export default function OnboardingFlow({ sourceLabel }: { sourceLabel?: string }
       <div className="mx-auto max-w-2xl px-5 py-8 sm:py-12">
         {/* ヘッダー */}
         <header className="relative text-center">
-          <button
-            type="button"
-            onClick={leave}
-            aria-label="閉じる"
-            className="absolute right-0 top-0 rounded-full bg-white p-2 text-slate-400 shadow-sm hover:bg-slate-100 hover:text-slate-600"
-          >
-            ✕
-          </button>
+          {!sourceLabel && (
+            <button
+              type="button"
+              onClick={leave}
+              aria-label="閉じる"
+              className="absolute right-0 top-0 rounded-full bg-white p-2 text-slate-400 shadow-sm hover:bg-slate-100 hover:text-slate-600"
+            >
+              ✕
+            </button>
+          )}
           <p className="text-sm font-medium text-[#2D7A4F]">JEMIA お申し込み手続き</p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">お申し込み手続き</h1>
           {step <= 5 && (
