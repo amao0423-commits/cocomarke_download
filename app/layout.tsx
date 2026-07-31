@@ -47,6 +47,30 @@ export default function RootLayout({
   return (
     <html lang="ja" className="scroll-smooth">
       <body className={`${notoSansJp.variable} min-h-screen font-sans`}>
+        {/* アプリ内ブラウザ（iOS WKWebView）等が注入するスクリプトが投げる
+            `window.webkit.messageHandlers` 未定義エラーだけを握りつぶす。
+            サイト自身のエラーは対象外（他のエラーは一切抑制しない）。 */}
+        <Script id="webkit-error-guard" strategy="beforeInteractive">{`
+          (function(){
+            function isWebkitBridgeError(msg){
+              return typeof msg === 'string' &&
+                (msg.indexOf('webkit.messageHandlers') !== -1 ||
+                 msg.indexOf("evaluating 'window.webkit") !== -1);
+            }
+            window.addEventListener('error', function(e){
+              if (isWebkitBridgeError(e && e.message)) {
+                e.preventDefault();
+                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                return true;
+              }
+            }, true);
+            window.addEventListener('unhandledrejection', function(e){
+              var r = e && e.reason;
+              var msg = r && (r.message || (typeof r === 'string' ? r : ''));
+              if (isWebkitBridgeError(msg)) e.preventDefault();
+            });
+          })();
+        `}</Script>
         {/* Google Analytics 4（gtag.js） */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
