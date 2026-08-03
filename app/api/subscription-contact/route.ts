@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           : `お申し込みは${link(applyUrl, 'こちら')}からどうぞ。`,
         '',
         `▷ ${link('https://www.cocomake-guide.com/subscription', 'サービス詳細・料金プランを見る')}`,
-        `▷ ${link('https://www.cocomake-guide.com/servicedocument', 'サービス資料を無料ダウンロードする')}`,
+        `▷ ${link('https://www.cocomake-guide.com/subscription/diagnosis', 'サービス資料を無料ダウンロードする')}`,
         `▷ 参考記事｜${link('https://www.cocomake-guide.com/subscription/blog/followers-vs-engagement', 'フォロワーが増えても“売れない”本当の理由')}`,
         '',
         '※本メールは診断にご参加いただいた方へお送りしています。',
