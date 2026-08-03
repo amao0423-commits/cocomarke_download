@@ -105,9 +105,9 @@ export async function POST(request: NextRequest) {
       const planLine = recommendedPlan
         ? `◆ おすすめプラン：${recommendedPlan}${info?.price ? `（月${info.price}・税込／契約縛りなし）` : ''}`
         : null;
+      const link = (href: string, text: string) =>
+        `<a href="${href}" style="color:#2D7A4F;font-weight:bold;text-decoration:underline">${text}</a>`;
       const promo = [
-        `${name} 様`,
-        '',
         'この度はJEMIAの「インスタ運用診断」にご参加いただき、ありがとうございます。',
         'あなたのアカウントの診断結果をお届けします。',
         '',
@@ -123,17 +123,13 @@ export async function POST(request: NextRequest) {
         '・おすすめ・発見タブ露出の強化／狙ったキーワードでの上位表示対策',
         '・月9,800円〜／契約期間の縛りなし・いつでも終了OK',
         '',
-        recommendedPlan ? `▼ あなたへのおすすめ「${recommendedPlan}」で申し込む` : '▼ お申し込みはこちら',
-        applyUrl,
+        recommendedPlan
+          ? `診断結果をふまえた「${recommendedPlan}」は、${link(applyUrl, 'こちらからそのままお申し込み')}いただけます（プラン選択済み）。`
+          : `お申し込みは${link(applyUrl, 'こちら')}からどうぞ。`,
         '',
-        '▼ サービス詳細・料金プランを見る',
-        'https://www.cocomake-guide.com/subscription',
-        '',
-        '▼ サービス資料をダウンロード（無料）',
-        'https://www.cocomake-guide.com/servicedocument',
-        '',
-        '▼ 参考記事：フォロワーが増えても“売れない”本当の理由',
-        'https://www.cocomake-guide.com/subscription/blog/followers-vs-engagement',
+        `▷ ${link('https://www.cocomake-guide.com/subscription', 'サービス詳細・料金プランを見る')}`,
+        `▷ ${link('https://www.cocomake-guide.com/servicedocument', 'サービス資料を無料ダウンロードする')}`,
+        `▷ 参考記事｜${link('https://www.cocomake-guide.com/subscription/blog/followers-vs-engagement', 'フォロワーが増えても“売れない”本当の理由')}`,
         '',
         '※本メールは診断にご参加いただいた方へお送りしています。',
         '※ご不明点は info@cocomake-guide.com までお気軽にどうぞ。',
