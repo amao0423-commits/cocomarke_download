@@ -9,6 +9,7 @@ const SUBJECT_LABELS: Record<string, string> = {
   plan_apply: '仮申込',         // 料金表「このプランで申し込む」
   diagnosis:  'プラン診断',     // プラン診断ページ経由
   corporate:  '法人問合せ',     // 法人お問い合わせフォーム
+  shindan:    'インスタ運用診断', // shindan.html の診断完了通知
 };
 
 function sanitize(v: unknown): string {

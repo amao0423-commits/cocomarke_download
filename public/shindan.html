@@ -758,16 +758,20 @@ function submitForm(){
     computeScore();
     const {key}=pickType();
     const ty=types[key], pl=plans[ty.plan];
+    /* プロフィールURLが貼られた場合はユーザーネームだけ取り出す */
+    const m=acc.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+    const handle=(m?m[1]:acc).replace(/^@/,'').replace(/[^A-Za-z0-9._].*$/,'');
     fetch('/api/subscription-contact',{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        name: acc || mail,
+        name: handle ? '@'+handle : mail,
         email: mail,
         inquiry_type: 'インスタ運用診断',
-        instagram_id: acc.replace(/^@/,''),
+        instagram_id: handle,
+        source: 'shindan',
         message:[
           '【インスタ運用診断 完了】',
-          'アカウントID: '+(acc||'（未入力）'),
+          'アカウントID: '+(handle ? '@'+handle : '（未入力）'),
           '診断タイプ: '+ty.name+'（'+ty.lvl+'）',
           'おすすめプラン: '+pl.name,
         ].join('\n')
