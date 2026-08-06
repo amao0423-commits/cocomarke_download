@@ -30,11 +30,7 @@ const ImagesTab = dynamic(() =>
 import {
   ADMIN_PAGE_BG,
   ADMIN_CARD,
-  ADMIN_HEADER_BAR,
   ADMIN_BTN_AUTH,
-  ADMIN_BTN_SECONDARY,
-  adminTabButtonClass,
-  ADMIN_TAB_WRAP,
   ADMIN_ICON_SKY,
   ADMIN_ICON_VIOLET,
 } from '@/components/admin/adminPastel';
@@ -47,6 +43,32 @@ type ActiveTab =
   | 'documents'
   | 'broadcast'
   | 'images';
+
+type NavItem = { id: ActiveTab; label: string; icon: string };
+const NAV: { section: string; items: NavItem[] }[] = [
+  {
+    section: 'CONTENT',
+    items: [
+      { id: 'documents', label: '資料管理', icon: '📚' },
+      { id: 'images', label: '画像ライブラリ', icon: '🖼️' },
+    ],
+  },
+  {
+    section: 'LEADS',
+    items: [
+      { id: 'download', label: '資料DL申請', icon: '📥' },
+      { id: 'restaurantDiagnosis', label: '飲食店無料診断', icon: '🍽️' },
+      { id: 'planning', label: 'プランニング履歴', icon: '🧭' },
+      { id: 'diagnostics', label: '診断統計', icon: '📈' },
+    ],
+  },
+  {
+    section: 'OUTREACH',
+    items: [{ id: 'broadcast', label: '一斉メール', icon: '📣' }],
+  },
+];
+
+const ALL_ITEMS = NAV.flatMap((g) => g.items);
 
 export default function AdminPage() {
   const [secretKey, setSecretKey] = useState('');
@@ -86,16 +108,6 @@ export default function AdminPage() {
     setErrorMessage('');
     setActiveTab('download');
   };
-
-  const tabBtn = (id: ActiveTab, label: string) => (
-    <button
-      type="button"
-      onClick={() => setActiveTab(id)}
-      className={adminTabButtonClass(activeTab === id)}
-    >
-      {label}
-    </button>
-  );
 
   if (isLoading) {
     return (
@@ -148,80 +160,115 @@ export default function AdminPage() {
     );
   }
 
+  const navBtnClass = (active: boolean) =>
+    `flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] transition ${
+      active ? 'bg-[#0D3B75] font-bold text-white' : 'text-[#4A5871] hover:bg-white'
+    }`;
+
   return (
-    <div className={`min-h-screen ${ADMIN_PAGE_BG}`}>
-      <div className={`sticky top-0 z-10 ${ADMIN_HEADER_BAR}`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <Sparkles className={`h-7 w-7 shrink-0 ${ADMIN_ICON_SKY} hidden sm:block`} aria-hidden />
-            <h1 className="font-semibold text-slate-600 truncate">管理ダッシュボード</h1>
-          </div>
+    <div className="min-h-screen bg-[#F7F9FC]">
+      {/* トップバー（ネイビー） */}
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-[#0D3B75] px-4 py-3 sm:px-6">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="h-5 w-5 shrink-0 rounded-full bg-white/90" aria-hidden />
+          <span className="truncate text-[15px] font-bold text-white">COCOマーケ 管理</span>
+          <span className="hidden rounded bg-white/15 px-2 py-0.5 font-mono text-[10px] tracking-wide text-white/85 sm:inline">
+            PRODUCTION
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-[13px] text-white/85">
+          <a href="/" className="hidden transition hover:text-white sm:inline">
+            公開サイトを見る →
+          </a>
           <button
             type="button"
             onClick={handleLogout}
-            className={`shrink-0 px-4 py-2 ${ADMIN_BTN_SECONDARY} text-xs sm:text-sm`}
+            className="shrink-0 rounded-md border border-white/25 px-3 py-1.5 text-white transition hover:bg-white/10"
           >
             ログアウト
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-        {/* 運用ガイド（即DL版） */}
-        <div className="rounded-3xl border border-violet-100/60 bg-gradient-to-r from-white via-sky-50/40 to-rose-50/30 px-4 py-3 shadow-xl shadow-violet-500/[0.06]">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2 flex items-center gap-1.5">
-            <Sparkles className={`h-3.5 w-3.5 ${ADMIN_ICON_VIOLET}`} aria-hidden />
-            運用ガイド
-          </p>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-slate-600">
-            <span className="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1.5 border border-blue-50/80 shadow-sm">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">1</span>
-              <FileUp className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
-              <span className="font-medium">資料をアップ</span>
-            </span>
-            <span className="text-slate-300 hidden sm:block">→</span>
-            <span className="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1.5 border border-blue-50/80 shadow-sm">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#A0D8EF] text-[#2C657A] text-xs font-bold">2</span>
-              <ToggleRight className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
-              <span className="font-medium">公開する</span>
-            </span>
+      <div className="mx-auto flex max-w-[1280px]">
+        {/* 左サイドバー（PC） */}
+        <aside className="hidden w-[224px] shrink-0 border-r border-[#E4E9F0] px-3 py-6 lg:block">
+          <nav className="flex flex-col gap-6">
+            {NAV.map((group) => (
+              <div key={group.section}>
+                <div className="px-3 pb-2 font-mono text-[10px] font-bold tracking-[.12em] text-[#9AA6B8]">
+                  {group.section}
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  {group.items.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveTab(item.id)}
+                      className={navBtnClass(activeTab === item.id)}
+                    >
+                      <span aria-hidden>{item.icon}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </aside>
+
+        {/* コンテンツ */}
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6">
+          {/* モバイル用ナビ（横スクロール） */}
+          <div className="mb-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+            {ALL_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveTab(item.id)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                  activeTab === item.id
+                    ? 'bg-[#0D3B75] text-white'
+                    : 'border border-[#E4E9F0] bg-white text-[#4A5871]'
+                }`}
+              >
+                {item.icon} {item.label}
+              </button>
+            ))}
           </div>
-        </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-600 px-0.5">申請・分析の確認</p>
-            <div className={ADMIN_TAB_WRAP}>
-              {tabBtn('download', '📥 資料ダウンロード一覧')}
-              {tabBtn('restaurantDiagnosis', '🍽️ 飲食店無料診断')}
-              {tabBtn('planning', '🧭 プランニング履歴')}
-              {tabBtn('diagnostics', '📈 診断統計')}
+          {/* 運用ガイド */}
+          <div className="mb-5 rounded-2xl border border-[#E4E9F0] bg-white px-4 py-3">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#7A879C]">
+              <Sparkles className={`h-3.5 w-3.5 ${ADMIN_ICON_VIOLET}`} aria-hidden />
+              運用ガイド
+            </p>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-[#4A5871]">
+              <span className="inline-flex items-center gap-2 rounded-xl border border-[#E4E9F0] bg-[#F7F9FC] px-3 py-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0D3B75] text-[11px] font-bold text-white">1</span>
+                <FileUp className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
+                <span className="font-medium">資料をアップ</span>
+              </span>
+              <span className="hidden text-[#C8D2E0] sm:block">→</span>
+              <span className="inline-flex items-center gap-2 rounded-xl border border-[#E4E9F0] bg-[#F7F9FC] px-3 py-1.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0D3B75] text-[11px] font-bold text-white">2</span>
+                <ToggleRight className={`h-4 w-4 ${ADMIN_ICON_SKY} shrink-0`} aria-hidden />
+                <span className="font-medium">公開する</span>
+              </span>
             </div>
           </div>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-600 px-0.5">配布物・メディア</p>
-            <div className={ADMIN_TAB_WRAP}>
-              {tabBtn('documents', '📚 資料管理')}
-              {tabBtn('images', '🖼️ 画像')}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-600 px-0.5">その他</p>
-            <div className={ADMIN_TAB_WRAP}>
-              {tabBtn('broadcast', '📣 一斉メール')}
-            </div>
-          </div>
-        </div>
 
-        <div className={`${ADMIN_CARD} p-5 sm:p-6`}>
-          {activeTab === 'diagnostics' && <DiagnosticsStatsTab secretKey={secretKey} />}
-          {activeTab === 'download' && <DownloadRequestsTab secretKey={secretKey} />}
-          {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
-          {activeTab === 'planning' && <PlanningRequestsTab secretKey={secretKey} />}
-          {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
-          {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
-          {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
-        </div>
+          {/* アクティブなタブの内容 */}
+          <div className="rounded-2xl border border-[#E4E9F0] bg-white p-5 shadow-[0_1px_3px_rgba(13,59,117,.05)] sm:p-6">
+            {activeTab === 'diagnostics' && <DiagnosticsStatsTab secretKey={secretKey} />}
+            {activeTab === 'download' && <DownloadRequestsTab secretKey={secretKey} />}
+            {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
+            {activeTab === 'planning' && <PlanningRequestsTab secretKey={secretKey} />}
+            {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
+            {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
+            {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
+          </div>
+        </main>
       </div>
     </div>
   );
