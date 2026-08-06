@@ -181,7 +181,7 @@ export default function DownloadPageShell({
 
               {/* 関連記事／サービスCTA（資料ごとに出し分け） */}
               <div className="mt-8 overflow-hidden rounded-2xl border-[1.5px] border-cta/60 bg-white shadow-[0_4px_16px_rgba(224,96,58,.1)]">
-                <div className="grid gap-5 p-6 sm:p-7 md:grid-cols-[1fr_180px] md:items-center">
+                <div className={`gap-5 p-6 sm:p-7 ${!relatedCta.industries?.length && relatedCta.ogImage ? 'grid md:grid-cols-[1fr_180px] md:items-center' : ''}`}>
                   <div>
                     <div className="mb-2 flex items-center gap-2">
                       <span className="h-4 w-0.5 bg-cta" aria-hidden />
@@ -212,13 +212,18 @@ export default function DownloadPageShell({
                       )}
                     </div>
                   </div>
-                  <div
-                    className="hidden aspect-[16/10] items-center justify-center rounded-lg border border-[#E4E9F0] md:flex"
-                    style={{ background: 'repeating-linear-gradient(135deg,#F2F5F9 0 8px,#E8EDF4 8px 16px)' }}
-                    aria-hidden
-                  >
-                    <span className="font-mono text-[10px] text-[#8C99AC]">記事のOG画像</span>
-                  </div>
+                  {/* 単体記事のときだけ記事のOG画像を表示（業種別が複数あるときは出さない） */}
+                  {!relatedCta.industries?.length && relatedCta.ogImage && (
+                    <div className="hidden overflow-hidden rounded-lg border border-[#E4E9F0] md:block">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={relatedCta.ogImage}
+                        alt=""
+                        loading="lazy"
+                        className="aspect-[16/10] w-full object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {relatedCta.industries && relatedCta.industries.length > 0 && (

@@ -23,7 +23,7 @@ const CHOICES = [
     title: 'まず自分で改善する',
     desc: 'チェックリストと最適化の手順で、社内運用のまま改善を進められます。',
     cta: 'JEMIAの内容を見る',
-    href: 'https://www.cocomarke.com/',
+    href: '/subscription',
     recommended: false,
   },
   {

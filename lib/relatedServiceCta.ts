@@ -9,6 +9,8 @@ export type RelatedServiceCta = {
   description: string;
   ctaLabel: string;
   href: string;
+  /** 記事のOG画像URL（単体記事のときだけ表示。複数=業種別ピルがあるときは出さない） */
+  ogImage?: string;
   /** 業種別の事例記事（あるときだけ主要CTA下にピル表示） */
   industries?: { label: string; href: string }[];
 };
@@ -25,6 +27,8 @@ const RULES: Rule[] = [
       description: 'アルゴリズムの最新動向と、対応のポイントを記事で解説しています。',
       ctaLabel: '最新アルゴリズムの記事を見る',
       href: 'https://www.cocomarke.com/blog/instagram-algorithm-update-latest/',
+      ogImage:
+        'https://images.microcms-assets.io/assets/bfc6bd7eb1b047c99582466ac1152f03/1568ac991c3943a4bf221a90f5de346f/00-hero.webp',
     },
   },
   {
@@ -40,7 +44,7 @@ const RULES: Rule[] = [
       industries: [
         { label: 'アパレルブランド', href: 'https://www.cocomarke.com/blog/instagram-apparel-brand-case/' },
         { label: 'ECショップ', href: 'https://www.cocomarke.com/blog/instagram-ec-shop-case-study/' },
-        { label: 'クリニック', href: 'https://www.cocomarke.com/blog' },
+        { label: 'クリニック', href: 'https://www.cocomarke.com/blog/instagram-clinic-marketing/' },
         { label: '飲食店 × Googleマップ', href: 'https://www.cocomarke.com/blog/restaurant-instagram-marketing-google-maps-2026/' },
       ],
     },
@@ -65,6 +69,8 @@ const RULES: Rule[] = [
       description: 'Facebook / Instagram 広告の始め方と考え方を記事で解説しています。',
       ctaLabel: 'Facebook広告の記事を見る',
       href: 'https://www.cocomarke.com/blog/facebook-ads-guide-how-to-start/',
+      ogImage:
+        'https://images.microcms-assets.io/assets/bfc6bd7eb1b047c99582466ac1152f03/3467394ef79d4464a860bfd73f9700bb/facebook-ads-guide-how-to-start.png',
     },
   },
   {
