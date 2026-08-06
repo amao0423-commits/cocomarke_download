@@ -6,11 +6,11 @@ const ctaBase =
 
 /** 資料カード・ダウンロード導線で共通のネイビーグラデーションCTA（カプセル型） */
 export const documentDownloadCtaClassName =
-  `${ctaBase} bg-gradient-to-r from-[#01408D] to-[#001A3D] text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-90 hover:shadow-lg focus-visible:ring-[#01408D]/50`;
+  `${ctaBase} bg-gradient-to-r from-[#0D3B75] to-[#001A3D] text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-90 hover:shadow-lg focus-visible:ring-[#0D3B75]/50`;
 
 /** ネイビー背景上で使う白地・ネイビー文字のCTA */
 const documentDownloadCtaLightClassName =
-  `${ctaBase} bg-white text-[#01408D] shadow-sm hover:bg-slate-50 focus-visible:ring-white/50`;
+  `${ctaBase} bg-white text-[#0D3B75] shadow-sm hover:bg-slate-50 focus-visible:ring-white/50`;
 
 type DocumentDownloadLinkProps = Omit<LinkProps, 'className'> & {
   className?: string;

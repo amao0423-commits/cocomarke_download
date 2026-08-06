@@ -155,7 +155,7 @@ export function FloatingNavigator() {
                       { variant: "trend" as const, lines: ["投稿頻度と", "ハッシュタグの評価"] },
                       { variant: "sparkle" as const, lines: ["総合的な", "改善アドバイス"] },
                     ].map(({ variant, lines }, index) => (
-                      <li key={variant} className="flex items-start gap-2 text-[11px] font-medium leading-snug sm:text-xs" style={{ color: "#01408D" }}>
+                      <li key={variant} className="flex items-start gap-2 text-[11px] font-medium leading-snug sm:text-xs" style={{ color: "#0D3B75" }}>
                         <DiagnosisIllustration variant={variant} gradientId={`${iconGradientPrefix}-${variant}-${index}`} />
                         <span>
                           {lines.map((line, lineIndex) => (
@@ -181,14 +181,14 @@ export function FloatingNavigator() {
 
                 <p
                   className="line-clamp-2 block w-full max-w-none text-xs leading-snug lg:hidden"
-                  style={{ color: "#01408D" }}
+                  style={{ color: "#0D3B75" }}
                 >
                   アカウントの成長度を、今すぐ確認できます。
                 </p>
 
                 <p
                   className="hidden w-full max-w-none text-xs leading-relaxed sm:text-[13px] lg:block"
-                  style={{ color: "#01408D" }}
+                  style={{ color: "#0D3B75" }}
                 >
                   あなたのアカウントがどこまで成長しているか、今すぐ確認できます。
                 </p>

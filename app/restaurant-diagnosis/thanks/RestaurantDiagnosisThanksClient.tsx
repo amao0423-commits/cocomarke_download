@@ -12,7 +12,7 @@ import {
 /** サンクス画面背景（サイトに合わせた薄いブルーグレー） */
 const BG = "#EFF4FA";
 /** COCOマーケ brand navy（tailwind: cocomarke-navy） */
-const ACCENT_BLUE = "#01408D";
+const ACCENT_BLUE = "#0D3B75";
 const ACCENT_BLUE_SOFT = "#E3EEF6";
 const LINE_URL = "https://lin.ee/nl7qUKz";
 
@@ -123,7 +123,7 @@ export function RestaurantDiagnosisThanksClient() {
               className="absolute inset-0 rounded-full motion-safe:animate-spin"
               style={{
                 background:
-                  "conic-gradient(from 0deg, #01408D 0deg, #01408D 110deg, #BFDBFE 110deg, #E0EEF8 250deg, #01408D 360deg)",
+                  "conic-gradient(from 0deg, #0D3B75 0deg, #0D3B75 110deg, #BFDBFE 110deg, #E0EEF8 250deg, #0D3B75 360deg)",
               }}
               aria-hidden
             />
@@ -132,7 +132,7 @@ export function RestaurantDiagnosisThanksClient() {
               style={{ backgroundColor: BG }}
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center px-2 text-center">
-              <p className="text-xs font-bold text-[#01408D] sm:text-sm">
+              <p className="text-xs font-bold text-[#0D3B75] sm:text-sm">
                 送信中 {percent}%
                 <span className="inline-block w-[1.5ch] animate-pulse">...</span>
               </p>
@@ -140,7 +140,7 @@ export function RestaurantDiagnosisThanksClient() {
           </div>
           <p
             key={statusIdx}
-            className="mt-6 max-w-xs text-center text-sm font-semibold text-[#01408D]/90 sm:text-base"
+            className="mt-6 max-w-xs text-center text-sm font-semibold text-[#0D3B75]/90 sm:text-base"
           >
             {STATUS_MESSAGES[statusIdx]}
           </p>
@@ -178,7 +178,7 @@ export function RestaurantDiagnosisThanksClient() {
           </p>
           <div className="mt-4 flex justify-center">
             <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-[#01408D]"
+              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-[#0D3B75]"
               style={{ backgroundColor: ACCENT_BLUE_SOFT }}
             >
               <span className="text-[0.65rem] leading-none" aria-hidden>
@@ -251,7 +251,7 @@ export function RestaurantDiagnosisThanksClient() {
         <div className="flex shrink-0 justify-center pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <Link
             href="/restaurant-diagnosis"
-            className="text-xs font-semibold text-[#01408D] underline-offset-2 hover:underline sm:text-sm"
+            className="text-xs font-semibold text-[#0D3B75] underline-offset-2 hover:underline sm:text-sm"
           >
             診断フォームに戻る
           </Link>

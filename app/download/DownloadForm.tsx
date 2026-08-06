@@ -28,7 +28,7 @@ export type DownloadFormProps = {
 
 /* ── スタイル定数 ── */
 const fieldClass =
-  'w-full h-12 rounded-[10px] border border-[#E2E8F0] bg-white px-3.5 text-sm text-[#1F2937] placeholder:text-[#CBD5E1] transition-[border-color,box-shadow] focus:border-[#2563A8] focus:outline-none focus:ring-[3px] focus:ring-[#2563A8]/12 disabled:opacity-60';
+  'w-full h-12 rounded-[10px] border border-[#E2E8F0] bg-white px-3.5 text-sm text-[#1F2937] placeholder:text-[#CBD5E1] transition-[border-color,box-shadow] focus:border-[#0D3B75] focus:outline-none focus:ring-[3px] focus:ring-[#0D3B75]/12 disabled:opacity-60';
 
 const labelClass = 'mb-1.5 flex items-center gap-1.5 text-[13px] font-bold text-[#1F2937]';
 
@@ -36,9 +36,9 @@ const reqClass = 'text-[10.5px] font-bold text-[#E24B4A]';
 const optClass = 'text-[10.5px] font-medium text-[#94A3B8]';
 
 const pillBase =
-  'cursor-pointer select-none rounded-full border px-3.5 py-2 text-[13px] transition-[border-color,background,color] focus-visible:ring-2 focus-visible:ring-[#2563A8]/30 disabled:opacity-60';
-const pillOn = 'border-[#01408D] bg-[#01408D] font-bold text-white';
-const pillOff = 'border-[#E2E8F0] bg-white text-[#64748B] hover:border-[#2563A8]';
+  'cursor-pointer select-none rounded-full border px-3.5 py-2 text-[13px] transition-[border-color,background,color] focus-visible:ring-2 focus-visible:ring-[#0D3B75]/30 disabled:opacity-60';
+const pillOn = 'border-[#0D3B75] bg-[#0D3B75] font-bold text-white';
+const pillOff = 'border-[#E2E8F0] bg-white text-[#64748B] hover:border-[#0D3B75]';
 
 export default function DownloadForm({
   templateId: templateIdProp,
@@ -266,10 +266,10 @@ export default function DownloadForm({
         <label className="flex cursor-pointer items-start gap-2.5 pt-1">
           <input type="checkbox" checked={privacyConsent} onChange={e => setPrivacyConsent(e.target.checked)}
             disabled={state === 'submitting'}
-            className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-[#01408D]" />
+            className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-[#0D3B75]" />
           <span className="text-[13px] leading-relaxed text-[#1F2937]">
             <a href="https://www.cocomarke.com/privacy" target="_blank" rel="noreferrer"
-              className="font-bold text-[#01408D] underline">
+              className="font-bold text-[#0D3B75] underline">
               プライバシーポリシー
             </a>
             に同意する <span className={reqClass}>必須</span>
@@ -281,12 +281,12 @@ export default function DownloadForm({
         )}
 
         <button type="submit" disabled={!canSubmit || state === 'submitting'}
-          className="mt-1 w-full rounded-full bg-[#2563A8] py-[15px] text-[15px] font-bold text-white transition hover:-translate-y-px hover:bg-[#1d5390] disabled:cursor-not-allowed disabled:bg-[#B8C4D6]">
+          className="mt-1 w-full rounded-full bg-[#0D3B75] py-[15px] text-[15px] font-bold text-white transition hover:-translate-y-px hover:bg-[#0A2E5C] disabled:cursor-not-allowed disabled:bg-[#B8C4D6]">
           {state === 'submitting' ? '送信中...' : !configReady ? '準備中...' : '資料ダウンロード'}
         </button>
 
         <p className="text-center">
-          <Link href="/" className="text-[13px] font-bold text-[#01408D]">
+          <Link href="/" className="text-[13px] font-bold text-[#0D3B75]">
             ← トップページに戻る
           </Link>
         </p>

@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import DownloadForm from './DownloadForm';
 import type { PageDocument } from './getDownloadPageContext';
+import { getRelatedServiceCta } from '@/lib/relatedServiceCta';
 
 export const DEFAULT_HERO_DESCRIPTION =
   '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';
@@ -115,13 +116,14 @@ export default function DownloadPageShell({
       activeDocument?.hero_highlight_3, activeDocument?.hero_highlights_extra],
   );
   const thumbSrc = activeDocument?.hero_image_1_url?.trim() || null;
+  const relatedCta = getRelatedServiceCta(heroTitle);
 
   return (
     <div className={`bg-[#F8FAFC] ${thanksMode ? '' : 'py-10 sm:py-14'}`}>
       <div className={thanksMode ? '' : 'mx-auto max-w-[1200px] px-5'}>
         {!thanksMode && (
           <p className="mb-4 text-xs text-[#9CA3AF]">
-            <a href="/" className="hover:text-[#01408D]">お役立ち資料</a>
+            <a href="/" className="hover:text-[#0D3B75]">お役立ち資料</a>
             {' '}／{' '}
             <span>{activeDocument?.label || '資料ダウンロード'}</span>
           </p>
@@ -137,7 +139,7 @@ export default function DownloadPageShell({
           {/* 左：資料情報（thanksMode 時は非表示） */}
           {!thanksMode && (
             <div>
-              <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-snug text-[#01408D]">
+              <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-snug text-[#0D3B75]">
                 {heroTitle}
               </h1>
               <p className="mt-3.5 whitespace-pre-line text-sm leading-relaxed text-[#64748B]">
@@ -154,20 +156,20 @@ export default function DownloadPageShell({
                   </div>
                 )}
                 <div className="flex items-center gap-2.5 border-t border-[#E2E8F0] px-4 py-3.5 text-[13px] text-[#64748B]">
-                  <span className="rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[11px] font-bold text-[#01408D]">PDF</span>
+                  <span className="rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[11px] font-bold text-[#0D3B75]">PDF</span>
                   <span>無料ダウンロード・約5分で読了</span>
                 </div>
               </div>
 
               <div className="mt-6">
-                <h2 className="mb-3 text-[13px] font-bold uppercase tracking-widest text-[#01408D]">
+                <h2 className="mb-3 text-[13px] font-bold uppercase tracking-widest text-[#0D3B75]">
                   この資料でわかること
                 </h2>
                 <ul className="flex flex-col gap-2.5">
                   {heroHighlights.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="relative mt-[3px] flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[#E6EFFA]">
-                        <svg className="h-3 w-3 stroke-[#2563A8]" viewBox="0 0 12 12" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <svg className="h-3 w-3 stroke-[#0D3B75]" viewBox="0 0 12 12" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                           <path d="M2 6l3 3 5-5" />
                         </svg>
                       </span>
@@ -175,6 +177,69 @@ export default function DownloadPageShell({
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* 関連記事／サービスCTA（資料ごとに出し分け） */}
+              <div className="mt-8 overflow-hidden rounded-2xl border-[1.5px] border-cta/60 bg-white shadow-[0_4px_16px_rgba(224,96,58,.1)]">
+                <div className="grid gap-5 p-6 sm:p-7 md:grid-cols-[1fr_180px] md:items-center">
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="h-4 w-0.5 bg-cta" aria-hidden />
+                      <span className="text-[11px] font-bold text-cta">{relatedCta.badge}</span>
+                    </div>
+                    <h3 className="text-[17px] font-bold leading-snug text-[#17233A]">
+                      {relatedCta.heading}
+                    </h3>
+                    <p className="mt-2 text-[13px] leading-relaxed text-[#4A5871]">
+                      {relatedCta.description}
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <a
+                        href={relatedCta.href}
+                        target={relatedCta.href.startsWith('http') ? '_blank' : undefined}
+                        rel={relatedCta.href.startsWith('http') ? 'noreferrer' : undefined}
+                        className="inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-3 text-[13.5px] font-bold text-white shadow-[0_3px_10px_rgba(224,96,58,.28)] transition hover:bg-cta-hover"
+                      >
+                        {relatedCta.ctaLabel}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                          <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+                        </svg>
+                      </a>
+                      {relatedCta.href.startsWith('http') && (
+                        <span className="break-all font-mono text-[10.5px] leading-tight text-[#9AA6B8]">
+                          {relatedCta.href.replace(/^https?:\/\/(www\.)?/, '')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div
+                    className="hidden aspect-[16/10] items-center justify-center rounded-lg border border-[#E4E9F0] md:flex"
+                    style={{ background: 'repeating-linear-gradient(135deg,#F2F5F9 0 8px,#E8EDF4 8px 16px)' }}
+                    aria-hidden
+                  >
+                    <span className="font-mono text-[10px] text-[#8C99AC]">記事のOG画像</span>
+                  </div>
+                </div>
+
+                {relatedCta.industries && relatedCta.industries.length > 0 && (
+                  <div className="border-t border-[#F0DCCF] bg-[#FFF8F3] px-6 py-4 sm:px-7">
+                    <div className="mb-3 text-[11.5px] font-bold text-[#8A5A44]">業種別の事例記事</div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {relatedCta.industries.map((ind) => (
+                        <a
+                          key={ind.label}
+                          href={ind.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-between rounded-md border border-[#F0DCCF] bg-white px-3 py-2.5 text-[12px] font-medium text-[#4A5871] transition hover:border-cta hover:text-[#17233A]"
+                        >
+                          {ind.label}
+                          <span className="text-cta">→</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -192,6 +257,30 @@ export default function DownloadPageShell({
             />
           </div>
         </div>
+
+        {/* フォーム直下（軽いトーンで2本） */}
+        {!thanksMode && (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <a
+              href="/analysis"
+              className="rounded-2xl border border-[#E4E9F0] bg-white p-5 transition hover:border-[#0D3B75]/40 hover:shadow-[0_8px_24px_-14px_rgba(13,59,117,.2)]"
+            >
+              <div className="text-[14px] font-bold text-[#17233A]">自社アカウントの改善点を無料で確認する</div>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-[#7A879C]">1分の入力で、伸びない原因を診断します。</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[#0D3B75]">無料診断へ →</span>
+            </a>
+            <a
+              href="https://www.cocomarke.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-2xl border border-[#E4E9F0] bg-white p-5 transition hover:border-[#0D3B75]/40 hover:shadow-[0_8px_24px_-14px_rgba(13,59,117,.2)]"
+            >
+              <div className="text-[14px] font-bold text-[#17233A]">料金と支援プランを確認する</div>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-[#7A879C]">運用代行・伴走支援の費用感を公開しています。</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[#0D3B75]">プランを見る →</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
