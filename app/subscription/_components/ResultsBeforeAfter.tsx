@@ -1,22 +1,20 @@
 // ────────────────────────────────────────────────────────────────
-// 導入前後（Before / After）+ フォロワー増加フロー セクション
+// 導入前後（Before / After）+ 計測条件 + フォロワー増加フロー セクション
 //
-// 設置場所: /subscription ページの「Results（導入前後の変化）」を
-//           このコンポーネントに置き換えています。
+// 設置場所: /subscription ページの「Results（導入前後の変化）」。
 //
-// 画像: public/ 配下に before / after 画像を置き、下の src を合わせてください。
-//   - BEFORE: 泰然のプロフィール画面（フォロワーのみに届く状態）
+// 画像: public/images/results/ に before / after 画像を置き、下の src を合わせる。
+//   - BEFORE: プロフィール画面（フォロワーのみに届く状態）
 //   - AFTER : おすすめ・発見タブ「六本木グルメ」に掲載された画面
-//   例: public/images/results/before-profile.png, public/images/results/after-explore.png
 // ────────────────────────────────────────────────────────────────
 
 import Image from "next/image";
 
 const beforeStats = [
+  { label: "リーチ（1投稿）", value: "500" },
   { label: "いいね", value: "15" },
   { label: "保存", value: "0" },
-  { label: "コメント", value: "0" },
-  { label: "リーチ", value: "500" },
+  { label: "プロフィールアクセス", value: "12" },
 ];
 
 const afterStats = [
@@ -26,11 +24,18 @@ const afterStats = [
   { label: "フォロワー", value: "+380" },
 ];
 
+const conditions = [
+  { label: "業種・所在地", value: "飲食店（東京都・1店舗）" },
+  { label: "開始時フォロワー", value: "412名" },
+  { label: "利用プラン", value: "セットプラン（24,980円/月）" },
+  { label: "投稿頻度", value: "週2回（お客様側で投稿）" },
+];
+
 const flowSteps = [
-  { icon: "🔍", label: "おすすめ・発見タブに掲載" },
-  { icon: "👀", label: "投稿を見つける" },
-  { icon: "👤", label: "プロフィール流入" },
-  { icon: "✅", label: "フォロー", highlight: true },
+  { no: "STEP 1", label: "おすすめ・発見タブに掲載", desc: "投稿直後の反応を高め、掲載対象に入りやすくします。" },
+  { no: "STEP 2", label: "投稿を見つけてもらう", desc: "フォロワー外のユーザーの画面に表示されます。" },
+  { no: "STEP 3", label: "プロフィール流入", desc: "気になった人がプロフィールを見に来ます。" },
+  { no: "STEP 4", label: "フォロー・来店", desc: "フォローや予約・来店につながります。", highlight: true },
 ];
 
 export default function ResultsBeforeAfter() {
@@ -51,12 +56,14 @@ export default function ResultsBeforeAfter() {
       <div className="mt-12 grid gap-6 md:grid-cols-2">
         {/* BEFORE */}
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
-          <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
-            導入前 — Before
-          </span>
-          <p className="mt-3 text-sm text-slate-600">フォロワーにしか届かない状態</p>
+          <div className="flex items-center gap-2">
+            <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+              導入前 — Before
+            </span>
+            <span className="text-xs text-slate-400">2026.02</span>
+          </div>
+          <p className="mt-3 text-sm text-slate-600">フォロワーにしか届いていない状態</p>
 
-          {/* 画像（泰然プロフィール画面） */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-slate-50">
             <Image
               src="/images/results/before-profile.png"
@@ -67,9 +74,8 @@ export default function ResultsBeforeAfter() {
               className="mx-auto h-auto w-full max-w-[260px] object-contain"
             />
           </div>
-          <p className="mt-2 text-center text-xs text-slate-400">投稿はフォロワーのみに表示</p>
+          <p className="mt-2 text-center text-xs text-slate-400">投稿はフォロワーのみに表示されている</p>
 
-          {/* 数字 */}
           <dl className="mt-5 space-y-2.5">
             {beforeStats.map((s) => (
               <div key={s.label} className="flex items-center justify-between border-b border-slate-100 pb-2 text-sm">
@@ -80,18 +86,20 @@ export default function ResultsBeforeAfter() {
           </dl>
 
           <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-center text-sm text-rose-600">
-            フォロワーの約10%しか反応せず、新規に届かない
+            フォロワーの約10%しか反応せず、新規のお客様に届いていない状態です。
           </p>
         </div>
 
         {/* AFTER */}
         <div className="rounded-3xl border-2 border-[#4CAF75] bg-white p-6 shadow-sm sm:p-7">
-          <span className="inline-block rounded-full bg-[#E8F5ED] px-3 py-1 text-xs font-medium text-[#2D7A4F]">
-            導入後 — After
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-block rounded-full bg-[#E8F5ED] px-3 py-1 text-xs font-medium text-[#2D7A4F]">
+              導入後 — After
+            </span>
+            <span className="text-xs text-slate-400">2026.05（3ヶ月後）</span>
+          </div>
           <p className="mt-3 text-sm text-slate-600">おすすめ・発見タブから新規のお客様に届く状態</p>
 
-          {/* 画像（おすすめ・発見タブ掲載画面） */}
           <div className="mt-4 overflow-hidden rounded-2xl bg-[#E8F5ED]">
             <Image
               src="/images/results/after-explore.png"
@@ -104,7 +112,6 @@ export default function ResultsBeforeAfter() {
           </div>
           <p className="mt-2 text-center text-xs text-slate-400">おすすめ・発見タブ「六本木グルメ」で上位表示</p>
 
-          {/* 数字 */}
           <dl className="mt-5 space-y-2.5">
             {afterStats.map((s) => (
               <div key={s.label} className="flex items-center justify-between border-b border-[#E8F5ED] pb-2 text-sm">
@@ -115,9 +122,25 @@ export default function ResultsBeforeAfter() {
           </dl>
 
           <p className="mt-4 rounded-xl bg-[#E8F5ED] px-4 py-3 text-center text-sm text-[#2D7A4F]">
-            フォロワー外へリーチが広がり、来店・フォローにつながる
+            フォロワー外へリーチが広がり、来店・フォローにつながっています。
           </p>
         </div>
+      </div>
+
+      {/* 計測条件 */}
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 sm:p-7">
+        <p className="text-sm font-bold text-slate-900">この事例の計測条件</p>
+        <dl className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+          {conditions.map((c) => (
+            <div key={c.label}>
+              <dt className="text-xs text-slate-400">{c.label}</dt>
+              <dd className="mt-0.5 text-sm font-medium text-slate-800">{c.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-4 text-xs leading-relaxed text-slate-400">
+          ※ 個別事例であり、同等の成果を保証するものではありません。成果はアカウントの状態・投稿頻度・業種により異なります。
+        </p>
       </div>
 
       {/* フォロワー増加フロー */}
@@ -125,27 +148,24 @@ export default function ResultsBeforeAfter() {
         <p className="text-center text-sm font-bold text-slate-900">
           おすすめ・発見タブ掲載からフォロワー増加までの流れ
         </p>
-        {/* モバイルは縦一列（↓）、sm以上は横並び（›） */}
-        <div className="mt-6 flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
-          {flowSteps.map((step, i) => (
-            <div key={step.label} className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-              <div
-                className={
-                  "flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm sm:w-auto sm:min-w-[104px] sm:flex-col sm:gap-1 sm:text-center sm:text-xs " +
-                  (step.highlight
-                    ? "bg-[#2D7A4F] font-bold text-white"
-                    : "bg-white text-[#2D7A4F] shadow-sm")
-                }
-              >
-                <span className="text-xl" aria-hidden>{step.icon}</span>
-                <span>{step.label}</span>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {flowSteps.map((step) => (
+            <div
+              key={step.no}
+              className={
+                "rounded-2xl p-4 " +
+                (step.highlight ? "bg-[#2D7A4F] text-white" : "bg-white text-slate-700 shadow-sm")
+              }
+            >
+              <div className={"text-[11px] font-bold tracking-wide " + (step.highlight ? "text-[#CDEBD9]" : "text-[#2D7A4F]")}>
+                {step.no}
               </div>
-              {i < flowSteps.length - 1 && (
-                <span aria-hidden className="text-lg leading-none text-[#4CAF75]">
-                  <span className="sm:hidden">↓</span>
-                  <span className="hidden sm:inline">›</span>
-                </span>
-              )}
+              <div className={"mt-1 text-sm font-bold " + (step.highlight ? "text-white" : "text-slate-900")}>
+                {step.label}
+              </div>
+              <p className={"mt-1.5 text-xs leading-relaxed " + (step.highlight ? "text-[#E8F5ED]" : "text-slate-500")}>
+                {step.desc}
+              </p>
             </div>
           ))}
         </div>

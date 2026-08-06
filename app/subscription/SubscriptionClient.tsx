@@ -210,12 +210,23 @@ export default function SubscriptionClient() {
 
   return (
     <div className="[text-wrap:pretty]">
+      {/* ── 最上部インフォバー ── */}
+      <div style={{ background:"#fff", borderBottom:`1px solid ${BD}` }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"7px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap", fontSize:12, color:TM }}>
+          <span>運営：株式会社ホットセラー</span>
+          <span style={{ color:"#D9D9D9" }}>｜</span>
+          <span>受付：平日 09:00–18:00</span>
+          <span style={{ color:"#D9D9D9" }}>｜</span>
+          <span>Instagram運用サブスク「JEMIA」</span>
+        </div>
+      </div>
+
       {/* ── JEMIA Header ── */}
       <header className={styles.siteHeader}>
         <div className={styles.headerInner}>
           <a href="#top" className={styles.headerLogo}>JEM<span style={{ color:C }}>I</span>A</a>
           <nav className={styles.headerNav}>
-            {([["特徴","#features"],["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
+            {([["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
               <a key={href} href={href}>{label}</a>
             ))}
             <Link href="/subscription/blog">お役立ち記事</Link>
@@ -233,16 +244,13 @@ export default function SubscriptionClient() {
       </header>
 
       {/* ── 受付枠バー（ヘッダー直下） ── */}
-      <div style={{ background:"#1F1F1F", color:"#fff" }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", padding:"10px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:16, flexWrap:"wrap" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:8, fontSize:14 }}>
-            <span className={styles.pulseDot} style={{ width:7, height:7, borderRadius:"50%", background:C, display:"inline-block", flexShrink:0 }} />
-            <span style={{ fontWeight:700 }}>今月の残り受付枠：</span>
-            <span style={{ color:C, fontWeight:900, fontSize:18 }}>3</span>
-            <span style={{ fontWeight:700 }}>件</span>
-            <span style={{ color:"rgba(255,255,255,.55)", fontSize:12, marginLeft:2 }}>受付中</span>
-          </div>
-          <button onClick={()=>router.push("/subscription/apply")} style={{ background:C, color:"#fff", border:"none", padding:"8px 20px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>今すぐ申し込む</button>
+      <div style={{ background:OW, borderBottom:`1px solid ${BD}` }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"11px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:12, flexWrap:"wrap", textAlign:"center" }}>
+          <span style={{ display:"inline-flex", alignItems:"center", gap:6, background:CL, color:C, fontSize:12, fontWeight:700, padding:"4px 12px", borderRadius:100, flexShrink:0 }}>
+            <span className={styles.pulseDot} style={{ width:6, height:6, borderRadius:"50%", background:C, display:"inline-block" }} />受付中
+          </span>
+          <span style={{ fontSize:14, fontWeight:700, color:TXT }}>今月の残り受付枠：<span style={{ color:C, fontWeight:900 }}>3件</span></span>
+          <span style={{ fontSize:12.5, color:TM }}>担当が固定制のため、月ごとに新規のお受け入れ数を制限しています。</span>
         </div>
       </div>
 
@@ -340,30 +348,6 @@ export default function SubscriptionClient() {
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section id="features" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
-        <div style={{ maxWidth:1100, margin:"0 auto" }}>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Features</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行が選ばれる3つの理由</h2>
-          <p style={{ fontSize:15, color:TM, margin:"0 0 16px", lineHeight:1.8 }}>インスタ集客・SNS運用をプロにまるごとお任せ。月額サブスクだから続けやすく、成果につながります。</p>
-          <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, margin:"0 0 40px" }} />
-          <div className={styles.grid3} style={{ gap:24 }}>
-            {[
-              { icon:"📅", title:"月額固定・解約自由", desc:"契約縛りなし。月々定額で予算が読める。いつでも解約OK。成果が出なければ継続しなくていい。" },
-              { icon:"🎛️", title:"自由な組み合わせ",   desc:"いいね代行・おすすめ・発見タブ・リスト上位・セットプランなど、目的に合わせてプランを選択・変更できる。" },
-              { icon:"💬", title:"LINE直接相談",         desc:"専任担当がLINEで対応。投稿アドバイス・分析レポート・戦略相談まで気軽に聞ける。" },
-            ].map((f)=>(
-              <div key={f.title} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:20, padding:"32px 28px", position:"relative", overflow:"hidden", transition:"box-shadow .2s,transform .2s" }}>
-                <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${G},${GM})` }} />
-                <div style={{ width:48, height:48, borderRadius:12, background:GL, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20, fontSize:22 }}>{f.icon}</div>
-                <h3 style={{ fontSize:17, fontWeight:700, marginBottom:10, color:TXT }}>{f.title}</h3>
-                <p style={{ fontSize:14, color:TM, lineHeight:1.75 }}>{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Results（導入前後 Before/After + フロー） ── */}
       <section style={{ background:OW }}>
         <ResultsBeforeAfter />
@@ -399,14 +383,14 @@ export default function SubscriptionClient() {
             <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>プランごとの導入イメージを、実際の画面とともにご紹介します。</p>
           </div>
           {[
-            { badge:"いいね代行", img:"/images/intro/intro-like.webp", alt:"いいね代行の導入イメージ：フォロワー・非フォロワーとの交流",
+            { badge:"いいね代行", price:"9,800円/月（税込）〜", img:"/images/intro/intro-like.webp", alt:"いいね代行の導入イメージ：フォロワー・非フォロワーとの交流",
               title:"フォロワー外との接点が生まれ、認知が広がる",
               points:[
                 ["認知の入口が広がる","これまで届かなかったフォロワー外のユーザーに、アカウントの存在を知ってもらえます。"],
                 ["自然な認知拡大に繋がる","ユーザーへの反応を積み重ねることで、アクティブな状態になりアカウントの評価が向上します。"],
                 ["手間なく自動で","ターゲット設定はおまかせ。運用の手間をかけずに認知拡大が進みます。"],
               ] },
-            { badge:"リスト上位表示", img:"/images/intro/intro-rank.webp", alt:"リスト上位表示の導入イメージ：検索結果の上位に表示される",
+            { badge:"リスト上位表示", price:"14,800円/月（税込）〜", img:"/images/intro/intro-rank.webp", alt:"リスト上位表示の導入イメージ：検索結果の上位に表示される",
               title:"検索で「見つけられる」アカウントへ",
               points:[
                 ["検索で見つけられる","「エリア×業種」などのキーワードで検索したユーザーに、上位表示で見つけてもらえます。"],
@@ -420,7 +404,7 @@ export default function SubscriptionClient() {
                 <img src={r.img} alt={r.alt} loading="lazy" style={{ display:"block", width:"100%", height:"auto", borderRadius:12 }} />
               </div>
               <div>
-                <span style={{ display:"inline-block", background:GL, color:G, fontSize:12, fontWeight:700, padding:"5px 12px", borderRadius:100, marginBottom:14 }}>{r.badge}</span>
+                <span style={{ display:"inline-block", background:GL, color:G, fontSize:12, fontWeight:700, padding:"5px 12px", borderRadius:100, marginBottom:14 }}>{r.badge} — {r.price}</span>
                 <h3 style={{ fontSize:"clamp(18px,2.2vw,24px)", fontWeight:700, color:TXT, lineHeight:1.5, marginBottom:20 }}>{r.title}</h3>
                 <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
                   {r.points.map(([h,d],pi)=>(
@@ -454,9 +438,16 @@ export default function SubscriptionClient() {
       <section id="plans" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Plans & Pricing</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行の料金プラン（月額固定・5プラン）</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>料金プラン（月額固定・税込）</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:12 }} />
-          <p style={{ fontSize:15, color:TM, marginBottom:36, lineHeight:1.8 }}>目的に合わせて選べる5プラン。すべて月額固定・解約自由。</p>
+          <p style={{ fontSize:15, color:TM, marginBottom:18, lineHeight:1.8 }}>表示価格はすべて税込です。初期費用・解約手数料はかかりません。オプションを追加しない限り、記載の月額以外の請求は発生しません。</p>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:36 }}>
+            {["初期費用 0円","最低利用期間なし","解約手数料 0円","自動更新（当月連絡で翌月停止）","クレジットカード／請求書払い"].map((b)=>(
+              <span key={b} style={{ display:"inline-flex", alignItems:"center", gap:6, background:OW, border:`1px solid ${BD}`, color:TXT, fontSize:12, fontWeight:700, padding:"6px 13px", borderRadius:100 }}>
+                <span style={{ color:G }}>✓</span>{b}
+              </span>
+            ))}
+          </div>
           {/* 5プラン カード一覧 */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))", gap:16, alignItems:"stretch" }}>
             {plans.map((p)=>{
@@ -517,22 +508,40 @@ export default function SubscriptionClient() {
       {/* ── Flow ── */}
       <section style={{ padding:"80px 24px", background:OW }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
-          <div style={{ textAlign:"center", marginBottom:48 }}>
+          <div style={{ marginBottom:36 }}>
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it works</div>
-            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行サービスの導入の流れ</h2>
-            <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>インスタ集客・SNS運用の代行を、ご相談から運用開始までスムーズに進めます。</p>
+            <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT }}>導入の流れ</h2>
+            <p style={{ fontSize:15, color:TM, margin:"12px 0 0", lineHeight:1.8 }}>ご相談から運用開始まで、最短で翌日にスタートできます。お客様の作業は初回のヒアリングとお支払いのみです。</p>
           </div>
-          <div className={styles.stepsGrid} style={{ position:"relative" }}>
-            {[["01","無料相談","LINEまたはフォームからご連絡。現状のアカウントをヒアリングし最適なプランをご提案。"],
-              ["02","プラン選択・決済","ご希望のプランを選択し、オンラインで決済。"],
-              ["03","設定・運用開始","最短翌日から運用スタート。初期設定はすべて担当が対応。お客様の作業は不要。"],
-            ].map(([n,h,p])=>(
-              <div key={n} style={{ textAlign:"center", padding:"0 12px", position:"relative", zIndex:1 }}>
-                <div style={{ fontFamily:"Montserrat,sans-serif", width:64, height:64, borderRadius:"50%", background:"#fff", border:`2px solid ${G}`, color:G, fontSize:20, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>{n}</div>
-                <h4 style={{ fontSize:15, fontWeight:700, marginBottom:8, color:TXT }}>{h}</h4>
-                <p style={{ fontSize:13, color:TM, lineHeight:1.7 }}>{p}</p>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))", gap:16, alignItems:"stretch" }}>
+            {[
+              { n:"01", h:"お申し込み・無料相談", d:"フォームからお申し込みください。現状のアカウントを確認し、メールにてお手続きフォーム・ご相談内容に応じてご連絡いたします。", note:"所要 15〜30分／費用なし" },
+              { n:"02", h:"作業内容・金額のご提示", d:"実施する作業と月額の内訳を書面でお渡しします。ご不明点が解消してからお申し込みいただけます。" },
+              { n:"03", h:"プラン選択・お支払い", d:"ご希望のプランを選び、オンラインで決済。法人のお客様は請求書払いもご利用いただけます。" },
+              { n:"04", h:"運用開始", d:"設定はすべて担当が対応します。以降は簡易月次レポートで進捗を共有します。", active:true },
+            ].map((s)=>(
+              <div key={s.n} style={{ background:"#fff", border:s.active?`2px solid ${G}`:`1px solid ${BD}`, borderRadius:16, padding:"24px 22px", display:"flex", flexDirection:"column" }}>
+                <div style={{ fontFamily:"Montserrat,sans-serif", fontSize:26, fontWeight:900, color:s.active?G:"#D1D5DB", lineHeight:1, marginBottom:12 }}>{s.n}</div>
+                <h4 style={{ fontSize:16, fontWeight:700, marginBottom:8, color:TXT }}>{s.h}</h4>
+                <p style={{ fontSize:13, color:TM, lineHeight:1.75, flex:1 }}>{s.d}</p>
+                {s.note && <p style={{ fontSize:12, color:TL, marginTop:12 }}>{s.note}</p>}
               </div>
             ))}
+          </div>
+
+          {/* 運用にあたってお預かりする情報 */}
+          <div style={{ marginTop:24, background:"#fff", border:`1px solid ${BD}`, borderRadius:16, padding:"24px 26px" }}>
+            <p style={{ fontSize:14, fontWeight:700, color:TXT, marginBottom:16 }}>運用にあたってお預かりする情報</p>
+            <div className={styles.grid2} style={{ gap:24 }}>
+              <div>
+                <p style={{ fontSize:13.5, fontWeight:700, color:TXT, marginBottom:4 }}>パスワードのお預かり</p>
+                <p style={{ fontSize:13, color:TM, lineHeight:1.8 }}>いいね代行をご選択の場合、パスワードの共有が必要になります。お預かりする場合は取扱者を担当者に限定し、契約終了時に速やかに削除します。</p>
+              </div>
+              <div>
+                <p style={{ fontSize:13.5, fontWeight:700, color:TXT, marginBottom:4 }}>解約時のお手続き</p>
+                <p style={{ fontSize:13, color:TM, lineHeight:1.8 }}>当月中のご連絡で翌月分から停止。違約金・引き止めはありません。設定はこちらで解除します。</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
