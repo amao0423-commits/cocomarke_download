@@ -586,9 +586,9 @@ export default function SubscriptionClient() {
             {/* 運用チーム写真 */}
             <div style={{ background:OW, border:`1px solid ${BD}`, borderRadius:20, padding:18 }}>
               <div style={{ position:"relative", borderRadius:12, overflow:"hidden", background:"#EDEFED", minHeight:220, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ position:"absolute", fontSize:12, color:TL }}>運用チーム写真（team.jpg）を配置</span>
+                <span style={{ position:"absolute", fontSize:12, color:TL }}>運用チーム写真（team.png）を配置</span>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/company/team.jpg" alt="JEMIA運用チーム（東京オフィス）" loading="lazy" style={{ position:"relative", display:"block", width:"100%", height:"auto", borderRadius:12 }} onError={(e)=>{ e.currentTarget.style.display="none"; }} />
+                <img src="/images/company/team.png" alt="JEMIA運用チーム（東京オフィス）" loading="lazy" style={{ position:"relative", display:"block", width:"100%", height:"auto", borderRadius:12 }} onError={(e)=>{ e.currentTarget.style.display="none"; }} />
               </div>
             </div>
             {/* テキスト＋責任者カード */}
