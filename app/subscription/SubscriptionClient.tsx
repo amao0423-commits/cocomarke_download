@@ -549,8 +549,8 @@ export default function SubscriptionClient() {
       {/* ── Voices ── */}
       <section id="voices" style={{ padding:"80px 24px", background:"#fff", scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Reviews</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>サブスク型インスタ運用代行利用者の口コミ・評判</h2>
+          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Voice</div>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:16, letterSpacing:"-.02em", color:TXT }}>お客様の声</h2>
           <div style={{ width:40, height:3, borderRadius:2, background:`linear-gradient(90deg,${G},${C})`, marginBottom:40 }} />
           <div className={styles.grid3} style={{ gap:20 }}>
             {visibleVoices.map((v)=>(
@@ -579,7 +579,74 @@ export default function SubscriptionClient() {
         </div>
       </section>
 
-      {/* ── メディア掲載実績（Reviews の直後・FAQ の前） ── */}
+      {/* ── 専任の運営担当者がサポート（Who we are） ── */}
+      <section style={{ padding:"80px 24px", background:"#fff" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div className={styles.grid2} style={{ gap:48, alignItems:"center" }}>
+            {/* 運用チーム写真 */}
+            <div style={{ background:OW, border:`1px solid ${BD}`, borderRadius:20, padding:18 }}>
+              <div style={{ position:"relative", borderRadius:12, overflow:"hidden", background:"#EDEFED", minHeight:220, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ position:"absolute", fontSize:12, color:TL }}>運用チーム写真（team.jpg）を配置</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/company/team.jpg" alt="JEMIA運用チーム（東京オフィス）" loading="lazy" style={{ position:"relative", display:"block", width:"100%", height:"auto", borderRadius:12 }} onError={(e)=>{ e.currentTarget.style.display="none"; }} />
+              </div>
+              <p style={{ fontSize:12, color:TL, marginTop:12, textAlign:"center" }}>運用チーム（東京オフィス）。お客様1社につき担当を1名固定でお付けします。</p>
+            </div>
+            {/* テキスト＋責任者カード */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Who we are</div>
+              <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT, marginBottom:24 }}>専任の運営担当者がサポート</h2>
+              <div style={{ border:`1.5px solid ${BD}`, borderRadius:16, padding:"22px 24px", background:"#fff" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:14 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/interview/interview-1.png" alt="JEMIA運営責任者" style={{ width:54, height:54, borderRadius:"50%", objectFit:"cover", flexShrink:0 }} />
+                  <div>
+                    <div style={{ fontSize:15, fontWeight:700, color:TXT }}>JEMIA 運営責任者</div>
+                    <div style={{ fontSize:12.5, color:TM }}>株式会社ホットセラー／Instagram運用マーケティング歴 6年</div>
+                  </div>
+                </div>
+                <p style={{ fontSize:14, color:TM, lineHeight:1.8, marginBottom:14 }}>「頑張っても伸びない」を終わらせたい。― 運営責任者インタビューを公開しています。</p>
+                <Link href="/subscription/blog/jemia-interview" style={{ color:G, fontSize:14, fontWeight:700, textDecoration:"none" }}>インタビューを読む →</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 運営会社（Company） ── */}
+      <section style={{ padding:"80px 24px", background:OW }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Company</div>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT, marginBottom:28 }}>運営会社</h2>
+          <div className={styles.grid2} style={{ gap:40, alignItems:"start" }}>
+            <div>
+              <dl>
+                {[
+                  ["会社名","株式会社ホットセラー"],
+                  ["所在地","東京都中央区晴海1-8-16 晴海トリトンスクエアX棟"],
+                  ["連絡先","お問い合わせフォーム・LINE（受付：平日 09:00–18:00）"],
+                ].map(([k,v])=>(
+                  <div key={k} style={{ display:"flex", gap:16, padding:"14px 0", borderBottom:`1px solid ${BD}` }}>
+                    <dt style={{ width:72, flexShrink:0, fontSize:13, color:TL }}>{k}</dt>
+                    <dd style={{ fontSize:14, color:TXT, lineHeight:1.7 }}>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p style={{ fontSize:12, color:TL, marginTop:14, lineHeight:1.8 }}>※ お打ち合わせはオンラインのほか、ご来社・訪問にも対応しています。</p>
+            </div>
+            <div style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:16, padding:"22px 24px" }}>
+              <p style={{ fontSize:14, fontWeight:700, color:TXT, marginBottom:14 }}>お取引の安全性について</p>
+              <ul style={{ listStyle:"none", padding:0, margin:0, display:"flex", flexDirection:"column", gap:10 }}>
+                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・契約書／秘密保持契約（NDA）の締結に対応</li>
+                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・請求書払い・法人口座での取引に対応</li>
+                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・お預かり情報の取り扱いは<Link href="/subscription/privacy" style={{ color:G, textDecoration:"underline" }}>プライバシーポリシー</Link>に準拠</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── メディア掲載実績（Company の直後・FAQ の前） ── */}
       <MediaMentions />
 
       {/* ── お役立ち記事（自動横スクロール） ── */}
@@ -723,7 +790,7 @@ export default function SubscriptionClient() {
           Instagram運用を、もっと自由に。もっとスマートに。
         </div>
         <div style={{ marginBottom:16 }}>
-          {([["特徴","#features"],["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
+          {([["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
             <a key={href} href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>{label}</a>
           ))}
           <Link href="/subscription/corporate" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>法人のお客様</Link>
