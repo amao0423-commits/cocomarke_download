@@ -461,9 +461,38 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
       ? documents
       : documents.filter((d) => d.category === filterCategory);
 
+  const publishedCount = documents.filter((d) => d.is_published).length;
+  const lastUpdatedMs = documents.reduce((acc, d) => {
+    const t = new Date(d.created_at).getTime();
+    return Number.isFinite(t) && t > acc ? t : acc;
+  }, 0);
+  const kpis = [
+    { label: '公開中の資料', value: String(publishedCount), sub: `/ ${documents.length}` },
+    { label: '非公開', value: String(documents.length - publishedCount), sub: '件' },
+    { label: 'カテゴリ数', value: String(categories.length), sub: '件' },
+    {
+      label: '最終更新',
+      value: lastUpdatedMs ? new Date(lastUpdatedMs).toLocaleDateString('ja-JP') : '—',
+      sub: '',
+    },
+  ];
+
   return (
     <div className="space-y-8">
       {errorMessage && <p className="text-red-600 text-sm">{errorMessage}</p>}
+
+      {/* KPI カード */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {kpis.map((k) => (
+          <div key={k.label} className="rounded-2xl border border-[#E4E9F0] bg-white p-4">
+            <div className="text-[11.5px] font-medium text-[#7A879C]">{k.label}</div>
+            <div className="mt-1.5 flex items-baseline gap-1.5">
+              <span className="text-[20px] font-bold leading-none text-[#17233A]">{k.value}</span>
+              {k.sub && <span className="text-[11.5px] text-[#9AA6B8]">{k.sub}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* 資料を追加 */}
       <div className="border border-blue-50/90 rounded-3xl p-5 space-y-4 shadow-xl shadow-blue-500/[0.04]">
@@ -666,15 +695,15 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                   key={d.id}
                   className="rounded-2xl border border-blue-50/90 bg-white overflow-hidden shadow-sm"
                 >
-                  {/* 行ヘッダー（クリックで開閉） */}
-                  <div className="flex items-center gap-2 px-3 py-2.5">
+                  {/* 行（テーブル風） */}
+                  <div className="flex items-center gap-3 px-3 py-2.5">
                     {filterCategory === 'all' && (
-                      <div className="flex flex-col gap-0.5 shrink-0">
+                      <div className="flex shrink-0 flex-col gap-0.5">
                         <button
                           type="button"
                           disabled={i === 0 || reorderBusy}
                           onClick={() => void moveDocument(i, -1)}
-                          className="rounded border border-gray-200 bg-white px-1.5 py-0 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
+                          className="rounded border border-[#E4E9F0] bg-white px-1.5 py-0 text-xs leading-none text-[#7A879C] transition hover:bg-[#F1F5F9] disabled:opacity-30"
                           aria-label="上へ"
                         >
                           ↑
@@ -683,33 +712,61 @@ export function DocumentsTab({ secretKey }: { secretKey: string }) {
                           type="button"
                           disabled={i === filteredDocs.length - 1 || reorderBusy}
                           onClick={() => void moveDocument(i, 1)}
-                          className="rounded border border-gray-200 bg-white px-1.5 py-0 text-xs text-gray-500 hover:bg-gray-100 disabled:opacity-30 transition leading-none"
+                          className="rounded border border-[#E4E9F0] bg-white px-1.5 py-0 text-xs leading-none text-[#7A879C] transition hover:bg-[#F1F5F9] disabled:opacity-30"
                           aria-label="下へ"
                         >
                           ↓
                         </button>
                       </div>
                     )}
+                    {/* 表紙サムネ */}
+                    <div className="hidden h-8 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-[#E4E9F0] bg-[#F7F9FC] sm:flex">
+                      {d.thumbnail_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={d.thumbnail_url} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="font-mono text-[8px] text-[#B6BFCC]">PDF</span>
+                      )}
+                    </div>
+                    {/* タイトル + ファイル名（クリックで詳細） */}
                     <button
                       type="button"
                       onClick={() => setExpandedId(open ? null : d.id)}
-                      className="flex flex-1 min-w-0 items-center gap-2 text-left"
+                      className="flex min-w-0 flex-1 flex-col items-start text-left"
                     >
-                      <span className="flex-1 min-w-0 truncate font-medium text-slate-700">
-                        {d.title}
+                      <span className="w-full truncate font-medium text-[#17233A]">{d.title}</span>
+                      <span className="w-full truncate font-mono text-[10px] text-[#9AA6B8]">
+                        {d.file_name ?? '—'}
                       </span>
-                      <span className="hidden sm:inline-block shrink-0 rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[10px] font-bold text-[#0C447C]">
-                        {d.category}
-                      </span>
-                      <span
-                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                          d.is_published
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-gray-100 text-gray-500'
-                        }`}
-                      >
-                        {d.is_published ? '公開中' : '非公開'}
-                      </span>
+                    </button>
+                    {/* カテゴリ */}
+                    <span className="hidden w-[128px] shrink-0 truncate rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-center text-[10px] font-bold text-[#0C447C] md:inline-block">
+                      {d.category}
+                    </span>
+                    {/* 公開トグル */}
+                    <button
+                      type="button"
+                      onClick={() => void updateDocumentPublished(d.id, !d.is_published)}
+                      title="クリックで公開／非公開を切り替え"
+                      className={`w-[52px] shrink-0 rounded-full px-2 py-1 text-[10px] font-bold transition ${
+                        d.is_published
+                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                          : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      }`}
+                    >
+                      {d.is_published ? '公開中' : '非公開'}
+                    </button>
+                    {/* 更新日 */}
+                    <span className="hidden w-[80px] shrink-0 text-right font-mono text-[10.5px] text-[#9AA6B8] lg:inline">
+                      {new Date(d.created_at).toLocaleDateString('ja-JP')}
+                    </span>
+                    {/* 詳細トグル */}
+                    <button
+                      type="button"
+                      onClick={() => setExpandedId(open ? null : d.id)}
+                      className="shrink-0"
+                      aria-label="詳細を開閉"
+                    >
                       <Chevron open={open} />
                     </button>
                   </div>
