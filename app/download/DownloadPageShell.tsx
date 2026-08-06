@@ -121,7 +121,7 @@ export default function DownloadPageShell({
       <div className={thanksMode ? '' : 'mx-auto max-w-[1200px] px-5'}>
         {!thanksMode && (
           <p className="mb-4 text-xs text-[#9CA3AF]">
-            <a href="/" className="hover:text-[#01408D]">お役立ち資料</a>
+            <a href="/" className="hover:text-[#0D3B75]">お役立ち資料</a>
             {' '}／{' '}
             <span>{activeDocument?.label || '資料ダウンロード'}</span>
           </p>
@@ -137,7 +137,7 @@ export default function DownloadPageShell({
           {/* 左：資料情報（thanksMode 時は非表示） */}
           {!thanksMode && (
             <div>
-              <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-snug text-[#01408D]">
+              <h1 className="text-[clamp(22px,3vw,30px)] font-black leading-snug text-[#0D3B75]">
                 {heroTitle}
               </h1>
               <p className="mt-3.5 whitespace-pre-line text-sm leading-relaxed text-[#64748B]">
@@ -154,20 +154,20 @@ export default function DownloadPageShell({
                   </div>
                 )}
                 <div className="flex items-center gap-2.5 border-t border-[#E2E8F0] px-4 py-3.5 text-[13px] text-[#64748B]">
-                  <span className="rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[11px] font-bold text-[#01408D]">PDF</span>
+                  <span className="rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[11px] font-bold text-[#0D3B75]">PDF</span>
                   <span>無料ダウンロード・約5分で読了</span>
                 </div>
               </div>
 
               <div className="mt-6">
-                <h2 className="mb-3 text-[13px] font-bold uppercase tracking-widest text-[#01408D]">
+                <h2 className="mb-3 text-[13px] font-bold uppercase tracking-widest text-[#0D3B75]">
                   この資料でわかること
                 </h2>
                 <ul className="flex flex-col gap-2.5">
                   {heroHighlights.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="relative mt-[3px] flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[#E6EFFA]">
-                        <svg className="h-3 w-3 stroke-[#2563A8]" viewBox="0 0 12 12" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <svg className="h-3 w-3 stroke-[#0D3B75]" viewBox="0 0 12 12" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                           <path d="M2 6l3 3 5-5" />
                         </svg>
                       </span>

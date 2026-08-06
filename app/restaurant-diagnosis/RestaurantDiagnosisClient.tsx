@@ -372,7 +372,7 @@ export function RestaurantDiagnosisClient() {
         <div className="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-[#F77737]/10 blur-3xl" />
 
         <div className={`relative ${pageContentClass} text-center`}>
-          <p className="text-sm font-semibold leading-normal text-[#01408D]/90 sm:text-base sm:leading-normal">
+          <p className="text-sm font-semibold leading-normal text-[#0D3B75]/90 sm:text-base sm:leading-normal">
             飲食店専門 · Instagram集客診断
           </p>
           <h1
@@ -391,7 +391,7 @@ export function RestaurantDiagnosisClient() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-end sm:gap-4">
             <a
               href="#diagnosis-form"
-              className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full bg-[#01408D] px-8 py-3.5 text-sm font-bold text-white shadow-md sm:w-auto sm:max-w-none ${floatInteractive}`}
+              className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full bg-[#0D3B75] px-8 py-3.5 text-sm font-bold text-white shadow-md sm:w-auto sm:max-w-none ${floatInteractive}`}
             >
               無料診断フォームへ
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
@@ -406,7 +406,7 @@ export function RestaurantDiagnosisClient() {
               </p>
               <Link
                 href="/?diagnosis=1"
-                className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full border-2 border-[#01408D]/25 bg-white px-8 py-3.5 text-sm font-bold text-[#01408D] shadow-sm sm:w-auto sm:max-w-none ${floatInteractive}`}
+                className={`inline-flex min-h-[48px] w-full max-w-xs items-center justify-center rounded-full border-2 border-[#0D3B75]/25 bg-white px-8 py-3.5 text-sm font-bold text-[#0D3B75] shadow-sm sm:w-auto sm:max-w-none ${floatInteractive}`}
               >
                 アカウント無料分析（ID入力）
               </Link>
@@ -455,7 +455,7 @@ export function RestaurantDiagnosisClient() {
 
       {/* Educational — ネイビー + 曲線（下のピンクの角丸と同じ半径で重ねると隙間が出ない） */}
       <section
-        className={`${navyTopCurveClass} w-full bg-gradient-to-b from-[#01408D] to-[#001A3D] px-4 pb-24 pt-16 text-white sm:px-6 sm:pb-28 sm:pt-20 lg:px-8 lg:pb-36 lg:pt-20`}
+        className={`${navyTopCurveClass} w-full bg-gradient-to-b from-[#0D3B75] to-[#001A3D] px-4 pb-24 pt-16 text-white sm:px-6 sm:pb-28 sm:pt-20 lg:px-8 lg:pb-36 lg:pt-20`}
         aria-labelledby="flow-heading"
       >
         <div className={pageContentClass}>
@@ -504,7 +504,7 @@ export function RestaurantDiagnosisClient() {
                 key={title}
                 className="flex flex-col rounded-2xl border border-white/90 bg-white p-5 shadow-design-soft"
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#E1306C]/15 to-[#F77737]/15 text-[#01408D]">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#E1306C]/15 to-[#F77737]/15 text-[#0D3B75]">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <h3 className="mt-4 text-sm font-bold text-cocomarke-navy">{title}</h3>
@@ -519,7 +519,7 @@ export function RestaurantDiagnosisClient() {
 
       {/* Profile */}
       <section
-        className={`${navyTopCurveClass} w-full bg-gradient-to-b from-[#01408D] to-[#001A3D] px-4 pb-24 pt-14 text-white sm:px-6 sm:pb-28 sm:pt-16 lg:px-8 lg:pb-36`}
+        className={`${navyTopCurveClass} w-full bg-gradient-to-b from-[#0D3B75] to-[#001A3D] px-4 pb-24 pt-14 text-white sm:px-6 sm:pb-28 sm:pt-16 lg:px-8 lg:pb-36`}
         aria-labelledby="profile-heading"
       >
         <div className={`grid ${pageContentClass} grid-cols-1 gap-10 lg:grid-cols-[minmax(0,280px)_1fr] lg:items-start lg:gap-14`}>
@@ -605,8 +605,8 @@ export function RestaurantDiagnosisClient() {
                             }
                             className={`min-h-[44px] max-w-full rounded-full border px-4 py-2.5 text-left text-xs font-medium leading-snug transition sm:text-sm ${
                               selected
-                                ? "border-[#01408D] bg-[#01408D] text-white shadow-md"
-                                : "border-slate-200 bg-white text-design-text-primary hover:border-[#01408D]/40"
+                                ? "border-[#0D3B75] bg-[#0D3B75] text-white shadow-md"
+                                : "border-slate-200 bg-white text-design-text-primary hover:border-[#0D3B75]/40"
                             } ${floatInteractive}`}
                           >
                             {opt}
@@ -629,7 +629,7 @@ export function RestaurantDiagnosisClient() {
                   value={answers.storeName}
                   onChange={(e) => setTextField("storeName", e.target.value)}
                   placeholder="例：COCOカフェ 渋谷店"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#01408D]/30 transition focus:border-[#01408D] focus:ring-2"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#0D3B75]/30 transition focus:border-[#0D3B75] focus:ring-2"
                 />
               </fieldset>
 
@@ -648,8 +648,8 @@ export function RestaurantDiagnosisClient() {
                         onClick={() => toggleMultiChoice("q8_area", opt)}
                         className={`min-h-[44px] max-w-full rounded-full border px-4 py-2.5 text-left text-xs font-medium leading-snug transition sm:text-sm ${
                           selected
-                            ? "border-[#01408D] bg-[#01408D] text-white shadow-md"
-                            : "border-slate-200 bg-white text-design-text-primary hover:border-[#01408D]/40"
+                            ? "border-[#0D3B75] bg-[#0D3B75] text-white shadow-md"
+                            : "border-slate-200 bg-white text-design-text-primary hover:border-[#0D3B75]/40"
                         } ${floatInteractive}`}
                       >
                         {opt}
@@ -676,7 +676,7 @@ export function RestaurantDiagnosisClient() {
                       value={answers.instagram}
                       onChange={(e) => setTextField("instagram", e.target.value)}
                       placeholder="@から入力可（任意）"
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#01408D]/30 transition focus:border-[#01408D] focus:ring-2"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#0D3B75]/30 transition focus:border-[#0D3B75] focus:ring-2"
                     />
                   </div>
                   <div>
@@ -690,7 +690,7 @@ export function RestaurantDiagnosisClient() {
                       value={answers.consultation}
                       onChange={(e) => setTextField("consultation", e.target.value)}
                       placeholder="ご相談内容があればご記入ください（任意）"
-                      className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#01408D]/30 transition focus:border-[#01408D] focus:ring-2"
+                      className="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#0D3B75]/30 transition focus:border-[#0D3B75] focus:ring-2"
                     />
                   </div>
                 </div>
@@ -707,7 +707,7 @@ export function RestaurantDiagnosisClient() {
                   value={answers.email}
                   onChange={(e) => setTextField("email", e.target.value)}
                   placeholder="example@email.com"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#01408D]/30 transition focus:border-[#01408D] focus:ring-2"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-design-text-primary outline-none ring-[#0D3B75]/30 transition focus:border-[#0D3B75] focus:ring-2"
                 />
                 <p className="mt-2 text-xs text-design-text-secondary">診断結果・ご連絡に使用します。</p>
               </fieldset>
@@ -722,7 +722,7 @@ export function RestaurantDiagnosisClient() {
                 </button>
               </div>
 
-              <div className="rounded-2xl border border-dashed border-[#01408D]/25 bg-white/60 p-6 text-center">
+              <div className="rounded-2xl border border-dashed border-[#0D3B75]/25 bg-white/60 p-6 text-center">
                 <p className="text-sm font-semibold text-cocomarke-navy">
                   LINEでそのまま相談したい方へ
                 </p>
@@ -753,11 +753,11 @@ export function RestaurantDiagnosisClient() {
             className="pointer-events-auto w-full max-w-[min(100%,22rem)] rounded-2xl border border-white/90 bg-white/95 p-4 shadow-[0_12px_40px_-8px_rgba(1,64,141,0.35)] backdrop-blur-sm transition-shadow duration-200 ease-out hover:shadow-[0_16px_48px_-10px_rgba(1,64,141,0.42)] sm:max-w-sm"
           >
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#E1306C]/12 to-[#F77737]/12 text-[#01408D]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#E1306C]/12 to-[#F77737]/12 text-[#0D3B75]">
                 <ClipboardList className="h-5 w-5" aria-hidden />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#01408D]/80">入力の進捗</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#0D3B75]/80">入力の進捗</p>
                 <p className="mt-0.5 text-sm font-bold text-cocomarke-navy">
                   {formProgress.done}/{formProgress.total} 完了
                   <span className="ml-1.5 font-semibold text-design-text-secondary">（{formProgress.pct}%）</span>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { loadHomeDocumentsFlat } from "@/lib/homeDocuments";
 import { SITE_SNS_LINKS } from "@/lib/siteSns";
 import { DocumentLibrary } from "@/components/home/DocumentLibrary";
+import { HeroCoverStack } from "@/components/home/HeroCoverStack";
 import { ContactSection } from "@/components/home/ContactSection";
 import { FloatingNavigator } from "@/components/navigation/floating-navigator";
 import Image from "next/image";
@@ -17,53 +18,39 @@ export default async function Home() {
   return (
     <div>
       {/* ===== Hero ===== */}
-      <div className="relative overflow-hidden border-b border-[#E8EBF0] bg-white">
-        {/* 装飾グラデーション */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0"
-          aria-hidden
-          style={{
-            background: [
-              "radial-gradient(ellipse 60% 50% at 88% 8%, rgba(16,185,129,.07) 0%, transparent 60%)",
-              "radial-gradient(ellipse 70% 60% at 8% 92%, rgba(1,64,141,.06) 0%, transparent 62%)",
-            ].join(", "),
-          }}
-        />
-
-        <div className="relative z-10 mx-auto max-w-[1200px] px-5 py-[88px] sm:py-[80px]">
-          <div className="max-w-[760px]">
+      <div className="relative overflow-hidden border-b border-[#E4E9F0] bg-gradient-to-b from-[#F7F9FC] to-white">
+        <div className="relative z-10 mx-auto grid max-w-[1200px] items-center gap-10 px-5 py-16 sm:py-20 lg:grid-cols-[1fr_360px]">
+          <div>
             {/* Eyebrow */}
-            <span className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.14em] text-[#01408D]">
-              <span className="h-0.5 w-6 bg-[#2563A8]" aria-hidden />
+            <span className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.14em] text-[#0D3B75]">
+              <span className="h-0.5 w-6 bg-[#0D3B75]" aria-hidden />
               Instagram Marketing Library
             </span>
 
             {/* H1 */}
-            <h1 className="mt-0 font-black leading-[1.3] tracking-[.01em] text-[#01408D]"
-              style={{ fontSize: "clamp(30px, 5vw, 54px)" }}>
-              <span className="relative whitespace-nowrap">
-                お役立ち資料
-                <span
-                  className="pointer-events-none absolute -inset-x-0.5 bottom-[6px] -z-[1] h-3 rounded-sm"
-                  style={{ background: "rgba(16,185,129,.22)" }}
-                  aria-hidden
-                />
-              </span>
+            <h1 className="font-black leading-[1.35] tracking-[.01em] text-[#17233A]"
+              style={{ fontSize: "clamp(30px, 5vw, 44px)" }}>
+              お役立ち資料
             </h1>
+
+            {/* Lead */}
+            <p className="mt-4 max-w-[520px] text-[15px] leading-[1.9] text-[#4A5871]">
+              Instagram運用の設計から改善までを、現場で使える単位にまとめました。全{documents.length}点・すべて無料、フォーム入力後その場でダウンロードできます。
+            </p>
 
             {/* CTA */}
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <Link
                 href="/#document-categories"
-                className="inline-flex items-center gap-2 rounded-full bg-[#01408D] px-7 py-[15px] text-[15px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#013066] hover:shadow-[0_10px_24px_-8px_rgba(1,64,141,.5)]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0D3B75] px-7 py-[15px] text-[15px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#0A2E5C] hover:shadow-[0_10px_24px_-8px_rgba(1,64,141,.5)]"
               >
                 資料一覧を見る
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>
+                  <path d="M12 5v14"/><path d="m6 13 6 6 6-6"/>
                 </svg>
               </Link>
-              <span className="inline-flex items-center gap-1.5 text-[13px] text-[#9CA3AF]">
-                <b className="font-bold text-[#10B981]">全資料無料</b>・今すぐDL可能
+              <span className="text-[13px] text-[#7A879C]">
+                全資料無料・登録1分
               </span>
             </div>
 
@@ -72,12 +59,15 @@ export default async function Home() {
               {SITE_SNS_LINKS.map(({ href, label, src }) => (
                 <a key={href} href={href} target="_blank" rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[#E8EBF0] bg-white transition hover:border-[#01408D]/30">
+                  className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[#E8EBF0] bg-white transition hover:border-[#0D3B75]/30">
                   <Image src={src} alt="" width={20} height={20} className="h-5 w-5 object-contain" aria-hidden />
                 </a>
               ))}
             </nav>
           </div>
+
+          {/* 右：資料表紙スタック（上位3資料） */}
+          <HeroCoverStack documents={documents} />
         </div>
       </div>
 
@@ -88,12 +78,18 @@ export default async function Home() {
         aria-labelledby="library-heading"
       >
         <div className="mx-auto max-w-[1200px] px-5">
-          <h2
-            id="library-heading"
-            className="mb-6 text-xl font-bold tracking-tight text-[#01408D] sm:text-2xl"
-          >
-            資料一覧
-          </h2>
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <h2
+              id="library-heading"
+              className="text-xl font-bold tracking-tight text-[#17233A] sm:text-2xl"
+            >
+              資料一覧
+              <span className="ml-2.5 align-middle font-mono text-[13px] font-medium text-[#7A879C]">
+                {documents.length} 件
+              </span>
+            </h2>
+            <span className="text-[12.5px] text-[#7A879C]">新着順</span>
+          </div>
           {documents.length === 0 ? (
             <p className="mt-6 text-sm text-[#6B7280]">公開中の資料はまだありません。</p>
           ) : (

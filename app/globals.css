@@ -8,23 +8,27 @@
    tailwind.config.ts の colors はすべてこの変数を参照する。
    ========================================================= */
 :root {
-  /* --- ブランド主要色 --- */
-  --color-navy: #01408D;
-  --color-navy-hover: #013066;
-  --color-accent: #10B981;
+  /* --- ブランド主要色（COCOマーケ UI改善案 2026 パレット） --- */
+  --color-navy: #0D3B75;
+  --color-navy-hover: #0A2E5C;
+  --color-accent: #2E7D5B;
+  /* 主要CTA（オレンジ） — design doc の第一アクセント */
+  --color-cta: #E0603A;
+  --color-cta-hover: #C64F2C;
+  --color-cta-soft: #FFF8F3;
 
   /* --- 背景・面 --- */
-  --color-bg: #F9FAFB;
+  --color-bg: #F7F9FC;
   --color-surface: #FFFFFF;
-  --color-surface-soft: #F7F8FA;
+  --color-surface-soft: #F7F9FC;
 
   /* --- テキスト --- */
-  --color-text: #1F2937;
-  --color-text-secondary: #6B7280;
-  --color-text-muted: #9CA3AF;
+  --color-text: #17233A;
+  --color-text-secondary: #4A5871;
+  --color-text-muted: #7A879C;
 
   /* --- 罫線 --- */
-  --color-border: #E5E7EB;
+  --color-border: #E4E9F0;
 
   /* --- 用途特化（淡色面） --- */
   --color-mint-soft: #EAF8F1;

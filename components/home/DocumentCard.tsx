@@ -2,81 +2,75 @@ import Image from 'next/image';
 import type { HomeDocument } from '@/lib/homeDocuments';
 import { canOptimizeImage } from '@/lib/imageOptimization';
 
-/** 出典ロゴ（COCOマーケ アイコン: app/icon.png → /icon.png 配信） */
-const LOGO_URL = '/icon.png';
+/** 表紙未設定時のストライププレースホルダー */
+const COVER_PLACEHOLDER = {
+  background: 'repeating-linear-gradient(135deg,#F2F5F9 0 8px,#E8EDF4 8px 16px)',
+} as const;
 
 type Props = {
   document: HomeDocument;
   href: string;
-  /** バッジ下の説明文（カテゴリ説明など） */
+  /** カテゴリ説明など */
   description?: string;
 };
 
 export function DocumentCard({ document: doc, href, description }: Props) {
   return (
-    <article className="group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-[#E8EBF0] bg-white transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(15,23,42,.2)]">
-      <a href={href} style={{ display: 'contents' }}>
-        {/* ヘッダー：左に出典ロゴ（現状維持）、右に拡大したサムネイル */}
-        <div className="flex items-center justify-between gap-3 border-b border-[#EEF1F5] bg-[#F8FAFC] px-4 pb-3 pt-4">
-          <div className="flex min-w-0 shrink-0 items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={LOGO_URL}
-              alt="COCOマーケ"
-              className="h-8 w-8 shrink-0 rounded-md object-contain"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-[11px] font-bold leading-tight text-[#1F2937]">
-                COCOマーケ
-              </p>
-              <p className="text-[10px] leading-tight text-[#9CA3AF]">資料</p>
-            </div>
-          </div>
-
-          <div className="relative aspect-[16/10] w-full max-w-[150px] overflow-hidden rounded-lg border border-[#E2E8F0] bg-white">
-            {doc.thumbnailUrl ? (
-              canOptimizeImage(doc.thumbnailUrl) ? (
-                <Image
-                  src={doc.thumbnailUrl}
-                  alt=""
-                  fill
-                  sizes="150px"
-                  className="object-contain"
-                />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={doc.thumbnailUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-contain"
-                  loading="lazy"
-                />
-              )
-            ) : null}
-          </div>
+    <article className="group h-full min-w-0">
+      <a
+        href={href}
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#E4E9F0] bg-white shadow-[0_1px_3px_rgba(13,59,117,.05)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_16px_34px_-18px_rgba(13,59,117,.22)]"
+      >
+        {/* 表紙 16:9 */}
+        <div
+          className="relative flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-b border-[#E4E9F0]"
+          style={COVER_PLACEHOLDER}
+        >
+          {doc.thumbnailUrl ? (
+            canOptimizeImage(doc.thumbnailUrl) ? (
+              <Image
+                src={doc.thumbnailUrl}
+                alt=""
+                fill
+                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 380px"
+                className="object-cover"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={doc.thumbnailUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+              />
+            )
+          ) : (
+            <span className="font-mono text-[10px] text-[#8C99AC]">表紙 16:9</span>
+          )}
         </div>
 
-        {/* 本文：タグ・タイトル・説明・ボタン */}
-        <div className="flex min-h-0 flex-1 flex-col gap-2 px-4 pb-4 pt-3.5">
-          <span className="inline-block w-fit rounded-full bg-[#E6EFFA] px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-[#0C447C]">
-            {doc.category}
-          </span>
-
-          <h4 className="text-sm font-bold leading-snug tracking-[.005em] text-[#1F2937] line-clamp-2 sm:text-[14.5px]">
+        {/* 本文 */}
+        <div className="flex min-h-0 flex-1 flex-col px-5 pt-4">
+          <span className="mb-2 text-[11px] font-medium text-[#7A879C]">{doc.category}</span>
+          <h4 className="text-[15px] font-bold leading-snug text-[#17233A] line-clamp-2">
             {doc.title}
           </h4>
-
           {description && (
-            <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-[#6B7280]">
+            <p className="mt-2 text-xs leading-relaxed text-[#6B7280] line-clamp-2">
               {description}
             </p>
           )}
+        </div>
 
-          <div className="mt-auto pt-2.5">
-            <span className="flex w-full items-center justify-center gap-1.5 rounded-full bg-[#2563A8] py-2.5 text-[13px] font-bold text-white transition group-hover:bg-[#1d5390]">
-              ダウンロード
-            </span>
-          </div>
+        {/* フッター */}
+        <div className="mt-4 flex items-center justify-between border-t border-[#EEF1F6] px-5 py-3.5">
+          <span className="text-[11.5px] text-[#9AA6B8]">PDF</span>
+          <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#0D3B75] transition group-hover:gap-1.5">
+            ダウンロード
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+            </svg>
+          </span>
         </div>
       </a>
     </article>

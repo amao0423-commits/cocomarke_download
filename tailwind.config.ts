@@ -24,6 +24,12 @@ const config: Config = {
           hover: "var(--color-navy-hover)",
         },
         accent: "var(--color-accent)",
+        /* 主要CTA（オレンジ） */
+        cta: {
+          DEFAULT: "var(--color-cta)",
+          hover: "var(--color-cta-hover)",
+          soft: "var(--color-cta-soft)",
+        },
 
         /* --- 背景・面 --- */
         bg: "var(--color-bg)",
@@ -83,6 +89,9 @@ const config: Config = {
           "accent-mint-soft": "var(--color-mint-soft)",
           "accent-lavender-soft": "var(--color-lavender-soft)",
           accent: "var(--color-accent)",
+          cta: "var(--color-cta)",
+          "cta-hover": "var(--color-cta-hover)",
+          "cta-soft": "var(--color-cta-soft)",
         },
       },
       backgroundImage: {

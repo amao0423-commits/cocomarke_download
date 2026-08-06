@@ -28,9 +28,9 @@ const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
 /** 本体サイト（cocomarke.com）への導線：右端に1本だけ集約 */
 const MAIN_SITE_URL = SERVICE_URL;
 
-/** 飲食店Instagram集客診断：Instagram 風グラデをやや落ち着かせた色・白文字・薄枠 */
+/** 飲食店Instagram集客診断：主要CTA（オレンジ #E0603A） — design doc の第一アクセント */
 const HEADER_RESTAURANT_DIAGNOSIS_CTA_CLASS =
-  "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[10.5rem] sm:min-w-[11.5rem] items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 sm:px-4 sm:text-sm hover:opacity-95 hover:shadow-md";
+  "inline-flex max-w-full shrink-0 whitespace-nowrap min-w-[10.5rem] sm:min-w-[11.5rem] items-center justify-center rounded-full bg-cta px-3 py-2.5 text-xs font-bold text-white shadow-[0_2px_8px_rgba(224,96,58,.3)] transition-all duration-200 sm:px-4 sm:text-sm hover:bg-cta-hover hover:shadow-md";
 
 /** 本体サイトへ外部リンク（枠線あり・右端） */
 const MAIN_SITE_LINK_CLASS =
@@ -44,15 +44,15 @@ function centerNavLinkClass(isActive: boolean): string {
   const shared = [
     "relative inline-flex items-center pb-1 text-sm leading-none transition-all duration-300",
     NAV_LINK_FOCUS,
-    "hover:text-[#01408D]",
+    "hover:text-[#0D3B75]",
   ].join(" ");
   if (!isActive) {
     return `${shared} font-medium text-gray-500`;
   }
   return [
     shared,
-    "font-semibold text-[#01408D]",
-    "after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#10B981] after:content-['']",
+    "font-semibold text-[#0D3B75]",
+    "after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#2E7D5B] after:content-['']",
   ].join(" ");
 }
 

@@ -42,15 +42,15 @@ const MAIN_SITE_LINKS: NavItem[] = [
 
 /** 上部バー「飲食店Instagram集客診断」：Instagram 風グラデをやや落ち着かせた色 */
 const HEADER_RESTAURANT_DIAGNOSIS_COMPACT_CLASS =
-  "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-3 py-2 text-[11px] font-semibold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg sm:px-3.5 sm:text-xs";
+  "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-cta px-3 py-2 text-[11px] font-bold leading-tight text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-lg sm:px-3.5 sm:text-xs";
 
 /** ドロワー下部「飲食店Instagram集客診断」 */
 const HEADER_RESTAURANT_DIAGNOSIS_MENU_CLASS =
-  "flex w-full items-center justify-center rounded-full border border-white/35 bg-gradient-to-r from-[#6f4f88] via-[#b05068] to-[#c99552] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
+  "flex w-full items-center justify-center rounded-full bg-cta px-5 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-cta-hover hover:shadow-lg";
 
 /** ドロワー下部「サービス資料をダウンロード」 */
 const HEADER_DOWNLOAD_MENU_CLASS =
-  "flex w-full items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#01408D] to-[#001A3D] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
+  "flex w-full items-center justify-center rounded-full border border-white/30 bg-gradient-to-r from-[#0D3B75] to-[#001A3D] px-5 py-3.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-lg";
 
 export function SiteHeaderMobile({
   currentState: _currentState = "default",
