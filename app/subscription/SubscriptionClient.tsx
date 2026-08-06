@@ -211,12 +211,12 @@ export default function SubscriptionClient() {
   return (
     <div className="[text-wrap:pretty]">
       {/* ── 最上部インフォバー ── */}
-      <div style={{ background:"#fff", borderBottom:`1px solid ${BD}` }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", padding:"7px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap", fontSize:12, color:TM }}>
+      <div style={{ background:"#1A1A1A" }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"7px 24px", display:"flex", alignItems:"center", justifyContent:"center", gap:14, flexWrap:"wrap", fontSize:12, color:"rgba(255,255,255,.78)" }}>
           <span>運営：株式会社ホットセラー</span>
-          <span style={{ color:"#D9D9D9" }}>｜</span>
+          <span style={{ color:"rgba(255,255,255,.3)" }}>｜</span>
           <span>受付：平日 09:00–18:00</span>
-          <span style={{ color:"#D9D9D9" }}>｜</span>
+          <span style={{ color:"rgba(255,255,255,.3)" }}>｜</span>
           <span>Instagram運用サブスク「JEMIA」</span>
         </div>
       </div>
