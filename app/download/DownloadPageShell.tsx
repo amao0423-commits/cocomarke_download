@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import DownloadForm from './DownloadForm';
 import type { PageDocument } from './getDownloadPageContext';
+import { getRelatedServiceCta } from '@/lib/relatedServiceCta';
 
 export const DEFAULT_HERO_DESCRIPTION =
   '「投稿しているのに見られない」を解決。\nInstagramを検索・発見で選ばれる導線に変える施策サービス概要をまとめた資料です。';
@@ -115,6 +116,7 @@ export default function DownloadPageShell({
       activeDocument?.hero_highlight_3, activeDocument?.hero_highlights_extra],
   );
   const thumbSrc = activeDocument?.hero_image_1_url?.trim() || null;
+  const relatedCta = getRelatedServiceCta(heroTitle);
 
   return (
     <div className={`bg-[#F8FAFC] ${thanksMode ? '' : 'py-10 sm:py-14'}`}>
@@ -175,6 +177,33 @@ export default function DownloadPageShell({
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* 関連サービスCTA（資料ごとに誘導先を出し分け） */}
+              <div className="mt-8 overflow-hidden rounded-2xl border-[1.5px] border-cta/60 bg-white shadow-[0_4px_16px_rgba(224,96,58,.1)]">
+                <div className="p-6 sm:p-7">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="h-4 w-0.5 bg-cta" aria-hidden />
+                    <span className="text-[11px] font-bold text-cta">{relatedCta.badge}</span>
+                  </div>
+                  <h3 className="text-[17px] font-bold leading-snug text-[#17233A]">
+                    {relatedCta.heading}
+                  </h3>
+                  <p className="mt-2 text-[13px] leading-relaxed text-[#4A5871]">
+                    {relatedCta.description}
+                  </p>
+                  <a
+                    href={relatedCta.href}
+                    target={relatedCta.href.startsWith('http') ? '_blank' : undefined}
+                    rel={relatedCta.href.startsWith('http') ? 'noreferrer' : undefined}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-3 text-[13.5px] font-bold text-white shadow-[0_3px_10px_rgba(224,96,58,.28)] transition hover:bg-cta-hover"
+                  >
+                    {relatedCta.ctaLabel}
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           )}

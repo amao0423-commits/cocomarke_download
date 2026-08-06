@@ -16,6 +16,31 @@ type StoredDownload = {
   docName: string;
 };
 
+/** 資料を読んだ後の3つの選択肢（案3b） */
+const CHOICES = [
+  {
+    title: 'まず自分で改善する',
+    desc: 'チェックリストと最適化の手順で、社内運用のまま改善を進められます。',
+    cta: 'JEMIAの内容を見る',
+    href: 'https://www.cocomarke.com/',
+    recommended: false,
+  },
+  {
+    title: '自社の問題点を知る',
+    desc: '1回の無料アカウント診断で、伸びていない原因と次の一手がわかります。',
+    cta: '無料で診断する',
+    href: '/analysis',
+    recommended: true,
+  },
+  {
+    title: '運用を任せる',
+    desc: '支援内容・料金プラン・導入事例をまとめて確認できます。LINEでの相談も可能です。',
+    cta: '料金と事例を見る',
+    href: 'https://www.cocomarke.com/',
+    recommended: false,
+  },
+] as const;
+
 export default function ThanksClient() {
   const [data, setData] = useState<StoredDownload | null>(null);
 
@@ -47,8 +72,9 @@ export default function ThanksClient() {
   }, [downloadUrl]);
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
-      <div className="w-full max-w-[520px] rounded-3xl border border-[#E2E8F0] bg-white px-8 py-12 text-center shadow-[0_16px_40px_-22px_rgba(15,23,42,.2)] sm:px-10">
+    <div className="bg-[#F7F9FC] py-12 sm:py-16">
+      <div className="mx-auto max-w-[560px] px-4">
+      <div className="w-full rounded-3xl border border-[#E2E8F0] bg-white px-8 py-12 text-center shadow-[0_16px_40px_-22px_rgba(15,23,42,.2)] sm:px-10">
         {/* チェックアイコン */}
         <div className="mx-auto mb-6 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#E6EFFA]">
           <svg className="h-9 w-9 stroke-[#0D3B75]" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -113,6 +139,53 @@ export default function ThanksClient() {
           >
             サービスについて相談する
           </a>
+        </div>
+      </div>
+      </div>
+
+      {/* ===== 資料を読んだ後の3つの選択肢（案3b） ===== */}
+      <div className="mx-auto mt-12 max-w-5xl px-5">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-[#17233A] sm:text-2xl">資料を読んだ後の3つの選択肢</h2>
+          <p className="mt-2 text-[13px] text-[#7A879C]">今のフェーズに近いものからお進みください。</p>
+        </div>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {CHOICES.map((c, i) => {
+            const external = c.href.startsWith('http');
+            return (
+              <a
+                key={c.title}
+                href={c.href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noreferrer' : undefined}
+                className={`group relative flex flex-col rounded-2xl border bg-white p-6 transition hover:-translate-y-1 ${
+                  c.recommended
+                    ? 'border-[1.5px] border-cta shadow-[0_4px_16px_rgba(224,96,58,.12)]'
+                    : 'border-[#E4E9F0] shadow-[0_1px_3px_rgba(13,59,117,.05)] hover:shadow-[0_10px_28px_-14px_rgba(13,59,117,.22)]'
+                }`}
+              >
+                {c.recommended && (
+                  <span className="absolute right-4 top-[-10px] rounded bg-cta px-2.5 py-0.5 text-[10px] font-bold text-white">
+                    おすすめ
+                  </span>
+                )}
+                <span className={`font-mono text-[10.5px] font-bold tracking-[.1em] ${c.recommended ? 'text-cta' : 'text-[#9AA6B8]'}`}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 className="mt-3 text-[15px] font-bold text-[#17233A]">{c.title}</h3>
+                <p className="mt-2 flex-1 text-xs leading-relaxed text-[#6A7789]">{c.desc}</p>
+                <span
+                  className={`mt-5 flex items-center justify-center rounded-lg py-3 text-[13px] font-bold transition ${
+                    c.recommended
+                      ? 'bg-cta text-white group-hover:bg-cta-hover'
+                      : 'border-[1.5px] border-[#0D3B75] text-[#0D3B75]'
+                  }`}
+                >
+                  {c.cta}
+                </span>
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>
