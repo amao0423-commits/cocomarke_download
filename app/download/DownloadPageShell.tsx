@@ -179,31 +179,67 @@ export default function DownloadPageShell({
                 </ul>
               </div>
 
-              {/* 関連サービスCTA（資料ごとに誘導先を出し分け） */}
+              {/* 関連記事／サービスCTA（資料ごとに出し分け） */}
               <div className="mt-8 overflow-hidden rounded-2xl border-[1.5px] border-cta/60 bg-white shadow-[0_4px_16px_rgba(224,96,58,.1)]">
-                <div className="p-6 sm:p-7">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="h-4 w-0.5 bg-cta" aria-hidden />
-                    <span className="text-[11px] font-bold text-cta">{relatedCta.badge}</span>
+                <div className="grid gap-5 p-6 sm:p-7 md:grid-cols-[1fr_180px] md:items-center">
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="h-4 w-0.5 bg-cta" aria-hidden />
+                      <span className="text-[11px] font-bold text-cta">{relatedCta.badge}</span>
+                    </div>
+                    <h3 className="text-[17px] font-bold leading-snug text-[#17233A]">
+                      {relatedCta.heading}
+                    </h3>
+                    <p className="mt-2 text-[13px] leading-relaxed text-[#4A5871]">
+                      {relatedCta.description}
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <a
+                        href={relatedCta.href}
+                        target={relatedCta.href.startsWith('http') ? '_blank' : undefined}
+                        rel={relatedCta.href.startsWith('http') ? 'noreferrer' : undefined}
+                        className="inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-3 text-[13.5px] font-bold text-white shadow-[0_3px_10px_rgba(224,96,58,.28)] transition hover:bg-cta-hover"
+                      >
+                        {relatedCta.ctaLabel}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                          <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+                        </svg>
+                      </a>
+                      {relatedCta.href.startsWith('http') && (
+                        <span className="break-all font-mono text-[10.5px] leading-tight text-[#9AA6B8]">
+                          {relatedCta.href.replace(/^https?:\/\/(www\.)?/, '')}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <h3 className="text-[17px] font-bold leading-snug text-[#17233A]">
-                    {relatedCta.heading}
-                  </h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-[#4A5871]">
-                    {relatedCta.description}
-                  </p>
-                  <a
-                    href={relatedCta.href}
-                    target={relatedCta.href.startsWith('http') ? '_blank' : undefined}
-                    rel={relatedCta.href.startsWith('http') ? 'noreferrer' : undefined}
-                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-3 text-[13.5px] font-bold text-white shadow-[0_3px_10px_rgba(224,96,58,.28)] transition hover:bg-cta-hover"
+                  <div
+                    className="hidden aspect-[16/10] items-center justify-center rounded-lg border border-[#E4E9F0] md:flex"
+                    style={{ background: 'repeating-linear-gradient(135deg,#F2F5F9 0 8px,#E8EDF4 8px 16px)' }}
+                    aria-hidden
                   >
-                    {relatedCta.ctaLabel}
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
-                    </svg>
-                  </a>
+                    <span className="font-mono text-[10px] text-[#8C99AC]">記事のOG画像</span>
+                  </div>
                 </div>
+
+                {relatedCta.industries && relatedCta.industries.length > 0 && (
+                  <div className="border-t border-[#F0DCCF] bg-[#FFF8F3] px-6 py-4 sm:px-7">
+                    <div className="mb-3 text-[11.5px] font-bold text-[#8A5A44]">業種別の事例記事</div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {relatedCta.industries.map((ind) => (
+                        <a
+                          key={ind.label}
+                          href={ind.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center justify-between rounded-md border border-[#F0DCCF] bg-white px-3 py-2.5 text-[12px] font-medium text-[#4A5871] transition hover:border-cta hover:text-[#17233A]"
+                        >
+                          {ind.label}
+                          <span className="text-cta">→</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -221,6 +257,30 @@ export default function DownloadPageShell({
             />
           </div>
         </div>
+
+        {/* フォーム直下（軽いトーンで2本） */}
+        {!thanksMode && (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <a
+              href="/analysis"
+              className="rounded-2xl border border-[#E4E9F0] bg-white p-5 transition hover:border-[#0D3B75]/40 hover:shadow-[0_8px_24px_-14px_rgba(13,59,117,.2)]"
+            >
+              <div className="text-[14px] font-bold text-[#17233A]">自社アカウントの改善点を無料で確認する</div>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-[#7A879C]">1分の入力で、伸びない原因を診断します。</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[#0D3B75]">無料診断へ →</span>
+            </a>
+            <a
+              href="https://www.cocomarke.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-2xl border border-[#E4E9F0] bg-white p-5 transition hover:border-[#0D3B75]/40 hover:shadow-[0_8px_24px_-14px_rgba(13,59,117,.2)]"
+            >
+              <div className="text-[14px] font-bold text-[#17233A]">料金と支援プランを確認する</div>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-[#7A879C]">運用代行・伴走支援の費用感を公開しています。</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-bold text-[#0D3B75]">プランを見る →</span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

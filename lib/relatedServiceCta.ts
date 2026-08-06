@@ -9,6 +9,8 @@ export type RelatedServiceCta = {
   description: string;
   ctaLabel: string;
   href: string;
+  /** 業種別の事例記事（あるときだけ主要CTA下にピル表示） */
+  industries?: { label: string; href: string }[];
 };
 
 type Rule = { test: RegExp; cta: RelatedServiceCta };
@@ -29,11 +31,18 @@ const RULES: Rule[] = [
     // なぜSNSは売上につながらないのか → 業種別の導入事例記事
     test: /売上|つながらない|集客/,
     cta: {
-      badge: '導入事例',
-      heading: '売上・来店につながった支援事例',
-      description: '不動産・アパレル・EC・飲食など、業種別に成果につながった事例を記事で公開しています。',
-      ctaLabel: '売上・来店につながった支援事例を見る',
+      badge: 'この資料と同じテーマの実例記事',
+      heading: '売上・来店につながった支援事例を見る',
+      description:
+        '不動産・アパレル・EC・クリニック・飲食店など、業種別に「どの投稿がどう売上に効いたか」を公開しています。資料の内容を自社に当てはめる材料になります。',
+      ctaLabel: '支援事例を見る',
       href: 'https://www.cocomarke.com/blog/instagram-realestate-marketing/',
+      industries: [
+        { label: 'アパレルブランド', href: 'https://www.cocomarke.com/blog/instagram-apparel-brand-case/' },
+        { label: 'ECショップ', href: 'https://www.cocomarke.com/blog/instagram-ec-shop-case-study/' },
+        { label: 'クリニック', href: 'https://www.cocomarke.com/blog' },
+        { label: '飲食店 × Googleマップ', href: 'https://www.cocomarke.com/blog/restaurant-instagram-marketing-google-maps-2026/' },
+      ],
     },
   },
   {
