@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "./subscription.module.css";
 import { getAttribution } from "@/lib/attribution";
 import { useRouter } from "next/navigation";
-import MediaMentions from "./_components/MediaMentions";
+import { mediaItems } from "./_components/MediaMentions";
 import ResultsBeforeAfter from "./_components/ResultsBeforeAfter";
 import ContactForm from "./_components/ContactForm";
 
@@ -506,7 +506,7 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Flow ── */}
-      <section style={{ padding:"80px 24px", background:OW }}>
+      <section id="flow" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
           <div style={{ marginBottom:36 }}>
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>How it works</div>
@@ -590,7 +590,6 @@ export default function SubscriptionClient() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/company/team.jpg" alt="JEMIA運用チーム（東京オフィス）" loading="lazy" style={{ position:"relative", display:"block", width:"100%", height:"auto", borderRadius:12 }} onError={(e)=>{ e.currentTarget.style.display="none"; }} />
               </div>
-              <p style={{ fontSize:12, color:TL, marginTop:12, textAlign:"center" }}>運用チーム（東京オフィス）。お客様1社につき担当を1名固定でお付けします。</p>
             </div>
             {/* テキスト＋責任者カード */}
             <div>
@@ -613,13 +612,14 @@ export default function SubscriptionClient() {
         </div>
       </section>
 
-      {/* ── 運営会社（Company） ── */}
-      <section style={{ padding:"80px 24px", background:OW }}>
+      {/* ── 運営会社 ＋ メディア掲載（Company / Media） ── */}
+      <section id="company" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:1100, margin:"0 auto" }}>
-          <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Company</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT, marginBottom:28 }}>運営会社</h2>
-          <div className={styles.grid2} style={{ gap:40, alignItems:"start" }}>
+          <div className={styles.grid2} style={{ gap:48, alignItems:"start" }}>
+            {/* 運営会社 */}
             <div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Company</div>
+              <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT, marginBottom:24 }}>運営会社</h2>
               <dl>
                 {[
                   ["会社名","株式会社ホットセラー"],
@@ -632,22 +632,39 @@ export default function SubscriptionClient() {
                   </div>
                 ))}
               </dl>
-              <p style={{ fontSize:12, color:TL, marginTop:14, lineHeight:1.8 }}>※ お打ち合わせはオンラインのほか、ご来社・訪問にも対応しています。</p>
+              <p style={{ fontSize:12, color:TL, margin:"14px 0 20px", lineHeight:1.8 }}>※ お打ち合わせはオンラインのほか、ご来社・訪問にも対応しています。</p>
+              <div style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:16, padding:"22px 24px" }}>
+                <p style={{ fontSize:14, fontWeight:700, color:TXT, marginBottom:14 }}>お取引の安全性について</p>
+                <ul style={{ listStyle:"none", padding:0, margin:0, display:"flex", flexDirection:"column", gap:10 }}>
+                  <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・契約書／秘密保持契約（NDA）の締結に対応</li>
+                  <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・請求書払い・法人口座での取引に対応</li>
+                  <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・お預かり情報の取り扱いは<Link href="/subscription/privacy" style={{ color:G, textDecoration:"underline" }}>プライバシーポリシー</Link>に準拠</li>
+                </ul>
+              </div>
             </div>
-            <div style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:16, padding:"22px 24px" }}>
-              <p style={{ fontSize:14, fontWeight:700, color:TXT, marginBottom:14 }}>お取引の安全性について</p>
-              <ul style={{ listStyle:"none", padding:0, margin:0, display:"flex", flexDirection:"column", gap:10 }}>
-                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・契約書／秘密保持契約（NDA）の締結に対応</li>
-                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・請求書払い・法人口座での取引に対応</li>
-                <li style={{ fontSize:13.5, color:TM, lineHeight:1.7 }}>・お預かり情報の取り扱いは<Link href="/subscription/privacy" style={{ color:G, textDecoration:"underline" }}>プライバシーポリシー</Link>に準拠</li>
-              </ul>
+            {/* メディア掲載 */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>Media</div>
+              <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, letterSpacing:"-.02em", color:TXT, marginBottom:24 }}>メディア掲載</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                {mediaItems.map((m)=>(
+                  <div key={m.url} style={{ background:"#fff", border:`1px solid ${BD}`, borderRadius:16, padding:"18px 20px" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:8 }}>
+                      <span style={{ fontSize:12.5, color:TM }}>{m.media}</span>
+                      <time style={{ fontSize:12, color:TL }}>{m.date}</time>
+                    </div>
+                    <p style={{ fontSize:14, fontWeight:700, color:TXT, lineHeight:1.6, marginBottom:10 }}>{m.title}</p>
+                    <a href={m.url} target="_blank" rel="noopener" style={{ fontSize:13, fontWeight:700, color:G, textDecoration:"none" }}>掲載ページを見る →</a>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop:16 }}>
+                <Link href="/subscription/media" style={{ fontSize:13, fontWeight:700, color:G, textDecoration:"none" }}>メディア掲載実績の一覧を見る →</Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* ── メディア掲載実績（Company の直後・FAQ の前） ── */}
-      <MediaMentions />
 
       {/* ── お役立ち記事（自動横スクロール） ── */}
       <section style={{ padding:"48px 0 44px", background:"#fff", overflow:"hidden" }}>
@@ -682,7 +699,7 @@ export default function SubscriptionClient() {
       <section id="faq" style={{ padding:"80px 24px", background:OW, scrollMarginTop:64 }}>
         <div style={{ maxWidth:720, margin:"0 auto" }}>
           <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:C, textTransform:"uppercase", marginBottom:12 }}>FAQ</div>
-          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:40, letterSpacing:"-.02em", color:TXT }}>インスタ運用代行サブスクのよくある質問</h2>
+          <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, marginBottom:40, letterSpacing:"-.02em", color:TXT }}>よくある質問</h2>
           {faqs.map((faq,i)=>(
             <div key={i} style={{ borderBottom:`1px solid ${BD}` }}>
               <button onClick={()=>setOpenFaq(openFaq===i?null:i)} style={{ width:"100%", textAlign:"left", background:"none", border:"none", padding:"20px 0", fontSize:15, fontWeight:700, cursor:"pointer", display:"flex", justifyContent:"space-between", alignItems:"center", gap:16, fontFamily:"inherit", color:TXT }}>
@@ -696,13 +713,30 @@ export default function SubscriptionClient() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, textAlign:"center", padding:"80px 24px", scrollMarginTop:64 }}>
-        <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
-        <h2 style={{ fontSize:"clamp(22px,3vw,34px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>マーケティングに関するご相談はこちら</h2>
-        <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:36, lineHeight:1.8 }}>インスタ運用のお問い合わせ・ご相談はこちらから。<br />プラン選びに迷ったら気軽にフォームからどうぞ。3日以内に確認後、ご入力いただいたメールアドレス宛にご連絡します。</p>
-        <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-          <button style={{ background:"#fff", color:G, border:"none", padding:"16px 36px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", transition:"all .2s", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：マーケティング相談")}>🎧 マーケティング相談はこちら</button>
-          <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 30px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>まずプラン診断する →</Link>
+      <section id="contact" style={{ background:`linear-gradient(135deg,${G} 0%,#1a5c37 100%)`, padding:"80px 24px", scrollMarginTop:64 }}>
+        <div style={{ maxWidth:1100, margin:"0 auto" }}>
+          <div className={styles.grid2} style={{ gap:48, alignItems:"center" }}>
+            {/* 左：CTA */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:".1em", color:"rgba(255,255,255,.7)", textTransform:"uppercase", marginBottom:12 }}>Get started</div>
+              <h2 style={{ fontSize:"clamp(24px,3.4vw,36px)", fontWeight:700, color:"#fff", marginBottom:16, lineHeight:1.3, letterSpacing:"-.02em" }}>マーケティングに関する<br />ご相談はこちら</h2>
+              <p style={{ fontSize:15, color:"rgba(255,255,255,.75)", marginBottom:32, lineHeight:1.8 }}>診断のみのご利用でも構いません。3営業日以内にご入力のメールアドレス宛にご返信します。</p>
+              <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
+                <button style={{ background:"#fff", color:G, border:"none", padding:"16px 32px", borderRadius:10, fontSize:15, fontWeight:700, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 4px 20px rgba(0,0,0,.15)" }} onClick={()=>openModal("consult","最終CTA：マーケティング相談")}>マーケティング相談をする</button>
+                <Link href="/subscription/diagnosis" style={{ background:"rgba(255,255,255,.12)", color:"#fff", border:"2px solid rgba(255,255,255,.6)", padding:"16px 28px", borderRadius:10, fontSize:15, fontWeight:700, textDecoration:"none" }}>30秒でプラン診断</Link>
+              </div>
+            </div>
+            {/* 右：確認事項 */}
+            <div style={{ background:"rgba(255,255,255,.08)", border:"1px solid rgba(255,255,255,.2)", borderRadius:16, padding:"26px 28px" }}>
+              <p style={{ fontSize:14, fontWeight:700, color:"#fff", marginBottom:16 }}>お問い合わせ前にご確認いただけます</p>
+              <ul style={{ listStyle:"none", padding:0, margin:"0 0 18px", display:"flex", flexDirection:"column", gap:12 }}>
+                <li style={{ fontSize:13.5, color:"rgba(255,255,255,.82)", lineHeight:1.7 }}>・利用規約／秘密保持方針</li>
+                <li style={{ fontSize:13.5, color:"rgba(255,255,255,.82)", lineHeight:1.7 }}>・作業内容と月額の内訳を記載したサービス説明資料（PDF）</li>
+                <li style={{ fontSize:13.5, color:"rgba(255,255,255,.82)", lineHeight:1.7 }}>・過去事例のインサイト実データ（許諾済み・3件）</li>
+              </ul>
+              <Link href="/subscription/diagnosis" style={{ fontSize:14, fontWeight:700, color:"#fff", textDecoration:"underline" }}>資料をダウンロードする →</Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -783,29 +817,41 @@ export default function SubscriptionClient() {
 
       {/* ── JEMIA Footer ── */}
       <footer className={styles.siteFooter}>
-        <div style={{ marginBottom:12 }}>
-          <span style={{ fontFamily:"Montserrat,sans-serif", fontWeight:900, fontSize:20, color:"#fff" }}>JEM<span style={{ color:C }}>I</span>A</span>
+        <div style={{ maxWidth:1100, margin:"0 auto", textAlign:"left" }}>
+          <div className={styles.grid2} style={{ gap:40, alignItems:"start" }}>
+            {/* ブランド */}
+            <div>
+              <div style={{ fontFamily:"Montserrat,sans-serif", fontWeight:900, fontSize:22, color:"#fff", marginBottom:12 }}>JEM<span style={{ color:C }}>I</span>A</div>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.7)", lineHeight:1.9, marginBottom:12 }}>Instagram運用を、もっと自由に。もっとスマートに。<br />株式会社ホットセラー／東京都中央区晴海1-8-16</p>
+              <p style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>受付時間：平日 09:00 - 18:00（土日祝を除く）</p>
+            </div>
+            {/* リンク3カラム */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
+              {[
+                { head:"サービス", links:[["実データ","#results"],["料金","#plans"],["導入の流れ","#flow"],["法人のお客様","/subscription/corporate"]] },
+                { head:"情報", links:[["運営会社","#company"],["お役立ち記事","/subscription/blog"],["メディア掲載","/subscription/media"]] },
+                { head:"規約", links:[["利用規約","/subscription/terms"],["プライバシーポリシー","/subscription/privacy"],["秘密保持方針","/subscription/confidentiality"]] },
+              ].map((col)=>(
+                <div key={col.head}>
+                  <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.9)", marginBottom:12 }}>{col.head}</div>
+                  <ul style={{ listStyle:"none", padding:0, margin:0, display:"flex", flexDirection:"column", gap:10 }}>
+                    {col.links.map(([label,href])=>(
+                      <li key={label}>
+                        {href.startsWith("#")
+                          ? <a href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", fontSize:13 }}>{label}</a>
+                          : <Link href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", fontSize:13 }}>{label}</Link>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={{ borderTop:"1px solid rgba(255,255,255,0.12)", marginTop:36, paddingTop:24 }}>
+            <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.45)", lineHeight:1.9, marginBottom:10 }}>表示している実績・数値は自社調査に基づく実測値であり、同等の成果を保証するものではありません。Instagramの仕様・規約変更により提供内容が変わる場合があります。Instagram は Meta Platforms, Inc. の商標です。</p>
+            <p style={{ fontSize:12, color:"rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</p>
+          </div>
         </div>
-        <div style={{ fontSize:13, color:"rgba(255,255,255,0.7)", marginBottom:16 }}>
-          Instagram運用を、もっと自由に。もっとスマートに。
-        </div>
-        <div style={{ marginBottom:16 }}>
-          {([["料金","#plans"],["実績","#voices"],["FAQ","#faq"]] as const).map(([label,href])=>(
-            <a key={href} href={href} style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>{label}</a>
-          ))}
-          <Link href="/subscription/corporate" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>法人のお客様</Link>
-          <Link href="/subscription/blog" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>お役立ち記事</Link>
-        </div>
-        <div style={{ marginBottom:16 }}>
-          <Link href="/subscription/terms" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>利用規約</Link>
-          <Link href="/subscription/privacy" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>プライバシーポリシー</Link>
-          <Link href="/subscription/confidentiality" style={{ color:"rgba(255,255,255,0.6)", textDecoration:"none", margin:"0 12px", fontSize:13 }}>秘密保持方針</Link>
-        </div>
-        <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", lineHeight:1.9 }}>
-          受付時間：平日 09:00 - 18:00（土日祝日は除く）<br />
-          時間外のお問い合わせは次の相談時間に順次返答しております。
-        </div>
-        <div style={{ marginTop:20, fontSize:12, color:"rgba(255,255,255,0.4)" }}>© 2026 株式会社ホットセラー. All rights reserved.</div>
       </footer>
     </div>
   );

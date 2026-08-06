@@ -19,7 +19,7 @@ type MediaItem = {
   note?: string;
 };
 
-const mediaItems: MediaItem[] = [
+export const mediaItems: MediaItem[] = [
   {
     media: "Growth Marketing ブログ",
     date: "2026.07.16",
