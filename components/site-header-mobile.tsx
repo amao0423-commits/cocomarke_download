@@ -55,7 +55,7 @@ const HEADER_DOWNLOAD_MENU_CLASS =
 export function SiteHeaderMobile({
   currentState: _currentState = "default",
   currentPath = "/",
-  logoHref = SERVICE_URL,
+  logoHref = "/",
   className = "",
   isDownloadThanks = false,
   serviceDocumentHref = DEFAULT_SERVICE_DOCUMENT_HREF,

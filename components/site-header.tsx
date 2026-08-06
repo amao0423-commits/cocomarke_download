@@ -59,7 +59,7 @@ function centerNavLinkClass(isActive: boolean): string {
 export function SiteHeader({
   currentState: _currentState = "default",
   currentPath = "/",
-  logoHref = SERVICE_URL,
+  logoHref = "/",
   className = "",
   isDownloadThanks = false,
 }: SiteHeaderProps) {

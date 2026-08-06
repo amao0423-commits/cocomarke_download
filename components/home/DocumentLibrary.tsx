@@ -109,9 +109,13 @@ export function DocumentLibrary({ documents, categoryOrder = [] }: Props) {
   const filtered =
     active === 'all' ? documents : documents.filter((d) => d.category === active);
 
-  // 「すべて」表示時は先頭資料を注目カードとして大きく見せ、残りをグリッドに。
-  const featured = active === 'all' && filtered.length > 0 ? filtered[0] : null;
-  const gridDocs = featured ? filtered.slice(1) : filtered;
+  // 「すべて」表示時は「COCOマーケ サービス概要」を注目カードとして最上部に。
+  // 見つからなければ先頭資料をフォールバックに。残りをグリッドへ。
+  const featured =
+    active === 'all' && filtered.length > 0
+      ? (filtered.find((d) => /サービス概要/.test(d.title)) ?? filtered[0])
+      : null;
+  const gridDocs = featured ? filtered.filter((d) => d.id !== featured.id) : filtered;
 
   return (
     <div>

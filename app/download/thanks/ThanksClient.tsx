@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { getRelatedServiceCta } from '@/lib/relatedServiceCta';
 
 declare global {
   interface Window {
@@ -65,6 +66,7 @@ export default function ThanksClient() {
 
   const downloadUrl = data?.downloadUrl ?? null;
   const docName = data?.docName?.trim() || 'ご請求の資料';
+  const relatedCta = getRelatedServiceCta(docName);
 
   const triggerDownload = useCallback(() => {
     if (!downloadUrl) return;
@@ -138,6 +140,29 @@ export default function ThanksClient() {
             className="text-[13.5px] font-bold text-[#0D3B75]"
           >
             サービスについて相談する
+          </a>
+        </div>
+      </div>
+
+      {/* 関連記事／サービスCTA（ダウンロードした資料に応じて出し分け） */}
+      <div className="mt-6 overflow-hidden rounded-2xl border-[1.5px] border-cta/60 bg-white shadow-[0_4px_16px_rgba(224,96,58,.1)]">
+        <div className="p-6">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-4 w-0.5 bg-cta" aria-hidden />
+            <span className="text-[11px] font-bold text-cta">{relatedCta.badge}</span>
+          </div>
+          <h3 className="text-[16px] font-bold leading-snug text-[#17233A]">{relatedCta.heading}</h3>
+          <p className="mt-2 text-[13px] leading-relaxed text-[#4A5871]">{relatedCta.description}</p>
+          <a
+            href={relatedCta.href}
+            target={relatedCta.href.startsWith('http') ? '_blank' : undefined}
+            rel={relatedCta.href.startsWith('http') ? 'noreferrer' : undefined}
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cta px-5 py-3 text-[13.5px] font-bold text-white shadow-[0_3px_10px_rgba(224,96,58,.28)] transition hover:bg-cta-hover"
+          >
+            {relatedCta.ctaLabel}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+            </svg>
           </a>
         </div>
       </div>

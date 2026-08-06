@@ -15,29 +15,29 @@ type Rule = { test: RegExp; cta: RelatedServiceCta };
 
 const RULES: Rule[] = [
   {
-    // Instagramアルゴリズム攻略ガイド → 運用代行
+    // Instagramアルゴリズム攻略ガイド → 最新アルゴリズムの記事
     test: /アルゴリズム/,
     cta: {
-      badge: '関連サービス',
-      heading: 'Instagram運用代行サービス',
-      description: '最新アルゴリズムに対応した運用設計・改善を、プロが伴走して支援します。',
-      ctaLabel: '最新アルゴリズムに対応した運用支援を見る',
-      href: 'https://www.cocomarke.com/',
+      badge: '関連記事',
+      heading: '最新アルゴリズムの変更点と対応',
+      description: 'アルゴリズムの最新動向と、対応のポイントを記事で解説しています。',
+      ctaLabel: '最新アルゴリズムの記事を見る',
+      href: 'https://www.cocomarke.com/blog/instagram-algorithm-update-latest/',
     },
   },
   {
-    // なぜSNSは売上につながらないのか → 導入事例・集客導線
+    // なぜSNSは売上につながらないのか → 業種別の導入事例記事
     test: /売上|つながらない|集客/,
     cta: {
       badge: '導入事例',
       heading: '売上・来店につながった支援事例',
-      description: '不動産・アパレル・EC・飲食など、業種別に成果につながった事例を公開しています。',
+      description: '不動産・アパレル・EC・飲食など、業種別に成果につながった事例を記事で公開しています。',
       ctaLabel: '売上・来店につながった支援事例を見る',
-      href: 'https://www.cocomarke.com/blog',
+      href: 'https://www.cocomarke.com/blog/instagram-realestate-marketing/',
     },
   },
   {
-    // 土台構築＆コンテンツ最適化 → 無料アカウント診断
+    // 土台構築＆コンテンツ最適化 → 無料アカウント診断（自社提供サービス）
     test: /土台|基礎|コンテンツ最適化|再現性/,
     cta: {
       badge: '無料アカウント診断',
@@ -48,24 +48,24 @@ const RULES: Rule[] = [
     },
   },
   {
-    // エンゲージメント強化 / 拡散・運用編 → 運用代行
-    test: /エンゲージ|拡散|運用編/,
+    // Meta / Facebook 広告 → Facebook広告の始め方の記事（広告運用サービスは非提供）
+    test: /Meta広告|Facebook|広告/,
     cta: {
-      badge: '運用代行サービス',
-      heading: '投稿制作から拡散まで任せる',
-      description: 'アカウント設計から投稿制作・運用改善まで、一貫してお任せいただけます。',
-      ctaLabel: '投稿制作から拡散まで任せる方法を見る',
-      href: 'https://www.cocomarke.com/',
+      badge: '関連記事',
+      heading: 'Facebook・Instagram広告の始め方',
+      description: 'Facebook / Instagram 広告の始め方と考え方を記事で解説しています。',
+      ctaLabel: 'Facebook広告の記事を見る',
+      href: 'https://www.cocomarke.com/blog/facebook-ads-guide-how-to-start/',
     },
   },
   {
-    // Meta広告最新トレンド → Meta広告運用
-    test: /Meta広告|広告/,
+    // エンゲージメント強化 / 拡散・運用編 → 運用代行（自社提供サービス）
+    test: /エンゲージ|拡散|運用編/,
     cta: {
-      badge: 'Meta広告・広告運用',
-      heading: 'Meta広告の運用について相談する',
-      description: 'Facebook / Instagram 広告の設計・運用を、成果ベースでサポートします。',
-      ctaLabel: 'Meta広告の運用について相談する',
+      badge: '関連サービス',
+      heading: 'Instagram運用代行サービス',
+      description: 'アカウント設計から投稿制作・運用改善まで、一貫してお任せいただけます。',
+      ctaLabel: 'Instagram運用代行サービスを見る',
       href: 'https://www.cocomarke.com/',
     },
   },

@@ -14,7 +14,15 @@ const POSITION = [
 ] as const;
 
 export function HeroCoverStack({ documents }: { documents: HomeFlatDocument[] }) {
-  const top = documents.slice(0, 3);
+  // 「サービス概要」を中央（前面）に配置。無ければ先頭3件。
+  const service = documents.find((d) => /サービス概要/.test(d.title));
+  let top: HomeFlatDocument[];
+  if (service) {
+    const rest = documents.filter((d) => d.id !== service.id).slice(0, 2);
+    top = [rest[0], service, rest[1]].filter(Boolean) as HomeFlatDocument[];
+  } else {
+    top = documents.slice(0, 3);
+  }
   if (top.length === 0) return null;
 
   return (
