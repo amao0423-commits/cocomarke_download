@@ -16,6 +16,26 @@ function sanitize(v: unknown): string {
   return String(v ?? '').replace(/[\r\n]/g, ' ').trim();
 }
 
+// 期間限定のお知らせ（令和8年熊本地震・返信遅延）。
+// JST基準で 2026/08/08〜2026/08/16 の間に送信されるサンクスメールにのみ差し込む。
+function disasterNoticeLines(): string[] {
+  const jst = new Date(Date.now() + 9 * 60 * 60 * 1000); // UTC→JST
+  const ymd = jst.getUTCFullYear() * 10000 + (jst.getUTCMonth() + 1) * 100 + jst.getUTCDate();
+  if (ymd < 20260808 || ymd > 20260816) return [];
+  return [
+    '2026年7月28日に発生した令和8年熊本地震の被災者の方々へ心よりお見舞い申し上げます。',
+    '現在も現地では予断を許さない状況が続いている中、皆様のご無事を心よりお祈りしております。',
+    '',
+    '【ご連絡について】',
+    '誠に勝手ながら、8月8日(土) ～ 8月16日(日)の期間は、通常よりご返信にお時間をいただく場合がございます。',
+    'お問い合わせにつきましては順次対応いたしますが、ご連絡までにお時間を頂戴することがございますので、あらかじめご了承いただけますと幸いです。',
+    'ご不便をおかけいたしますが、何卒よろしくお願い申し上げます。',
+    '',
+    '──────────────',
+    '',
+  ];
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -154,6 +174,7 @@ export async function POST(request: NextRequest) {
       const autoReply = [
         `${name} 様`,
         '',
+        ...disasterNoticeLines(),
         'この度はJEMIAへお問い合わせいただき、誠にありがとうございます。',
         '以下の内容で受け付けいたしました。担当者より3日以内に、ご入力いただいたメールアドレス宛にご連絡いたします。',
         '',
