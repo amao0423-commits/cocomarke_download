@@ -741,6 +741,26 @@ function updateProgress(done){
 }
 
 /* ---- フォーム検証 ---- */
+/* 流入元（UTM・参照元）を初回訪問時に記録し、送信時に同梱する。
+   Next.jsのAttributionTrackerと同じ sessionStorage キー(jemia_attribution)を使用。 */
+function jemiaCaptureAttribution(){
+  try{
+    var KEY='jemia_attribution';
+    if(sessionStorage.getItem(KEY)) return;
+    var p=new URLSearchParams(location.search);
+    var pick=function(k){ var v=p.get(k); return (v&&v.trim())?v.trim():undefined; };
+    sessionStorage.setItem(KEY, JSON.stringify({
+      utm_source:pick('utm_source'), utm_medium:pick('utm_medium'),
+      utm_campaign:pick('utm_campaign'), utm_content:pick('utm_content'),
+      utm_term:pick('utm_term'), referrer:document.referrer||undefined, landing:location.href
+    }));
+  }catch(e){}
+}
+function jemiaGetAttribution(){
+  try{ return JSON.parse(sessionStorage.getItem('jemia_attribution')||'{}'); }catch(e){ return {}; }
+}
+jemiaCaptureAttribution();
+
 function submitForm(){
   const acc=document.getElementById('accId').value.trim();
   const mail=document.getElementById('email').value.trim();
@@ -772,6 +792,7 @@ function submitForm(){
         inquiry_type: 'インスタ運用診断',
         instagram_id: handle,
         source: 'shindan',
+        attribution: jemiaGetAttribution(),
         diagnosisType: ty.name,
         diagnosisLevel: ty.lvl,
         diagnosisTag: ty.tag,
