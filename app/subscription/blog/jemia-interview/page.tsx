@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "SNSマーケティング",
     "運用代行 サブスク",
   ],
-  alternates: { canonical: URL },
+  alternates: { canonical: URL, languages: { "ja-JP": URL, "ko-KR": `${URL}/ko` } },
   openGraph: {
     title:
       "「頑張っても伸びない」を終わらせたい——インスタ運用代行JEMIA運営責任者インタビュー",
@@ -125,9 +125,14 @@ export default function JemiaInterviewPage() {
               <span className="mx-1.5">/</span>
               <span className="text-slate-500">運営者インタビュー</span>
             </nav>
-            <span className="inline-block rounded-full bg-[#E8F5ED] px-3 py-1 text-xs font-medium tracking-wide text-[#2D7A4F]">
-              運営者インタビュー
-            </span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="inline-block rounded-full bg-[#E8F5ED] px-3 py-1 text-xs font-medium tracking-wide text-[#2D7A4F]">
+                運営者インタビュー
+              </span>
+              <a href={`${SUBSCRIPTION_URL}/blog/jemia-interview/ko`} className="text-xs font-medium text-slate-400 underline underline-offset-4 hover:text-slate-600">
+                한국어로 보기 →
+              </a>
+            </div>
             <h1 className="mt-4 text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl sm:leading-tight">
               「頑張っても伸びない」を終わらせたい
             </h1>
