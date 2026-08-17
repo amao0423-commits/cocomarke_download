@@ -324,7 +324,7 @@ export default function SubscriptionClient() {
 
       {/* ── Results（導入前後 Before/After + フロー） ── */}
       <section style={{ background:OW }}>
-        <ResultsBeforeAfter />
+        <ResultsBeforeAfter lang={lang} />
       </section>
 
       {/* ── Keywords Marquee ── */}
