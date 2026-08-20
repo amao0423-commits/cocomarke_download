@@ -600,7 +600,7 @@ export default function SubscriptionClient() {
                       <span style={{ fontSize:12.5, color:TM }}>{m.media}</span>
                       <time style={{ fontSize:12, color:TL }}>{m.date}</time>
                     </div>
-                    <p style={{ fontSize:14, fontWeight:700, color:TXT, lineHeight:1.6, marginBottom:10 }}>{m.title}</p>
+                    <a href={m.url} target="_blank" rel="noopener" style={{ display:"block", fontSize:14, fontWeight:700, color:TXT, lineHeight:1.6, marginBottom:10, textDecoration:"none" }}>{m.title}</a>
                     <a href={m.url} target="_blank" rel="noopener" style={{ fontSize:13, fontWeight:700, color:G, textDecoration:"none" }}>{t.media.ctaItem}</a>
                   </div>
                 ))}

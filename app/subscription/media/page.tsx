@@ -47,6 +47,16 @@ const mediaItems: MediaItem[] = [
     siteUrl: "https://pressnow.jp",
     note: "プレスリリースサイト「PRESSNOW プレスナウ」に掲載されました。",
   },
+  {
+    media: "リップルマーク・ヘアー",
+    date: "2026.08.20",
+    dateISO: "2026-08-20",
+    title:
+      "床屋が上手い理容室の選び方徹底ガイド！カット技術と口コミで失敗しないコツ | 上三川町で床屋なら幅広いお客様に対応の理容室リップルマーク・ヘアー",
+    url: "https://www.ripplemarks-hair.com/news/555100.html",
+    siteUrl: "https://www.ripplemarks-hair.com/",
+    note: "上三川町の理容室「リップルマーク・ヘアー」様のサイトでご紹介いただきました。",
+  },
 ];
 
 // メディア掲載実績の構造化データ（信頼性の補強）
@@ -110,7 +120,14 @@ export default function MediaPage() {
                 </div>
 
                 <h2 className="mt-4 text-lg font-bold leading-snug text-slate-900">
-                  {m.title}
+                  <a
+                    href={m.url}
+                    target="_blank"
+                    rel="noopener"
+                    className="hover:text-[#2D7A4F]"
+                  >
+                    {m.title}
+                  </a>
                 </h2>
 
                 {m.note && (
