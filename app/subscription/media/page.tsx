@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
+import { renderNote } from "../_components/MediaMentions";
 
 export const metadata: Metadata = {
   title: "メディア掲載実績｜サブスク型インスタ運用代行 JEMIA",
@@ -24,6 +25,8 @@ type MediaItem = {
   url: string; // 掲載ページURL
   siteUrl?: string; // メディアのトップURL（任意）
   note?: string; // 補足（任意）
+  noteLinkText?: string; // note本文中でインラインリンクにする語（任意）
+  noteLinkUrl?: string; // その語のリンク先（任意）
 };
 
 const mediaItems: MediaItem[] = [
@@ -56,6 +59,8 @@ const mediaItems: MediaItem[] = [
     url: "https://www.ripplemarks-hair.com/news/555100.html",
     siteUrl: "https://www.ripplemarks-hair.com/",
     note: "上三川町の理容室「リップルマーク・ヘアー」様のサイトでご紹介いただきました。",
+    noteLinkText: "リップルマーク・ヘアー",
+    noteLinkUrl: "https://www.ripplemarks-hair.com/",
   },
 ];
 
@@ -131,7 +136,9 @@ export default function MediaPage() {
                 </h2>
 
                 {m.note && (
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{m.note}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                    {renderNote(m, "font-medium text-[#2D7A4F] underline underline-offset-4 hover:text-[#1A5C37]")}
+                  </p>
                 )}
 
                 <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">

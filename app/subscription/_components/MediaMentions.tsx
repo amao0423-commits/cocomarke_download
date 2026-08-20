@@ -17,7 +17,27 @@ type MediaItem = {
   url: string;
   siteUrl?: string;
   note?: string;
+  // note 本文中の noteLinkText の箇所をインラインリンク（dofollow）にする
+  noteLinkText?: string;
+  noteLinkUrl?: string;
 };
+
+// note を描画する。noteLinkText / noteLinkUrl があれば、その語だけをインラインリンクにする。
+// ※ rel に nofollow は付けない（相互リンクのSEO価値を双方に渡すため）
+export function renderNote(m: Pick<MediaItem, "note" | "noteLinkText" | "noteLinkUrl">, linkClassName: string) {
+  if (!m.note) return null;
+  if (!m.noteLinkText || !m.noteLinkUrl || !m.note.includes(m.noteLinkText)) return m.note;
+  const [before, ...rest] = m.note.split(m.noteLinkText);
+  return (
+    <>
+      {before}
+      <a href={m.noteLinkUrl} target="_blank" rel="noopener" className={linkClassName}>
+        {m.noteLinkText}
+      </a>
+      {rest.join(m.noteLinkText)}
+    </>
+  );
+}
 
 export const mediaItems: MediaItem[] = [
   {
@@ -49,6 +69,8 @@ export const mediaItems: MediaItem[] = [
     url: "https://www.ripplemarks-hair.com/news/555100.html",
     siteUrl: "https://www.ripplemarks-hair.com/",
     note: "上三川町の理容室「リップルマーク・ヘアー」様のサイトでご紹介いただきました。",
+    noteLinkText: "リップルマーク・ヘアー",
+    noteLinkUrl: "https://www.ripplemarks-hair.com/",
   },
 ];
 
@@ -92,7 +114,9 @@ export default function MediaMentions() {
             </a>
 
             {m.note && (
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{m.note}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {renderNote(m, "font-medium text-[#2D7A4F] underline underline-offset-4 hover:text-[#1A5C37]")}
+              </p>
             )}
 
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">
