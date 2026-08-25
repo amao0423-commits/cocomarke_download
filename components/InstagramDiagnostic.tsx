@@ -241,7 +241,6 @@ export default function InstagramDiagnostic({
   /** md 以上でのみ診断カードに高さフィット用 scale をかける（モバイルは常に等倍＋スクロール） */
   const [isDesktopViewport, setIsDesktopViewport] = useState(false);
   const [feedbackExpanded, setFeedbackExpanded] = useState(false);
-  const [improvementExpanded, setImprovementExpanded] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -486,7 +485,6 @@ export default function InstagramDiagnostic({
   useEffect(() => {
     if (!result) {
       setFeedbackExpanded(false);
-      setImprovementExpanded(false);
     }
   }, [result]);
 
@@ -636,7 +634,7 @@ export default function InstagramDiagnostic({
                   {result.profile_image_url && (
                     <img
                       src={result.profile_image_url}
-                      alt=""
+                      alt={result.username ? `@${result.username}のプロフィール画像` : 'Instagramプロフィール画像'}
                       className="w-14 h-14 rounded-full object-cover flex-shrink-0 md:w-12 md:h-12"
                     />
                   )}
@@ -1041,35 +1039,13 @@ export default function InstagramDiagnostic({
                             'リール動画の投稿頻度を増やし、トレンドに合わせたコンテンツ制作を行うことで、新規フォロワーの獲得が期待できます。',
                             'ハッシュタグ戦略を見直し、ニッチで競合が少ないタグを組み合わせることで、ターゲット層へのリーチ精度を高めることができます。',
                           ];
-                    const mobileVisible = improvementExpanded
-                      ? improvementParagraphs
-                      : improvementParagraphs.slice(0, 3);
                     return (
                       <div className="text-sm text-gray-700 leading-relaxed">
-                        <div className="relative text-sm text-gray-700 leading-relaxed">
-                          {mobileVisible.map((p, i) => (
-                            <p key={i} className="mb-2 last:mb-0">
-                              {p}
-                            </p>
-                          ))}
-                          <div
-                            className="pointer-events-none absolute inset-x-0 bottom-0 top-[5lh] bg-gradient-to-b from-transparent via-white/60 to-white/90 backdrop-blur-sm"
-                            aria-hidden
-                          />
-                        </div>
-                        {improvementParagraphs.length > 3 && (
-                          <button
-                            type="button"
-                            onClick={() => setImprovementExpanded((v) => !v)}
-                            className="mt-1 flex w-full items-center justify-center gap-1 text-xs font-medium text-[#C13584] hover:text-[#9D174D]"
-                          >
-                            {improvementExpanded ? '閉じる' : 'もっと見る'}
-                            <ChevronDown
-                              className={`h-4 w-4 transition-transform ${improvementExpanded ? 'rotate-180' : ''}`}
-                              aria-hidden
-                            />
-                          </button>
-                        )}
+                        {improvementParagraphs.map((p, i) => (
+                          <p key={i} className="mb-2 last:mb-0">
+                            {p}
+                          </p>
+                        ))}
                       </div>
                     );
                   })()}
