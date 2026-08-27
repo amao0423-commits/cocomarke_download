@@ -28,6 +28,7 @@ const siteMenu = [
   { label: "お役立ち資料", href: "/" },
   { label: "アカウント無料診断", href: "/analysis" },
   { label: "飲食店SNS動線診断", href: "/restaurant-diagnosis" },
+  { label: "Meta仕様変更タイムライン", href: "/reference/meta-updates" },
 ] as const;
 
 export function Footer() {

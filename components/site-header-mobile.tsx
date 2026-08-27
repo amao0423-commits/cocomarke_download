@@ -31,6 +31,7 @@ const CONTACT_URL = "https://www.cocomarke.com/contact";
 const DOCUMENTS_URL = "/";
 const DEFAULT_SERVICE_DOCUMENT_HREF = "/servicedocument";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
+const META_UPDATES_URL = "/reference/meta-updates";
 
 /** 本体サイト（cocomarke.com）への導線：ドロワー下部にまとめる */
 const MAIN_SITE_LINKS: NavItem[] = [
@@ -63,11 +64,12 @@ export function SiteHeaderMobile({
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断の2本に絞る */
+  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断・Meta仕様変更まとめの3本 */
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "お役立ち資料", href: DOCUMENTS_URL },
       { label: "飲食店無料診断", href: RESTAURANT_DIAGNOSIS_URL },
+      { label: "仕様変更まとめ", href: META_UPDATES_URL },
     ],
     [],
   );
@@ -164,7 +166,7 @@ export function SiteHeaderMobile({
             className="absolute left-0 right-0 top-full z-50 border-b border-design-border bg-[#ffffff] shadow-lg"
           >
             <div className="mx-auto max-w-[1200px] px-4 py-4 sm:px-6">
-              {/* 資料サイト内ナビ（2本） */}
+              {/* 資料サイト内ナビ（3本） */}
               <nav className="flex flex-col gap-1" aria-label="メインナビゲーション">
                 {navItems.map((item) => {
                   const isActive =

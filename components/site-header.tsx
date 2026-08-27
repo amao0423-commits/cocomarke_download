@@ -24,6 +24,7 @@ type NavItem = {
 const SERVICE_URL = "https://www.cocomarke.com/";
 const DOCUMENTS_URL = "/";
 const RESTAURANT_DIAGNOSIS_URL = "/restaurant-diagnosis";
+const META_UPDATES_URL = "/reference/meta-updates";
 
 /** 本体サイト（cocomarke.com）への導線：右端に1本だけ集約 */
 const MAIN_SITE_URL = SERVICE_URL;
@@ -63,11 +64,12 @@ export function SiteHeader({
   className = "",
   isDownloadThanks = false,
 }: SiteHeaderProps) {
-  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断の2本に絞る */
+  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断・Meta仕様変更まとめの3本 */
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "お役立ち資料", href: DOCUMENTS_URL },
       { label: "飲食店無料診断", href: RESTAURANT_DIAGNOSIS_URL },
+      { label: "仕様変更まとめ", href: META_UPDATES_URL },
     ],
     [],
   );
