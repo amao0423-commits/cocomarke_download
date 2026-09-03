@@ -4,11 +4,5 @@
       "path": "/api/admin/broadcast-email/run-due",
       "schedule": "0 0 * * *"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/subscription/:path*",
-      "destination": "https://instagram-service-jemia.vercel.app/:path*"
-    }
   ]
 }
