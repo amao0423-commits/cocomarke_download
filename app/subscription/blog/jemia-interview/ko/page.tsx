@@ -18,7 +18,7 @@ const MEDIA_URL = "/subscription/media";
 const DIAGNOSIS_URL =
   "https://www.cocomake-guide.com/shindan.html?utm_source=blog&utm_medium=referral&utm_campaign=interview";
 
-const AUTHOR = { name: "하야카와 아오이", org: "JEMIA 운영국" };
+const AUTHOR = { name: "JEMIA 편집부", org: "JEMIA 운영국" };
 
 export const metadata: Metadata = {
   title:
@@ -143,7 +143,7 @@ export default function JemiaInterviewKoPage() {
             <div className="mt-5 flex items-center gap-3 text-sm text-slate-500">
               <time dateTime={PUBLISHED}>2026년 7월 7일</time>
               <span aria-hidden>・</span>
-              <span>글쓴이: {AUTHOR.name}（{AUTHOR.org}）</span>
+              <span>글쓴이: {AUTHOR.name}</span>
             </div>
           </div>
         </header>
@@ -314,9 +314,9 @@ export default function JemiaInterviewKoPage() {
           {/* 執筆者プロフィール */}
           <aside className="mt-14 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-7">
             <p className="text-xs font-medium text-[#2D7A4F]">글쓴이</p>
-            <p className="mt-1 text-base font-bold text-slate-900">{AUTHOR.name}（{AUTHOR.org}）</p>
+            <p className="mt-1 text-base font-bold text-slate-900">{AUTHOR.name}</p>
             <p className="mt-3 text-sm leading-loose text-slate-600">
-              JEMIA 운영국의 편집・콘텐츠 담당. 인스타그램을 중심으로 한 SNS 운영 지원 현장에 몸담으며, 매장・개인사업자의 계정 개선과 추천・탐색 탭 공략 기획・분석을 담당. '좋은 것이 올바르게 발견되는' 운영의 사고방식을 최대한 알기 쉽게 전달하는 것을 소중히 여기고 있습니다.
+              JEMIA 운영국의 편집・콘텐츠 담당 팀. 인스타그램을 중심으로 한 SNS 운영 지원 현장에 몸담으며, 매장・개인사업자의 계정 개선과 추천・탐색 탭 공략 기획・분석을 담당. '좋은 것이 올바르게 발견되는' 운영의 사고방식을 최대한 알기 쉽게 전달하는 것을 소중히 여기고 있습니다.
             </p>
           </aside>
 

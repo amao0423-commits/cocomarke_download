@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { JemiaHeader, JemiaFooter } from "../../_components/JemiaChrome";
-import { AuthorBox } from "../../_components/AuthorBox";
+import { AuthorBox, AUTHOR } from "../../_components/AuthorBox";
 import ArticleDiagnosisBanners from "../../_components/ArticleDiagnosisBanners";
 import { Markdown } from "./Markdown";
 
@@ -50,7 +50,7 @@ export function MarkdownArticle({
       description,
       datePublished: published,
       dateModified: published,
-      author: { "@type": "Person", name: "早川 葵", affiliation: { "@type": "Organization", name: "JEMIA（株式会社ホットセラー）" } },
+      author: { "@type": "Organization", name: AUTHOR.name, affiliation: { "@type": "Organization", name: "JEMIA（株式会社ホットセラー）" } },
       publisher: { "@type": "Organization", name: "株式会社ホットセラー", url: "https://www.cocomake-guide.com" },
       mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     },
@@ -97,7 +97,7 @@ export function MarkdownArticle({
               <span aria-hidden>・</span>
               <span>{readingTime}</span>
               <span aria-hidden>・</span>
-              <span>執筆：早川 葵（JEMIA運営局）</span>
+              <span>執筆：{AUTHOR.byline}</span>
             </div>
           </div>
         </header>

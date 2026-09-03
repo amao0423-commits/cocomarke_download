@@ -17,7 +17,7 @@ const MEDIA_URL = "/subscription/media";
 const DIAGNOSIS_URL =
   "https://www.cocomake-guide.com/shindan.html?utm_source=blog&utm_medium=referral&utm_campaign=interview";
 
-const AUTHOR = { name: "早川 葵", org: "JEMIA運営局" };
+const AUTHOR = { name: "JEMIA編集部", org: "JEMIA運営局" };
 
 export const metadata: Metadata = {
   title:
@@ -65,7 +65,7 @@ const jsonLd = {
   image: ["https://www.cocomake-guide.com/images/interview/interview-1.png"],
   datePublished: PUBLISHED,
   dateModified: MODIFIED,
-  author: { "@type": "Person", name: AUTHOR.name, affiliation: { "@type": "Organization", name: "JEMIA（株式会社ホットセラー）" } },
+  author: { "@type": "Organization", name: AUTHOR.name, affiliation: { "@type": "Organization", name: "JEMIA（株式会社ホットセラー）" } },
   publisher: {
     "@type": "Organization",
     name: "株式会社ホットセラー",
@@ -142,7 +142,7 @@ export default function JemiaInterviewPage() {
             <div className="mt-5 flex items-center gap-3 text-sm text-slate-500">
               <time dateTime={PUBLISHED}>2026年7月7日</time>
               <span aria-hidden>・</span>
-              <span>執筆：{AUTHOR.name}（{AUTHOR.org}）</span>
+              <span>執筆：{AUTHOR.name}</span>
             </div>
           </div>
         </header>
@@ -313,9 +313,9 @@ export default function JemiaInterviewPage() {
           {/* 執筆者プロフィール */}
           <aside className="mt-14 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-7">
             <p className="text-xs font-medium text-[#2D7A4F]">執筆者</p>
-            <p className="mt-1 text-base font-bold text-slate-900">{AUTHOR.name}（{AUTHOR.org}）</p>
+            <p className="mt-1 text-base font-bold text-slate-900">{AUTHOR.name}</p>
             <p className="mt-3 text-sm leading-loose text-slate-600">
-              JEMIA運営局の編集・コンテンツ担当。Instagramを中心としたSNS運用支援の現場に携わり、店舗・個人事業主のアカウント改善やおすすめ・発見タブ攻略の企画・分析を担当。「良いものが正しく見つけてもらえる」運用の考え方を、できるだけわかりやすく発信することを大切にしています。
+              JEMIA運営局の編集・コンテンツ担当チーム。Instagramを中心としたSNS運用支援の現場に携わり、店舗・個人事業主のアカウント改善やおすすめ・発見タブ攻略の企画・分析を担当。「良いものが正しく見つけてもらえる」運用の考え方を、できるだけわかりやすく発信することを大切にしています。
             </p>
           </aside>
 
