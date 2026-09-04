@@ -64,11 +64,11 @@ export function SiteHeaderMobile({
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  /** 資料サイト内ナビ：お役立ち資料・飲食店無料診断・Meta仕様変更まとめの3本 */
+  /** 資料サイト内ナビ：お役立ち資料・Meta仕様変更まとめの2本
+   *  （飲食店診断は「飲食店Instagram集客診断」CTAに集約） */
   const navItems = useMemo<NavItem[]>(
     () => [
       { label: "お役立ち資料", href: DOCUMENTS_URL },
-      { label: "飲食店無料診断", href: RESTAURANT_DIAGNOSIS_URL },
       { label: "仕様変更まとめ", href: META_UPDATES_URL },
     ],
     [],
