@@ -81,10 +81,6 @@ export function TemplatesTab({ secretKey }: { secretKey: string }) {
   const [editBody, setEditBody] = useState('');
   const [editPublish, setEditPublish] = useState(false);
   const [editLinks, setEditLinks] = useState<LinkRow[]>([]);
-  const [testEmailTo, setTestEmailTo] = useState('');
-  const [testSampleName, setTestSampleName] = useState('テスト 太郎');
-  const [testBusy, setTestBusy] = useState(false);
-  const [testMessage, setTestMessage] = useState('');
 
   const auth = { Authorization: `Bearer ${secretKey}` };
   const hasDocuments = documents.length > 0;
@@ -187,34 +183,6 @@ export function TemplatesTab({ secretKey }: { secretKey: string }) {
         label: l.label,
       }))
     );
-    setTestMessage('');
-  };
-
-  const sendTestEmail = async () => {
-    if (!editingId) return;
-    setTestBusy(true);
-    setTestMessage('');
-    setErrorMessage('');
-    try {
-      const res = await fetch(`/api/admin/email-templates/${editingId}/test-send`, {
-        method: 'POST',
-        headers: { ...auth, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: testEmailTo.trim(),
-          sampleName: testSampleName.trim() || 'テスト 太郎',
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMessage(data?.error ?? 'テスト送信に失敗しました');
-        return;
-      }
-      setTestMessage('送信しました。受信トレイを確認してください。');
-    } catch {
-      setErrorMessage('テスト送信中にエラーが発生しました');
-    } finally {
-      setTestBusy(false);
-    }
   };
 
   const saveEdit = async () => {
@@ -485,7 +453,7 @@ export function TemplatesTab({ secretKey }: { secretKey: string }) {
               メール文面を編集
             </h3>
             <p className="text-xs leading-5 text-gray-600">
-              1. 本文を確認 2. 資料ボタンを確認 3. 保存 4. テスト送信、の順で進めるとスムーズです。
+              1. 本文を確認 2. 資料ボタンを確認 3. 保存、の順で進めるとスムーズです。
             </p>
             <label className="block">
               <span className="text-xs text-gray-500">件名</span>
@@ -593,45 +561,6 @@ export function TemplatesTab({ secretKey }: { secretKey: string }) {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="border-t border-gray-200 pt-4 mt-2 space-y-2">
-              <p className="text-xs font-semibold text-gray-800">テストメール</p>
-              <p className="text-xs text-gray-500">
-                実際の資料ダウンロード用URL（署名付き）が入ります。保存前の編集内容は、先に「保存」すると反映されます。
-              </p>
-              <div className="flex flex-wrap gap-2 items-end">
-                <label className="flex-1 min-w-[10rem] text-xs text-gray-500">
-                  送信先
-                  <input
-                    type="email"
-                    value={testEmailTo}
-                    onChange={(e) => setTestEmailTo(e.target.value)}
-                    placeholder="your@example.com"
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  />
-                </label>
-                <label className="flex-1 min-w-[8rem] text-xs text-gray-500">
-                  {'{{name}}'} 用（任意）
-                  <input
-                    type="text"
-                    value={testSampleName}
-                    onChange={(e) => setTestSampleName(e.target.value)}
-                    className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  />
-                </label>
-              </div>
-              <button
-                type="button"
-                onClick={() => void sendTestEmail()}
-                disabled={testBusy || !testEmailTo.trim()}
-                className={`${btnOutline} border-sky-200/60 text-sky-600`}
-              >
-                <Send className="h-4 w-4" aria-hidden />
-                {testBusy ? '送信中…' : 'テストメールを送る'}
-              </button>
-              {testMessage && (
-                <p className="text-xs text-green-700">{testMessage}</p>
-              )}
             </div>
             <div className="flex gap-2 justify-end pt-2">
               <button

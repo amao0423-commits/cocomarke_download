@@ -20,9 +20,6 @@ const PlanningRequestsTab = dynamic(() =>
 const DocumentsTab = dynamic(() =>
   import('@/components/admin/DocumentsTab').then((m) => ({ default: m.DocumentsTab }))
 );
-const BroadcastEmailTab = dynamic(() =>
-  import('@/components/admin/BroadcastEmailTab').then((m) => ({ default: m.BroadcastEmailTab }))
-);
 const ImagesTab = dynamic(() =>
   import('@/components/admin/ImagesTab').then((m) => ({ default: m.ImagesTab }))
 );
@@ -41,7 +38,6 @@ type ActiveTab =
   | 'restaurantDiagnosis'
   | 'planning'
   | 'documents'
-  | 'broadcast'
   | 'images';
 
 type NavItem = { id: ActiveTab; label: string; icon: string };
@@ -61,10 +57,6 @@ const NAV: { section: string; items: NavItem[] }[] = [
       { id: 'planning', label: 'プランニング履歴', icon: '🧭' },
       { id: 'diagnostics', label: '診断統計', icon: '📈' },
     ],
-  },
-  {
-    section: 'OUTREACH',
-    items: [{ id: 'broadcast', label: '一斉メール', icon: '📣' }],
   },
 ];
 
@@ -265,7 +257,6 @@ export default function AdminPage() {
             {activeTab === 'restaurantDiagnosis' && <RestaurantDiagnosisTab secretKey={secretKey} />}
             {activeTab === 'planning' && <PlanningRequestsTab secretKey={secretKey} />}
             {activeTab === 'documents' && <DocumentsTab secretKey={secretKey} />}
-            {activeTab === 'broadcast' && <BroadcastEmailTab secretKey={secretKey} />}
             {activeTab === 'images' && <ImagesTab secretKey={secretKey} />}
           </div>
         </main>
