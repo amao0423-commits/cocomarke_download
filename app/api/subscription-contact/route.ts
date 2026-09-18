@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 
 const NOTIFY_TO = 'info@cocomake-guide.com';
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     const subjectLabel = SUBJECT_LABELS[source] ?? 'ご相談';
 
-    await sendBrevoTransactionalEmail({
+    await sendTransactionalEmail({
       to:      NOTIFY_TO,
       subject: `【${subjectLabel}】JEMIA｜${name} 様${inquiryType ? `（${inquiryType}）` : ''}`,
       html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${rows}</pre>`,
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
         '━━━━━━━━━━━━━━━',
       ].filter((l) => l !== null).join('\n');
       try {
-        await sendBrevoTransactionalEmail({
+        await sendTransactionalEmail({
           to:      email,
           subject: '【JEMIA】インスタ運用診断のご参加ありがとうございます（診断結果つき）',
           html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${promo}</pre>`,
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
         '━━━━━━━━━━━━━━━',
       ].filter((l) => l !== null).join('\n');
       try {
-        await sendBrevoTransactionalEmail({
+        await sendTransactionalEmail({
           to:      email,
           subject: '【JEMIA】お問い合わせを受け付けました',
           html:    `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${autoReply}</pre>`,

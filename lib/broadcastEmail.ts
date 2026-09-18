@@ -4,8 +4,8 @@ import {
   buildBroadcastEmailHtmlFromContent,
   type BroadcastBodyMode,
 } from '@/lib/broadcastEmailContent';
-import { brevoMailConfigured } from '@/lib/brevoConfigured';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { transactionalMailConfigured } from '@/lib/mailConfigured';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 function looksLikeEmail(s: string): boolean {
@@ -114,7 +114,7 @@ export async function sendBroadcastEmails(params: {
   if (!supabase) {
     return { ok: false, reason: 'Supabase未設定' };
   }
-  if (!brevoMailConfigured()) {
+  if (!transactionalMailConfigured()) {
     return { ok: false, reason: 'メール送信の設定が不足しています' };
   }
 
@@ -140,7 +140,7 @@ export async function sendBroadcastEmails(params: {
   let n = 0;
   for (const to of emails) {
     try {
-      await sendBrevoTransactionalEmail({
+      await sendTransactionalEmail({
         to,
         subject: params.subject,
         html,

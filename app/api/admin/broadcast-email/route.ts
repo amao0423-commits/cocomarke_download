@@ -21,7 +21,7 @@ import {
   getBroadcastSenderEmail,
   saveBroadcastSenderEmail,
 } from '@/lib/siteSettings';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 import { z } from 'zod';
 
 /** 大量逐次送信のため上限を延長（プランに応じて調整） */
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
         bodyContent: data.bodyContent ?? data.mainBodyHtml ?? '',
         bodyMode: normalizeBroadcastBodyMode(data.bodyMode),
       });
-      await sendBrevoTransactionalEmail({
+      await sendTransactionalEmail({
         to: data.to ?? '',
         subject: data.subject ?? '',
         html,

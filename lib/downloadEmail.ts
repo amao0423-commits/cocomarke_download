@@ -2,8 +2,8 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { updateEmailStatusInDb } from '@/lib/downloadRequestsDb';
 import type { EmailStatus } from '@/types/database.types';
 import { applyEmailHtmlAssetUrls } from '@/lib/emailLogoUrl';
-import { brevoMailConfigured } from '@/lib/brevoConfigured';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { transactionalMailConfigured } from '@/lib/mailConfigured';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 
 function escapeHtml(s: string): string {
   return s
@@ -173,7 +173,7 @@ export async function sendOutboundEmailForRequest(
     return { ok: false, emailStatus: 'pending', reason: 'Supabase未設定' };
   }
 
-  if (!brevoMailConfigured()) {
+  if (!transactionalMailConfigured()) {
     return { ok: false, emailStatus: 'pending', reason: 'メール送信の設定が不足しています' };
   }
 
@@ -232,7 +232,7 @@ export async function sendOutboundEmailForRequest(
   html = applyEmailHtmlAssetUrls(html);
 
   try {
-    await sendBrevoTransactionalEmail({
+    await sendTransactionalEmail({
       to: row.email,
       subject: template.subject,
       html,
@@ -258,7 +258,7 @@ export async function sendTemplateTestEmail(params: {
   if (!supabase) {
     return { ok: false, reason: 'Supabase未設定' };
   }
-  if (!brevoMailConfigured()) {
+  if (!transactionalMailConfigured()) {
     return { ok: false, reason: 'メール送信の設定が不足しています' };
   }
   const { data: template, error } = await supabase
@@ -276,7 +276,7 @@ export async function sendTemplateTestEmail(params: {
     .replace(/\{\{documentButtons\}\}/g, documentButtons);
   html = applyEmailHtmlAssetUrls(html);
   try {
-    await sendBrevoTransactionalEmail({
+    await sendTransactionalEmail({
       to: params.to.trim(),
       subject: `[テスト] ${template.subject}`,
       html,

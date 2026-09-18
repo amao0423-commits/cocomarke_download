@@ -7,7 +7,7 @@ import { JemiaHeader, JemiaFooter } from "../_components/JemiaChrome";
 //   STEP1: 5つの質問＋補足。総合資料もこの画面からダウンロード可能。
 //   STEP2: 送付先（メール・アカウントID・同意）
 //   STEP3: おすすめプラン＋業種別事例＋お申し込み/資料への導線
-// 送信は /api/planning（Brevo）へ。回答者にはおすすめプランの案内メールが届く。
+// 送信は /api/planning（Resend）へ。回答者にはおすすめプランの案内メールが届く。
 
 const APPLY_URL = "/subscription/apply";
 const DOC_URL = "/docs/plan-overview.pdf"; // 総合資料（ブラウザで直接プレビュー）

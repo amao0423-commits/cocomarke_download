@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 // かんたんプランニング（プラン診断）の送信API
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       (note && note.trim()) ? note.trim() : '（なし）',
     ].join('\n');
 
-    await sendBrevoTransactionalEmail({
+    await sendTransactionalEmail({
       to: NOTIFY_TO,
       subject: `【プランニング】JEMIA｜おすすめ:${p.name}｜${email}`,
       html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${esc(adminBody)}</pre>`,
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
       </div>`;
 
     try {
-      await sendBrevoTransactionalEmail({
+      await sendTransactionalEmail({
         to: email,
         subject: `【JEMIA】あなたのおすすめプラン「${p.name}」のご案内`,
         html,

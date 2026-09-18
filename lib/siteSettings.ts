@@ -3,7 +3,7 @@ import {
   DEFAULT_EMAIL_TEMPLATE_BODY_HTML,
   DEFAULT_EMAIL_TEMPLATE_SUBJECT,
 } from '@/lib/email-template-defaults';
-import { defaultBrevoSenderEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { defaultSenderEmail } from '@/lib/sendTransactionalEmail';
 
 const KEY_DEFAULT_BODY = 'default_email_template_body_html';
 const KEY_DEFAULT_SUBJECT = 'default_email_template_subject';
@@ -35,14 +35,14 @@ export async function getDefaultEmailTemplateSubject(): Promise<string> {
 
 export async function getBroadcastSenderEmail(): Promise<string> {
   const supabase = getSupabaseAdmin();
-  if (!supabase) return defaultBrevoSenderEmail();
+  if (!supabase) return defaultSenderEmail();
   const { data } = await supabase
     .from('site_settings')
     .select('value')
     .eq('key', KEY_BROADCAST_SENDER_EMAIL)
     .maybeSingle();
   const v = data?.value?.trim();
-  return v && v.length > 0 ? v : defaultBrevoSenderEmail();
+  return v && v.length > 0 ? v : defaultSenderEmail();
 }
 
 export async function saveBroadcastSenderEmail(value: string): Promise<{ ok: boolean; error?: string }> {

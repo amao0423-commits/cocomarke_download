@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendBrevoTransactionalEmail } from '@/lib/sendBrevoTransactionalEmail';
+import { sendTransactionalEmail } from '@/lib/sendTransactionalEmail';
 
 const NOTIFY_TO = 'info@cocomake-guide.com';
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     // 2) 管理者へメール通知（best-effort）
     try {
-      await sendBrevoTransactionalEmail({
+      await sendTransactionalEmail({
         to: NOTIFY_TO,
         subject: `【本申込${source ? `・${source}` : ''}】JEMIA｜${plans.join('、') || 'プラン未選択'}｜${name || '—'}`,
         html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${bodyText}</pre>`,
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         '━━━━━━━━━━━━━━━',
       ].join('\n');
       try {
-        await sendBrevoTransactionalEmail({
+        await sendTransactionalEmail({
           to: email,
           subject: '【JEMIA】お申し込みを受け付けました',
           html: `<pre style="font-family:sans-serif;font-size:14px;line-height:1.8;white-space:pre-wrap">${reply}</pre>`,
